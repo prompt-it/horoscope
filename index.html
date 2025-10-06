@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ระบบจองคิวดูดวง • แม่หมอ</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bg-1:#0b0610;
+      --bg-2:#140a1b;
+      --card:#120814;
+      --primary:#a200ff;
+      --primary-2:#5a00a3;
+      --accent:#ff6fff;
+      --text:#ffffff;
+      --muted:#c9b6d8;
+      --border:rgba(255,255,255,.14);
+      --glow:0 0 24px rgba(162,0,255,.35), 0 0 48px rgba(102,0,204,.25);
+      --radius:16px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Sarabun',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(162,0,255,.25), transparent 60%),
+        radial-gradient(1000px 600px at 110% 10%, rgba(81,0,142,.25), transparent 60%),
+        linear-gradient(180deg, var(--bg-2), var(--bg-1));
+      overflow-x:hidden;
+    }
+
+    /* ---------- Preloader ---------- */
+    #preloader{
+      position:fixed; inset:0;
+      display:flex; flex-direction:column; gap:16px;
+      align-items:center; justify-content:center;
+      background:linear-gradient(135deg,#0a0511,#170b21 60%, #09040d);
+      z-index:9999;
+      transition:opacity .4s ease, visibility .4s ease;
+    }
+    #preloader.hide{opacity:0; visibility:hidden}
+    .loader-ring{
+      width:120px; height:120px; border-radius:50%;
+      border:6px solid transparent; border-top-color:var(--accent); border-right-color:var(--primary);
+      box-shadow:var(--glow);
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{color:#fff; letter-spacing:.5px}
+
+    /* ---------- Top HUD ---------- */
+    .hud{
+      position:fixed; left:16px; top:16px; z-index:60;
+      background:rgba(10,5,17,.6);
+      border:1px solid var(--border);
+      box-shadow:var(--glow);
+      border-radius:12px; padding:10px 12px; min-width:220px;
+      backdrop-filter: blur(6px);
+    }
+    .hud .title{font-weight:700; font-size:13px; color:var(--muted); margin-bottom:6px}
+    .hud .item{font-size:13px; padding:6px 8px; background:linear-gradient(90deg,#1b0e24,#120618);
+      border-radius:8px; border:1px solid var(--border); margin-top:6px; text-align:center}
+
+    /* ---------- Branding ---------- */
+    .logo{
+      position:fixed; right:16px; top:16px; z-index:60;
+      width:76px; height:76px; border-radius:50%;
+      box-shadow:var(--glow);
+      border:2px solid rgba(255,255,255,.6); background:#fff; object-fit:cover;
+    }
+
+    /* ---------- Cards / Containers ---------- */
+    .wrap{max-width:1080px; margin:120px auto 56px; padding:0 16px}
+    .card{
+      background:linear-gradient(180deg, rgba(30,10,42,.85), rgba(12,6,18,.85));
+      border:1px solid var(--border);
+      box-shadow:var(--glow);
+      border-radius:var(--radius);
+      padding:20px;
+      margin-bottom:16px;
+    }
+    h2.title{margin:0 0 10px; font-weight:700; color:#f5e9ff}
+    .muted{color:var(--muted); font-size:14px; margin-top:-2px}
+
+    label{display:block; margin:10px 0 6px; color:#e9d6ff; font-weight:600}
+    input, select, button{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border);
+      background:#fff; color:#000; font-size:16px;
+    }
+    input:focus, select:focus{outline:none; box-shadow:0 0 0 3px rgba(162,0,255,.25)}
+
+    .btn{
+      background:linear-gradient(90deg, #4b008f, #9a00ff);
+      color:#fff; border:none; cursor:pointer; font-weight:700;
+      transition:transform .12s ease, filter .2s ease;
+    }
+    .btn:hover{transform:translateY(-1px); filter:brightness(1.06)}
+    .btn:active{transform:translateY(0); filter:brightness(.98); box-shadow:var(--glow)}
+
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:720px){ .row{grid-template-columns:1fr} }
+
+    /* ---------- Popup Ticket ---------- */
+    .popup{
+      position:fixed; inset:0; display:none; place-items:center; z-index:80;
+      background:rgba(7,3,12,.6); backdrop-filter: blur(4px);
+    }
+    .popup.show{display:grid}
+    .popup .content{
+      width:min(520px, 92vw);
+      background:linear-gradient(170deg, rgba(34,13,48,.95), rgba(18,6,26,.95));
+      border:1px solid var(--border); border-radius:18px; padding:20px;
+      box-shadow:var(--glow);
+    }
+    .popup h3{margin:0 0 8px; color:#ffd9ff}
+    .popup .note{font-size:13px; color:#ffcaf9; margin-top:12px}
+    .popup .actions{display:flex; gap:10px; margin-top:14px}
+    .popup .actions .btn{flex:1}
+
+    /* ---------- Admin / Dashboard ---------- */
+    .toolbar{
+      display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px
+    }
+    .toolbar .btn{width:auto; padding:10px 14px}
+    .toolbar input{width:auto; background:#fff}
+
+    .admin-section{position:relative}
+    .table-wrap{
+      overflow-x:auto; border:1px solid var(--border); border-radius:14px;
+      background:rgba(255,255,255,.04); backdrop-filter: blur(6px);
+      box-shadow:var(--glow);
+      max-height: 62vh;
+    }
+    table{width:100%; min-width:860px; border-collapse:collapse; color:#fff}
+    thead th{
+      position:sticky; top:0; z-index:1;
+      background:linear-gradient(90deg,#3a0a64, #7a1db3);
+      color:#ffe8ff; text-shadow:0 0 6px rgba(255,255,255,.55);
+      border-bottom:1px solid var(--border); padding:10px; font-weight:700
+    }
+    tbody td{
+      padding:10px 8px; text-align:center; border-bottom:1px dashed rgba(255,255,255,.12);
+      word-break:break-word;
+    }
+    tbody tr:hover{background:rgba(255,255,255,.06)}
+
+    /* Compact mode hides some cols on narrow screens */
+    .compact td[data-col="age"],
+    .compact td[data-col="ig"],
+    .compact th[data-col="age"],
+    .compact th[data-col="ig"] { display:none }
+    @media (max-width:520px){
+      .compact td[data-col="ref"],
+      .compact th[data-col="ref"] { display:none }
+    }
+
+    .pager{display:flex; justify-content:center; gap:8px; margin:12px 0}
+    .pager .btn{width:auto; padding:8px 12px}
+
+    /* Fullscreen helper */
+    .fullscreen{position:fixed !important; inset:14px !important; z-index:70 !important; background:rgba(10,5,15,.98)}
+    .fullscreen .table-wrap{max-height:calc(100vh - 220px)}
+
+    /* Dashboard */
+    .dash-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:880px){ .dash-grid{grid-template-columns:1fr} }
+    canvas{background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:14px; padding:10px}
+
+    /* Contact */
+    .contact{text-align:center; margin:10px 0 0}
+    .contact a{
+      display:inline-block; text-decoration:none; color:#fff; font-weight:700;
+      background:linear-gradient(90deg, #6a00b8, #b300ff);
+      border:1px solid var(--border); padding:10px 14px; border-radius:12px;
+      box-shadow:var(--glow);
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="loader-ring"></div>
+    <div class="loading-text">กำลังโหลดระบบ… <span id="loading-percent">0%</span></div>
+  </div>
+
+  <!-- HUD + Branding -->
+  <div class="hud" id="hud">
+    <div class="title">สถานะระบบ</div>
+    <div class="item" id="queueCount">ยอดรวมผู้จองคิวทั้งหมด: 0 คน</div>
+    <div class="item" id="currentTime">เวลาปัจจุบัน: --:--:--</div>
+  </div>
+  <img class="logo" src="IMG_0920.JPG" alt="โลโก้" />
+
+  <main class="wrap">
+
+    <!-- Booking -->
+    <section class="card">
+      <h2 class="title">จองคิวดูดวงอัตโนมัติ</h2>
+      <p class="muted">กรอกข้อมูลให้ครบถ้วน ระบบจะจัดคิวให้อัตโนมัติ (จำกัด 5 คิวต่อวัน)</p>
+      <form id="bookingForm">
+        <div class="row">
+          <div>
+            <label for="name">ชื่อเล่น</label>
+            <input id="name" type="text" required placeholder="เช่น เบบี้, โฟกัส" />
+          </div>
+          <div>
+            <label for="age">อายุ</label>
+            <input id="age" type="number" required min="1" placeholder="เช่น 22" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="category">หมวดหมู่</label>
+            <select id="category">
+              <option>ดูดวงส่วนตัว</option>
+              <option>โชคชะตา</option>
+              <option>ความฝัน</option>
+              <option>อดีตและอนาคต</option>
+              <option>ความรัก</option>
+              <option>การงาน</option>
+              <option>การเงิน</option>
+              <option>การเรียน</option>
+              <option>สุขภาพ</option>
+            </select>
+          </div>
+          <div>
+            <label for="date">เลือกวัน</label>
+            <input id="date" type="date" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="igUsername">Instagram (@username)</label>
+            <input id="igUsername" type="text" placeholder="@yourusername" />
+          </div>
+          <div style="display:flex; align-items:flex-end">
+            <button type="submit" class="btn">จองคิว</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Reference Checker -->
+    <section class="card">
+      <h2 class="title">ตรวจสอบใบคิว</h2>
+      <div class="row">
+        <div>
+          <input type="text" id="refInput" placeholder="ใส่เลขอ้างอิง" />
+        </div>
+        <div>
+          <button id="btnCheckRef" class="btn" type="button">ตรวจสอบ</button>
+        </div>
+      </div>
+      <div id="refResult" class="muted" style="margin-top:10px"></div>
+    </section>
+
+    <!-- Contact -->
+    <section class="card contact">
+      <a href="https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx" target="_blank" rel="noopener">
+        ติดต่อแม่หมอผ่าน IG: @horoscope_1308
+      </a>
+    </section>
+
+    <!-- Dashboard -->
+    <section class="card" id="dashboardSection" style="display:none">
+      <h2 class="title">แดชบอร์ดการจองคิว</h2>
+      <div class="toolbar">
+        <button id="btnCloseDash" class="btn" type="button">ปิดแดชบอร์ด</button>
+      </div>
+      <div class="dash-grid">
+        <canvas id="lineChart"></canvas>
+        <canvas id="pieChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Admin Table -->
+    <section class="card admin-section" id="adminSection">
+      <h2 class="title">ข้อมูลใบคิวทั้งหมด</h2>
+      <div class="toolbar">
+        <button id="btnRefresh" class="btn" type="button">รีเฟรช</button>
+        <button id="btnToggleCompact" class="btn" type="button">โหมดย่อ (Compact)</button>
+        <button id="btnFullscreen" class="btn" type="button">แสดงเต็มหน้าจอ</button>
+        <button id="btnDashboard" class="btn" type="button">ดูแดชบอร์ด</button>
+        <input id="searchInput" type="search" placeholder="ค้นหา: ชื่อ / หมวด / IG / REF" />
+        <button id="btnExport" class="btn" type="button">Export CSV</button>
+      </div>
+
+      <div class="table-wrap" id="tableWrap">
+        <table id="adminTable">
+          <thead>
+            <tr>
+              <th data-col="name">ชื่อ</th>
+              <th data-col="age">อายุ</th>
+              <th data-col="cat">หมวดหมู่</th>
+              <th data-col="date">วันที่</th>
+              <th data-col="queue">คิว</th>
+              <th data-col="ref">เลขอ้างอิง</th>
+              <th data-col="ig">IG</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="pager">
+        <button id="prevPage" class="btn" type="button">ก่อนหน้า</button>
+        <div id="pageInfo" class="muted">หน้า 1</div>
+        <button id="nextPage" class="btn" type="button">ถัดไป</button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Popup -->
+  <div class="popup" id="popup">
+    <div class="content">
+      <h3>ใบคิวดูดวง</h3>
+      <div id="ticketData"></div>
+      <div class="actions">
+        <button id="btnPdf" class="btn">ดาวน์โหลด PDF</button>
+        <button id="btnIG" class="btn">ไปที่ IG</button>
+        <button id="btnClosePopup" class="btn">ปิด</button>
+      </div>
+      <p class="note">หมายเหตุ: กรุณาแคปหน้าจอใบคิวนี้ไว้และดาวน์โหลด PDF เพื่อเก็บเลขอ้างอิง</p>
+    </div>
+  </div>
+
+  <script>
+    /* ---------------- Firebase ---------------- */
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0o88iBVuKsj-2qgEFlP-V3FwArPHCrkY",
+      authDomain: "horoscopequeue.firebaseapp.com",
+      projectId: "horoscopequeue",
+      storageBucket: "horoscopequeue.appspot.com",
+      messagingSenderId: "30274669281",
+      appId: "1:30274669281:web:45b08e0c48e58680d3b351",
+      measurementId: "G-48X2FPNBYZ"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    /* ---------------- State ---------------- */
+    let currentTicket = null;
+    let tableData = [];          // raw data
+    let filteredData = [];       // after search
+    let page = 1;
+    const pageSize = 10;
+    let compact = true;
+    let lineChart, pieChart;     // Chart instances
+
+    /* ---------------- Helpers ---------------- */
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    function showPreloaderProgress(){
+      const el = $("#loading-percent");
+      let p = 0;
+      const t = setInterval(()=>{
+        p = Math.min(90, p+1);
+        el.textContent = p+"%";
+        if(p>=90) clearInterval(t);
+      }, 15);
+      window.addEventListener("load", ()=>{
+        el.textContent = "100%";
+        setTimeout(()=> $("#preloader").classList.add("hide"), 250);
+      });
+    }
+
+    function toast(msg){
+      alert(msg);
+    }
+
+    /* ---------------- Booking ---------------- */
+    async function handleBookingSubmit(e){
+      e.preventDefault();
+      const name = $("#name").value.trim();
+      const age = $("#age").value.trim();
+      const category = $("#category").value;
+      const date = $("#date").value;
+      const igUsername = $("#igUsername").value.trim();
+
+      if(!name || !age || !category || !date){ return; }
+
+      try{
+        // Check quota per day
+        const snap = await db.collection("queues").where("date","==",date).get();
+        if(snap.size >= 5){
+          toast("เต็มแล้วสำหรับวันนี้ กรุณาเลือกวันอื่น");
+          return;
+        }
+
+        const queueNumber = snap.size + 1;
+        const referenceId = Math.random().toString(36).substring(2,10).toUpperCase();
+        const ticket = {
+          name, age, category, date, queueNumber, referenceId,
+          timestamp: new Date(),
+          igUsername: igUsername || null
+        };
+        await db.collection("queues").add(ticket);
+        currentTicket = ticket;
+
+        $("#ticketData").innerHTML = `
+          <p><b>ชื่อ:</b> ${ticket.name}</p>
+          <p><b>อายุ:</b> ${ticket.age}</p>
+          <p><b>หมวดหมู่:</b> ${ticket.category}</p>
+          <p><b>ลำดับคิว:</b> ${ticket.queueNumber}</p>
+          <p><b>วันที่ดูดวง:</b> ${ticket.date}</p>
+          <p><b>เลขอ้างอิง:</b> ${ticket.referenceId}</p>
+        `;
+        $("#popup").classList.add("show");
+        (e.target).reset();
+      }catch(err){
+        console.error(err);
+        toast("เกิดข้อผิดพลาดในการบันทึกคิว: " + err.message);
+      }
+    }
+
+    function downloadPDF(){
+      if(!currentTicket) return;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const englishText = 
+`Ticket for Fortune Telling
+Name: ${currentTicket.name}
+Age: ${currentTicket.age}
+Category: ${currentTicket.category}
+Queue No: ${currentTicket.queueNumber}
+Appointment Date: ${currentTicket.date}
+Reference No: ${currentTicket.referenceId}`;
+      const lines = englishText.split("\\n");
+      let y = 20;
+      lines.forEach(line => { doc.text(line, 10, y); y += 10; });
+      doc.save("Ticket.pdf");
+    }
+
+    function goInstagram(){
+      window.open("https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx", "_blank", "noopener");
+    }
+
+    /* ---------------- Reference Check ---------------- */
+    async function checkReference(){
+      const ref = $("#refInput").value.trim().toUpperCase();
+      if(!ref){ $("#refResult").textContent = "กรุณากรอกเลขอ้างอิง"; return; }
+      try{
+        const snap = await db.collection("queues").where("referenceId","==",ref).get();
+        if(!snap.empty){
+          const d = snap.docs[0].data();
+          $("#refResult").innerHTML = `
+            <p>ชื่อ: ${d.name}</p>
+            <p>วันที่จอง: ${d.date}</p>
+            <p>ลำดับคิว: ${d.queueNumber}</p>
+            <p>หมวดหมู่: ${d.category}</p>
+            <p>อายุ: ${d.age}</p>
+            <p>IG: ${d.igUsername ?? "-"}</p>
+          `;
+        }else{
+          $("#refResult").textContent = "ไม่พบข้อมูล";
+        }
+      }catch(err){
+        console.error(err);
+        $("#refResult").textContent = "เกิดข้อผิดพลาด: " + err.message;
+      }
+    }
+
+    /* ---------------- Live HUD ---------------- */
+    function initLiveHud(){
+      // Real-time total count & clock
+      db.collection("queues").onSnapshot((snap)=>{
+        $("#queueCount").textContent = `ยอดรวมผู้จองคิวทั้งหมด: ${snap.size} คน`;
+      }, (err)=> console.error(err));
+
+      setInterval(()=>{
+        const now = new Date().toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        $("#currentTime").textContent = `เวลาปัจจุบัน(🇹🇭): ${now}`;
+      }, 1000);
+    }
+
+    /* ---------------- Admin Table ---------------- */
+    async function loadAdminData(){
+      try{
+        const snap = await db.collection("queues").orderBy("date","desc").get();
+        tableData = snap.docs.map(d => d.data());
+        applyFilter(); // refresh UI
+      }catch(err){
+        console.error(err);
+        toast("โหลดข้อมูลไม่สำเร็จ: " + err.message);
+      }
+    }
+
+    function applyFilter(){
+      const q = $("#searchInput").value.trim().toLowerCase();
+      filteredData = !q ? [...tableData] :
+        tableData.filter(t => {
+          const ref = (t.referenceId||"").toLowerCase();
+          const ig = (t.igUsername||"").toLowerCase();
+          return (t.name||"").toLowerCase().includes(q) ||
+                 (t.category||"").toLowerCase().includes(q) ||
+                 (ig).includes(q) ||
+                 (ref).includes(q);
+        });
+      page = 1;
+      renderTable();
+      updatePager();
+    }
+
+    function renderTable(){
+      const tbody = $("#adminTable tbody");
+      tbody.innerHTML = "";
+      const start = (page-1)*pageSize;
+      const slice = filteredData.slice(start, start+pageSize);
+      slice.forEach(t => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td data-col="name">${t.name||"-"}</td>
+          <td data-col="age">${t.age||"-"}</td>
+          <td data-col="cat">${t.category||"-"}</td>
+          <td data-col="date">${t.date||"-"}</td>
+          <td data-col="queue">${t.queueNumber||"-"}</td>
+          <td data-col="ref">${t.referenceId ? String(t.referenceId).slice(0,6)+"…" : "-"}</td>
+          <td data-col="ig">${t.igUsername ? (t.igUsername.length>12 ? t.igUsername.slice(0,12)+"…" : t.igUsername) : "<span style='color:#bbb'>—</span>"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      // apply compact class
+      const table = $("#adminTable");
+      if(compact) table.classList.add("compact"); else table.classList.remove("compact");
+    }
+
+    function updatePager(){
+      const total = filteredData.length;
+      const pages = Math.max(1, Math.ceil(total / pageSize));
+      $("#pageInfo").textContent = `หน้า ${page} / ${pages}`;
+      $("#prevPage").disabled = page<=1;
+      $("#nextPage").disabled = page>=pages;
+    }
+
+    function exportCsv(){
+      if(!tableData.length){ toast("ยังไม่มีข้อมูลสำหรับส่งออก"); return; }
+      const header = ["name","age","category","date","queueNumber","referenceId","igUsername"];
+      const rows = [header.join(",")].concat(
+        tableData.map(t=>[t.name,t.age,t.category,t.date,t.queueNumber,t.referenceId,(t.igUsername||"")].map(x=>`"${(x??"").toString().replace(/"/g,'""')}"`).join(","))
+      );
+      const blob = new Blob([rows.join("\\n")], {type:"text/csv;charset=utf-8;"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "queues_export.csv"; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /* ---------------- Dashboard ---------------- */
+    function destroyCharts(){
+      if(lineChart){ lineChart.destroy(); lineChart = null; }
+      if(pieChart){ pieChart.destroy(); pieChart = null; }
+    }
+
+    async function showDashboard(){
+      $("#dashboardSection").style.display = "block";
+      try{
+        const snap = await db.collection("queues").get();
+        const data = snap.docs.map(d=>d.data());
+
+        const dateMap = {};
+        const catMap = {};
+        data.forEach(it=>{
+          dateMap[it.date] = (dateMap[it.date]||0)+1;
+          catMap[it.category] = (catMap[it.category]||0)+1;
+        });
+
+        const dateLabels = Object.keys(dateMap).sort();
+        const queueCounts = dateLabels.map(d=>dateMap[d]);
+
+        destroyCharts();
+
+        lineChart = new Chart($("#lineChart"), {
+          type: 'line',
+          data: { labels: dateLabels, datasets: [{
+            label: 'จำนวนคิวแต่ละวัน',
+            data: queueCounts, borderColor: '#ff66ff', backgroundColor: 'rgba(255,102,255,0.25)', tension: 0.3
+          }]},
+          options: {
+            plugins:{ legend:{ labels:{ color:'#fff' } } },
+            scales:{ x:{ ticks:{ color:'#fff' } }, y:{ ticks:{ color:'#fff' } } }
+          }
+        });
+
+        const catLabels = Object.keys(catMap);
+        const catCounts = catLabels.map(c=>catMap[c]);
+        pieChart = new Chart($("#pieChart"), {
+          type: 'pie',
+          data: { labels: catLabels, datasets: [{
+            label: 'หมวดหมู่',
+            data: catCounts,
+            backgroundColor: ['#9a00ff','#a83fff','#b96cff','#c999ff','#d9c2ff','#6a00b8','#7a22c6','#8a44d4','#9a66e2']
+          }]},
+          options:{ plugins:{ legend:{ labels:{ color:'#fff' } } } }
+        });
+      }catch(err){
+        console.error(err);
+        toast("โหลดแดชบอร์ดไม่สำเร็จ: " + err.message);
+      }
+    }
+
+    function closeDashboard(){ $("#dashboardSection").style.display = "none"; destroyCharts(); }
+
+    /* ---------------- Fullscreen ---------------- */
+    function toggleFullscreen(){
+      $("#adminSection").classList.toggle("fullscreen");
+    }
+
+    /* ---------------- Init ---------------- */
+    document.addEventListener("DOMContentLoaded", ()=>{
+      showPreloaderProgress();
+      initLiveHud();
+
+      // Form
+      $("#bookingForm").addEventListener("submit", handleBookingSubmit);
+
+      // Popup
+      $("#btnPdf").addEventListener("click", downloadPDF);
+      $("#btnIG").addEventListener("click", goInstagram);
+      $("#btnClosePopup").addEventListener("click", ()=> $("#popup").classList.remove("show"));
+
+      // Ref
+      $("#btnCheckRef").addEventListener("click", checkReference);
+
+      // Admin
+      $("#btnRefresh").addEventListener("click", loadAdminData);
+      $("#btnToggleCompact").addEventListener("click", ()=>{ compact = !compact; renderTable(); });
+      $("#btnFullscreen").addEventListener("click", toggleFullscreen);
+      $("#btnDashboard").addEventListener("click", showDashboard);
+      $("#btnCloseDash").addEventListener("click", closeDashboard);
+      $("#btnExport").addEventListener("click", exportCsv);
+      $("#searchInput").addEventListener("input", applyFilter);
+      // เพิ่มระบบเปลี่ยนหน้าตาราง
+$("#prevPage").addEventListener("click", ()=>{
+  if(page > 1){
+    page--;
+    renderTable();
+    updatePager();
+  }
+});
+
+$("#nextPage").addEventListener("click", ()=>{
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+  if(page < totalPages){
+    page++;
+    renderTable();
+    updatePager();
+  }
+});
+
+      // Initial load
+      loadAdminData();
+    });
+  </script>
+</body>
+</html>
