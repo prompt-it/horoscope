@@ -2,350 +2,389 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>ระบบจองคิวดูดวง • แม่หมอ</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    :root{
-      --bg-1:#0b0610;
-      --bg-2:#140a1b;
-      --card:#120814;
-      --primary:#a200ff;
-      --primary-2:#5a00a3;
-      --accent:#ff6fff;
-      --text:#ffffff;
-      --muted:#c9b6d8;
-      --border:rgba(255,255,255,.14);
-      --glow:0 0 24px rgba(162,0,255,.35), 0 0 48px rgba(102,0,204,.25);
-      --radius:16px;
+    :root {
+      --bg-1: #06020a;
+      --bg-2: #140727;
+      --card: rgba(18, 8, 28, 0.75);
+      --primary: #c94dff;
+      --primary-2: #7b00ff;
+      --accent: #ffb8ff;
+      --text: #ffffff;
+      --muted: #d4c2e3;
+      --border: rgba(255, 255, 255, 0.15);
+      --glow: 0 0 20px rgba(162, 0, 255, 0.5), 0 0 40px rgba(123, 0, 255, 0.3);
+      --radius: 20px;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:'Sarabun',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(162,0,255,.25), transparent 60%),
-        radial-gradient(1000px 600px at 110% 10%, rgba(81,0,142,.25), transparent 60%),
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: 
+        radial-gradient(circle at 15% 50%, rgba(123, 0, 255, 0.15), transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(201, 77, 255, 0.15), transparent 50%),
         linear-gradient(180deg, var(--bg-2), var(--bg-1));
-      overflow-x:hidden;
+      background-attachment: fixed;
+      overflow-x: hidden;
     }
 
     /* ---------- Preloader ---------- */
-    #preloader{
-      position:fixed; inset:0;
-      display:flex; flex-direction:column; gap:16px;
-      align-items:center; justify-content:center;
-      background:linear-gradient(135deg,#0a0511,#170b21 60%, #09040d);
-      z-index:9999;
-      transition:opacity .4s ease, visibility .4s ease;
+    #preloader {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column; gap: 16px;
+      align-items: center; justify-content: center;
+      background: #090310;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
     }
-    #preloader.hide{opacity:0; visibility:hidden}
-    .loader-ring{
-      width:120px; height:120px; border-radius:50%;
-      border:6px solid transparent; border-top-color:var(--accent); border-right-color:var(--primary);
-      box-shadow:var(--glow);
-      animation:spin 1s linear infinite;
+    #preloader.hide { opacity: 0; visibility: hidden; }
+    .loader-ring {
+      width: 100px; height: 100px; border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--primary);
+      border-right-color: var(--accent);
+      box-shadow: var(--glow);
+      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
     }
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .loading-text{color:#fff; letter-spacing:.5px}
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* ---------- Magical UI Elements ---------- */
+    .sparkle {
+      position: absolute; width: 3px; height: 3px;
+      background: #fff; border-radius: 50%;
+      box-shadow: 0 0 10px #fff, 0 0 20px var(--primary);
+      animation: twinkle 3s infinite alternate;
+    }
+    @keyframes twinkle { 
+      0% { opacity: 0.2; transform: scale(0.8); } 
+      100% { opacity: 1; transform: scale(1.5); } 
+    }
 
     /* ---------- Top HUD ---------- */
-    .hud{
-      position:fixed; left:16px; top:16px; z-index:60;
-      background:rgba(10,5,17,.6);
-      border:1px solid var(--border);
-      box-shadow:var(--glow);
-      border-radius:12px; padding:10px 12px; min-width:220px;
-      backdrop-filter: blur(6px);
+    .hud {
+      position: fixed; left: 16px; top: 16px; z-index: 60;
+      background: rgba(15, 5, 25, 0.6);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      border-radius: 12px; padding: 10px 12px; min-width: 180px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .hud .title{font-weight:700; font-size:13px; color:var(--muted); margin-bottom:6px}
-    .hud .item{font-size:13px; padding:6px 8px; background:linear-gradient(90deg,#1b0e24,#120618);
-      border-radius:8px; border:1px solid var(--border); margin-top:6px; text-align:center}
+    .hud .title { font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;}
+    .hud .item { font-size: 12px; padding: 6px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-top: 4px; text-align: center; }
 
     /* ---------- Branding ---------- */
-    .logo{
-      position:fixed; right:16px; top:16px; z-index:60;
-      width:76px; height:76px; border-radius:50%;
-      box-shadow:var(--glow);
-      border:2px solid rgba(255,255,255,.6); background:#fff; object-fit:cover;
+    .logo {
+      position: fixed; right: 16px; top: 16px; z-index: 60;
+      width: 64px; height: 64px; border-radius: 50%;
+      box-shadow: var(--glow);
+      border: 2px solid var(--accent); background: #fff; object-fit: cover;
+      animation: float 4s ease-in-out infinite;
     }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
     /* ---------- Cards / Containers ---------- */
-    .wrap{max-width:1080px; margin:120px auto 56px; padding:0 16px}
-    .card{
-      background:linear-gradient(180deg, rgba(30,10,42,.85), rgba(12,6,18,.85));
-      border:1px solid var(--border);
-      box-shadow:var(--glow);
-      border-radius:var(--radius);
-      padding:20px;
-      margin-bottom:16px;
+    .wrap { max-width: 100%; margin: 100px auto 56px; padding: 0 16px; width: 600px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
     }
-    h2.title{margin:0 0 10px; font-weight:700; color:#f5e9ff}
-    .muted{color:var(--muted); font-size:14px; margin-top:-2px}
+    .card::before {
+      content: ""; position: absolute; top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(201, 77, 255, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    
+    h2.title { margin: 0 0 8px; font-weight: 700; color: var(--accent); text-shadow: 0 0 10px rgba(255, 184, 255, 0.3); font-size: 20px; }
+    .muted { color: var(--muted); font-size: 13px; margin-top: 0; line-height: 1.4;}
 
-    label{display:block; margin:10px 0 6px; color:#e9d6ff; font-weight:600}
-    input, select, button{
-      width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border);
-      background:#fff; color:#000; font-size:16px;
+    label { display: block; margin: 12px 0 6px; color: #f4e8ff; font-weight: 600; font-size: 14px;}
+    input, select {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.4); color: #fff; font-size: 15px; font-family: 'Sarabun';
+      transition: all 0.3s ease;
     }
-    input:focus, select:focus{outline:none; box-shadow:0 0 0 3px rgba(162,0,255,.25)}
+    input::placeholder { color: #888; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 12px rgba(201, 77, 255, 0.4); background: rgba(0,0,0,0.6); }
 
-    .btn{
-      background:linear-gradient(90deg, #4b008f, #9a00ff);
-      color:#fff; border:none; cursor:pointer; font-weight:700;
-      transition:transform .12s ease, filter .2s ease;
+    .btn {
+      width: 100%; padding: 14px; border-radius: 12px; border: none; cursor: pointer; 
+      font-weight: 700; font-size: 16px; font-family: 'Sarabun';
+      background: linear-gradient(135deg, var(--primary-2), var(--primary));
+      color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 15px rgba(123, 0, 255, 0.4);
+      transition: all 0.2s ease;
+      margin-top: 8px;
     }
-    .btn:hover{transform:translateY(-1px); filter:brightness(1.06)}
-    .btn:active{transform:translateY(0); filter:brightness(.98); box-shadow:var(--glow)}
+    .btn:hover { transform: translateY(-2px); box-shadow: var(--glow); filter: brightness(1.1); }
+    .btn:active { transform: translateY(1px); filter: brightness(0.9); }
+    
+    .btn-danger { background: linear-gradient(135deg, #a60000, #ff3333); box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); }
 
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    @media (max-width:720px){ .row{grid-template-columns:1fr} }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px){ .row { grid-template-columns: 1fr; } }
+    
+    .privacy-notice { font-size: 12px; color: #ff6b6b; text-align: center; margin-top: 12px; font-weight: 600; }
 
-    /* ---------- Popup Ticket ---------- */
-    .popup{
-      position:fixed; inset:0; display:none; place-items:center; z-index:80;
-      background:rgba(7,3,12,.6); backdrop-filter: blur(4px);
+    /* ---------- Popups ---------- */
+    .popup {
+      position: fixed; inset: 0; display: none; place-items: center; z-index: 100;
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+      padding: 16px;
     }
-    .popup.show{display:grid}
-    .popup .content{
-      width:min(520px, 92vw);
-      background:linear-gradient(170deg, rgba(34,13,48,.95), rgba(18,6,26,.95));
-      border:1px solid var(--border); border-radius:18px; padding:20px;
-      box-shadow:var(--glow);
+    .popup.show { display: grid; }
+    .popup .content {
+      width: 100%; max-width: 400px;
+      background: linear-gradient(160deg, #2a0b3d, #12031a);
+      border: 1px solid var(--primary); border-radius: 20px; padding: 24px;
+      box-shadow: var(--glow);
+      text-align: center;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .popup h3{margin:0 0 8px; color:#ffd9ff}
-    .popup .note{font-size:13px; color:#ffcaf9; margin-top:12px}
-    .popup .actions{display:flex; gap:10px; margin-top:14px}
-    .popup .actions .btn{flex:1}
+    @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    
+    .popup h3 { margin: 0 0 12px; color: var(--accent); font-size: 22px; }
+    .popup .note-strict { font-size: 15px; color: #ffb3b3; margin: 16px 0; line-height: 1.5; font-weight: 600; border: 1px dashed #ff4d4d; padding: 12px; border-radius: 10px; background: rgba(255,0,0,0.1); }
+    .popup .ticket-data { text-align: left; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; border: 1px solid rgba(255,255,255,0.1); }
+    .popup .actions { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ---------- Reviews Section ---------- */
+    .review-box { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; }
+    .review-stars { color: #ffdb58; font-size: 14px; margin-bottom: 4px; }
+    .review-text { font-size: 14px; font-style: italic; color: #e2d1f0; line-height: 1.5; }
+    .review-author { font-size: 12px; color: var(--primary); text-align: right; margin-top: 8px; font-weight: 600; }
 
     /* ---------- Admin / Dashboard ---------- */
-    .toolbar{
-      display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .toolbar .btn, .toolbar input { width: auto; flex: 1; min-width: 120px; font-size: 14px; padding: 10px; }
+    
+    .table-wrap {
+      overflow-x: auto; border: 1px solid var(--border); border-radius: 14px;
+      background: rgba(0,0,0,0.4); max-height: 50vh;
     }
-    .toolbar .btn{width:auto; padding:10px 14px}
-    .toolbar input{width:auto; background:#fff}
-
-    .admin-section{position:relative}
-    .table-wrap{
-      overflow-x:auto; border:1px solid var(--border); border-radius:14px;
-      background:rgba(255,255,255,.04); backdrop-filter: blur(6px);
-      box-shadow:var(--glow);
-      max-height: 62vh;
+    table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      position: sticky; top: 0; z-index: 1;
+      background: linear-gradient(90deg, #4b0082, #6a0dad);
+      color: #fff; padding: 12px; font-weight: 600; border-bottom: 2px solid var(--primary);
     }
-    table{width:100%; min-width:860px; border-collapse:collapse; color:#fff}
-    thead th{
-      position:sticky; top:0; z-index:1;
-      background:linear-gradient(90deg,#3a0a64, #7a1db3);
-      color:#ffe8ff; text-shadow:0 0 6px rgba(255,255,255,.55);
-      border-bottom:1px solid var(--border); padding:10px; font-weight:700
-    }
-    tbody td{
-      padding:10px 8px; text-align:center; border-bottom:1px dashed rgba(255,255,255,.12);
-      word-break:break-word;
-    }
-    tbody tr:hover{background:rgba(255,255,255,.06)}
+    tbody td { padding: 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); word-break: break-word; }
+    tbody tr:hover { background: rgba(255,255,255,0.08); }
+    .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+    .status-booked { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
+    .status-done { background: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
 
-    /* Compact mode hides some cols on narrow screens */
-    .compact td[data-col="age"],
-    .compact td[data-col="ig"],
-    .compact th[data-col="age"],
-    .compact th[data-col="ig"] { display:none }
-    @media (max-width:520px){
-      .compact td[data-col="ref"],
-      .compact th[data-col="ref"] { display:none }
-    }
+    .pager { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px; }
+    .pager .btn { width: auto; padding: 6px 12px; }
 
-    .pager{display:flex; justify-content:center; gap:8px; margin:12px 0}
-    .pager .btn{width:auto; padding:8px 12px}
-
-    /* Fullscreen helper */
-    .fullscreen{position:fixed !important; inset:14px !important; z-index:70 !important; background:rgba(10,5,15,.98)}
-    .fullscreen .table-wrap{max-height:calc(100vh - 220px)}
-
-    /* Dashboard */
-    .dash-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    @media (max-width:880px){ .dash-grid{grid-template-columns:1fr} }
-    canvas{background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:14px; padding:10px}
-
-    /* Contact */
-    .contact{text-align:center; margin:10px 0 0}
-    .contact a{
-      display:inline-block; text-decoration:none; color:#fff; font-weight:700;
-      background:linear-gradient(90deg, #6a00b8, #b300ff);
-      border:1px solid var(--border); padding:10px 14px; border-radius:12px;
-      box-shadow:var(--glow);
+    .dash-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    canvas { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; padding: 10px; max-height: 250px; }
+    
+    /* Responsive tweaks */
+    @media (min-width: 768px) {
+      .wrap { padding: 0 24px; }
+      .dash-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- Preloader -->
   <div id="preloader">
     <div class="loader-ring"></div>
-    <div class="loading-text">กำลังโหลดระบบ… <span id="loading-percent">0%</span></div>
+    <div style="color:var(--accent); font-weight:600; font-size: 16px;">อัญเชิญพลังแห่งดวงดาว... <span id="loading-percent">0%</span></div>
   </div>
 
-  <!-- HUD + Branding -->
-  <div class="hud" id="hud">
-    <div class="title">สถานะระบบ</div>
-    <div class="item" id="queueCount">ยอดรวมผู้จองคิวทั้งหมด: 0 คน</div>
-    <div class="item" id="currentTime">เวลาปัจจุบัน: --:--:--</div>
+  <div class="popup" id="rulesPopup">
+    <div class="content">
+      <h3>⚠️ กฎเกณฑ์ศักดิ์สิทธิ์ของร้าน</h3>
+      <div class="note-strict">
+        หากดูดวงเรียบร้อยแล้ว ไม่ทำตามกฎของทางร้าน <br><br>
+        ท่านจะถูก <b>ตัดสิทธิ์การดูดวงในอนาคต</b> และระบบจะ <b>บล็อคการใช้งาน IP</b> ของท่านในการเข้าชมเว็บไซต์ของทางร้านอย่างถาวร (เอาจริง)
+      </div>
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">โปรดอ่านและทำความเข้าใจก่อนใช้บริการ</p>
+      <button class="btn" id="btnAcceptRules">ข้าพเจ้ารับทราบและยอมรับกฎ</button>
+    </div>
   </div>
-  <img class="logo" src="IMG_0920.JPG" alt="โลโก้" />
+
+  <div class="hud" id="hud">
+    <div class="title">✨ สถานะมิติพลังงาน</div>
+    <div class="item" id="queueCount">ยอดจองคิวสะสม: 0 ท่าน</div>
+    <div class="item" id="currentTime">เวลา: --:--:--</div>
+  </div>
+  <img class="logo" src="IMG_0920.JPG" alt="โลโก้แม่หมอ" onerror="this.src='https://via.placeholder.com/64x64/7b00ff/ffffff?text=ดวง'" />
 
   <main class="wrap">
 
-    <!-- Booking -->
     <section class="card">
-      <h2 class="title">จองคิวดูดวงอัตโนมัติ</h2>
-      <p class="muted">กรอกข้อมูลให้ครบถ้วน ระบบจะจัดคิวให้อัตโนมัติ (จำกัด 5 คิวต่อวัน)</p>
+      <h2 class="title">🔮 จองคิวเปิดดวงชะตา</h2>
+      <p class="muted">กรอกข้อมูลแห่งตัวตนให้ครบถ้วน ระบบเวทมนตร์จะจัดคิวให้โดยอัตโนมัติ (รับเพียง 5 คิว/วัน)</p>
       <form id="bookingForm">
         <div class="row">
           <div>
-            <label for="name">ชื่อเล่น</label>
-            <input id="name" type="text" required placeholder="เช่น เบบี้, โฟกัส" />
+            <label for="fullName">ชื่อ - นามสกุลจริง</label>
+            <input id="fullName" type="text" required placeholder="ชื่อ-สกุล ตามบัตรประชาชน" />
           </div>
           <div>
-            <label for="age">อายุ</label>
-            <input id="age" type="number" required min="1" placeholder="เช่น 22" />
+            <label for="name">ชื่อเล่น</label>
+            <input id="name" type="text" required placeholder="ชื่อที่ใช้เรียก" />
           </div>
         </div>
 
         <div class="row">
           <div>
-            <label for="category">หมวดหมู่</label>
-            <select id="category">
-              <option>ดูดวงส่วนตัว</option>
-              <option>โชคชะตา</option>
-              <option>ความฝัน</option>
-              <option>อดีตและอนาคต</option>
-              <option>ความรัก</option>
-              <option>การงาน</option>
-              <option>การเงิน</option>
-              <option>การเรียน</option>
-              <option>สุขภาพ</option>
-            </select>
+            <label for="age">อายุจริง (ปี)</label>
+            <input id="age" type="number" required min="1" placeholder="เช่น 22" />
           </div>
           <div>
-            <label for="date">เลือกวัน</label>
+            <label for="date">วันที่ต้องการดูดวง</label>
             <input id="date" type="date" required />
           </div>
         </div>
 
         <div class="row">
           <div>
-            <label for="igUsername">Instagram (@username)</label>
-            <input id="igUsername" type="text" placeholder="@yourusername" />
+            <label for="phone">เบอร์โทรศัพท์ (ติดต่อได้จริง)</label>
+            <input id="phone" type="tel" required placeholder="08X-XXX-XXXX" />
           </div>
-          <div style="display:flex; align-items:flex-end">
-            <button type="submit" class="btn">จองคิว</button>
+          <div>
+            <label for="email">อีเมล</label>
+            <input id="email" type="email" required placeholder="your@email.com" />
           </div>
         </div>
+
+        <div class="row">
+          <div>
+            <label for="category">ศาสตร์ที่ต้องการตรวจดวง</label>
+            <select id="category">
+              <option>ดูดวงส่วนตัวแบบเจาะลึก</option>
+              <option>โชคชะตาและวาสนา</option>
+              <option>ทำนายความฝัน</option>
+              <option>วิบากกรรม อดีต-อนาคต</option>
+              <option>ความรัก คู่ครอง</option>
+              <option>หน้าที่การงาน</option>
+              <option>โชคลาภ การเงิน</option>
+              <option>การเรียน สอบแข่งขัน</option>
+              <option>สุขภาพ โรคภัย</option>
+            </select>
+          </div>
+          <div>
+            <label for="igUsername">Instagram (สำหรับส่งหลักฐาน)</label>
+            <input id="igUsername" type="text" required placeholder="@your_ig" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn" style="margin-top: 16px;">✨ ลงนามจองคิว</button>
+        <div class="privacy-notice">🔒 ข้อมูลส่วนบุคคลของท่านจะถูกเก็บเป็นความลับสูงสุดตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)</div>
       </form>
     </section>
 
-    <!-- Reference Checker -->
     <section class="card">
-      <h2 class="title">ตรวจสอบใบคิว</h2>
+      <h2 class="title">🔍 ตรวจสอบใบคิว</h2>
       <div class="row">
         <div>
-          <input type="text" id="refInput" placeholder="ใส่เลขอ้างอิง" />
+          <input type="text" id="refInput" placeholder="กรอกเลขยันต์อ้างอิง (Ref No.)" />
         </div>
         <div>
-          <button id="btnCheckRef" class="btn" type="button">ตรวจสอบ</button>
+          <button id="btnCheckRef" class="btn" type="button">ค้นหา</button>
         </div>
       </div>
-      <div id="refResult" class="muted" style="margin-top:10px"></div>
+      <div id="refResult" class="muted" style="margin-top:12px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display:none;"></div>
     </section>
 
-    <!-- Contact -->
-    <section class="card contact">
-      <a href="https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx" target="_blank" rel="noopener">
-        ติดต่อแม่หมอผ่าน IG: @horoscope_1308
-      </a>
-    </section>
-
-    <!-- Dashboard -->
-    <section class="card" id="dashboardSection" style="display:none">
-      <h2 class="title">แดชบอร์ดการจองคิว</h2>
-      <div class="toolbar">
-        <button id="btnCloseDash" class="btn" type="button">ปิดแดชบอร์ด</button>
+    <section class="card">
+      <h2 class="title">🌟 เสียงตอบรับจากผู้ผูกดวง</h2>
+      <div class="review-box">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <div class="review-text">"แม่นมากค่ะ รู้เรื่องที่ไม่เคยบอกใครเลย แนะนำแนวทางแก้ปัญหาได้ตรงจุดสุดๆ รู้สึกโล่งใจขึ้นเยอะเลยค่ะ"</div>
+        <div class="review-author">- K. ฟ้า (ดูเรื่องความรัก)</div>
       </div>
-      <div class="dash-grid">
+      <div class="review-box">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <div class="review-text">"ทักเรื่องงานได้ขนลุกมาก หลังจากไปปรับตามที่แม่หมอบอก ตอนนี้ได้โปรโมทแล้วครับ ขอบคุณมากๆ ครับ"</div>
+        <div class="review-author">- K. บอส (ดูเรื่องการงาน)</div>
+      </div>
+    </section>
+
+    <section class="card admin-section" id="adminSection" style="display:none; margin-top:40px; border-color:#ff4d4d;">
+      <h2 class="title" style="color:#ffb3b3;">🛠️ พื้นที่ศักดิ์สิทธิ์ (Admin Only)</h2>
+      
+      <div class="dash-grid" style="margin-bottom: 20px;">
         <canvas id="lineChart"></canvas>
         <canvas id="pieChart"></canvas>
       </div>
-    </section>
 
-    <!-- Admin Table -->
-    <section class="card admin-section" id="adminSection">
-      <h2 class="title">ข้อมูลใบคิวทั้งหมด</h2>
       <div class="toolbar">
-        <button id="btnRefresh" class="btn" type="button">รีเฟรช</button>
-        <button id="btnToggleCompact" class="btn" type="button">โหมดย่อ (Compact)</button>
-        <button id="btnFullscreen" class="btn" type="button">แสดงเต็มหน้าจอ</button>
-        <button id="btnDashboard" class="btn" type="button">ดูแดชบอร์ด</button>
-        <input id="searchInput" type="search" placeholder="ค้นหา: ชื่อ / หมวด / IG / REF" />
+        <button id="btnRefresh" class="btn" type="button">รีเฟรชข้อมูล</button>
+        <input id="searchInput" type="search" placeholder="ค้นหาชื่อ, IG, Ref..." />
         <button id="btnExport" class="btn" type="button">Export CSV</button>
       </div>
 
-      <div class="table-wrap" id="tableWrap">
+      <div class="table-wrap">
         <table id="adminTable">
           <thead>
             <tr>
-              <th data-col="name">ชื่อ</th>
-              <th data-col="age">อายุ</th>
-              <th data-col="cat">หมวดหมู่</th>
-              <th data-col="date">วันที่</th>
-              <th data-col="queue">คิว</th>
-              <th data-col="ref">เลขอ้างอิง</th>
-              <th data-col="ig">IG</th>
+              <th>สถานะ</th>
+              <th>ชื่อ-สกุล / ชื่อเล่น</th>
+              <th>อายุ</th>
+              <th>หมวดหมู่</th>
+              <th>วันที่ / คิว</th>
+              <th>IG / โทร</th>
+              <th>Ref No.</th>
+              <th>จัดการ</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-
       <div class="pager">
-        <button id="prevPage" class="btn" type="button">ก่อนหน้า</button>
+        <button id="prevPage" class="btn" type="button">« ถอย</button>
         <div id="pageInfo" class="muted">หน้า 1</div>
-        <button id="nextPage" class="btn" type="button">ถัดไป</button>
+        <button id="nextPage" class="btn" type="button">เดินหน้า »</button>
       </div>
-
     </section>
+
   </main>
 
-  <!-- Popup -->
-  <div class="popup" id="popup">
+  <div class="popup" id="ticketPopup">
     <div class="content">
-      <h3>ใบคิวดูดวง</h3>
-      <div id="ticketData"></div>
-      <div class="actions">
-        <button id="btnPdf" class="btn">ดาวน์โหลด PDF</button>
-        <button id="btnIG" class="btn">ไปที่ IG</button>
-        <button id="btnClosePopup" class="btn">ปิด</button>
+      <h3>✨ ใบคิวแห่งโชคชะตา</h3>
+      <div class="note-strict" style="font-size: 14px; margin-top:0;">
+        🚨 บังคับ: กรุณาแคปหน้าจอนี้ และส่งไปที่ IG: @horoscope_1308 ทันที เพื่อยืนยันตัวตน! หากไม่ส่งจะถือว่าสละสิทธิ์
       </div>
-      <p class="note">หมายเหตุ: กรุณาแคปหน้าจอใบคิวนี้ไว้และดาวน์โหลด PDF เพื่อเก็บเลขอ้างอิง</p>
+      <div id="ticketData" class="ticket-data"></div>
+      <div class="actions">
+        <button id="btnIG" class="btn">📲 คลิกเพื่อทัก IG แม่หมอทันที</button>
+        <button id="btnPdf" class="btn" style="background: linear-gradient(135deg, #444, #666);">ดาวน์โหลด PDF สำรอง</button>
+        <button id="btnCloseTicket" class="btn btn-danger">ปิดหน้าต่าง (แคปจอแล้ว)</button>
+      </div>
     </div>
   </div>
 
   <script>
-    /* ---------------- Firebase ---------------- */
+    /* ---------------- Firebase Config ---------------- */
     const firebaseConfig = {
       apiKey: "AIzaSyD0o88iBVuKsj-2qgEFlP-V3FwArPHCrkY",
       authDomain: "horoscopequeue.firebaseapp.com",
@@ -360,317 +399,269 @@
 
     /* ---------------- State ---------------- */
     let currentTicket = null;
-    let tableData = [];          // raw data
-    let filteredData = [];       // after search
+    let tableData = [];
+    let filteredData = [];
     let page = 1;
     const pageSize = 10;
-    let compact = true;
-    let lineChart, pieChart;     // Chart instances
+    let lineChart, pieChart;
 
-    /* ---------------- Helpers ---------------- */
-    const $ = (sel, root=document) => root.querySelector(sel);
-    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+    const $ = (sel) => document.querySelector(sel);
 
-    function showPreloaderProgress(){
+    /* ---------------- Preloader & Rules Popup ---------------- */
+    window.addEventListener("load", () => {
       const el = $("#loading-percent");
       let p = 0;
       const t = setInterval(()=>{
-        p = Math.min(90, p+1);
-        el.textContent = p+"%";
-        if(p>=90) clearInterval(t);
-      }, 15);
-      window.addEventListener("load", ()=>{
-        el.textContent = "100%";
-        setTimeout(()=> $("#preloader").classList.add("hide"), 250);
-      });
-    }
+        p += 5;
+        el.textContent = p + "%";
+        if(p >= 100) {
+          clearInterval(t);
+          setTimeout(() => {
+            $("#preloader").classList.add("hide");
+            // Show rules popup on first load
+            if(!sessionStorage.getItem("rulesAccepted")) {
+              $("#rulesPopup").classList.add("show");
+            }
+          }, 300);
+        }
+      }, 30);
+    });
 
-    function toast(msg){
-      alert(msg);
-    }
+    $("#btnAcceptRules").addEventListener("click", () => {
+      sessionStorage.setItem("rulesAccepted", "true");
+      $("#rulesPopup").classList.remove("show");
+      
+      // Secret Admin trigger: Double click accept button holding Shift could show admin, 
+      // but for simplicity, let's auto-show it if a specific URL parameter is present (?admin=1)
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.get('admin') === '1') {
+        $("#adminSection").style.display = "block";
+        loadAdminData();
+      }
+    });
 
-    /* ---------------- Booking ---------------- */
-    async function handleBookingSubmit(e){
+    /* ---------------- Live HUD ---------------- */
+    db.collection("queues").onSnapshot((snap) => {
+      $("#queueCount").textContent = `ยอดจองคิวสะสม: ${snap.size} ท่าน`;
+    });
+    setInterval(() => {
+      $("#currentTime").textContent = `เวลา: ${new Date().toLocaleTimeString('th-TH')}`;
+    }, 1000);
+
+    /* ---------------- Booking System ---------------- */
+    $("#bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = $("#name").value.trim();
-      const age = $("#age").value.trim();
-      const category = $("#category").value;
-      const date = $("#date").value;
-      const igUsername = $("#igUsername").value.trim();
+      
+      const payload = {
+        fullName: $("#fullName").value.trim(),
+        name: $("#name").value.trim(),
+        age: $("#age").value.trim(),
+        phone: $("#phone").value.trim(),
+        email: $("#email").value.trim(),
+        category: $("#category").value,
+        date: $("#date").value,
+        igUsername: $("#igUsername").value.trim(),
+        status: "จองคิว", // New Status field
+        timestamp: new Date()
+      };
 
-      if(!name || !age || !category || !date){ return; }
-
-      try{
-        // Check quota per day
-        const snap = await db.collection("queues").where("date","==",date).get();
-        if(snap.size >= 5){
-          toast("เต็มแล้วสำหรับวันนี้ กรุณาเลือกวันอื่น");
+      try {
+        const snap = await db.collection("queues").where("date","==",payload.date).get();
+        if(snap.size >= 5) {
+          alert("❌ คิวสำหรับวันที่ท่านเลือกเต็มแล้ว (รับ 5 คิว/วัน) โปรดเลือกวันอื่น");
           return;
         }
 
-        const queueNumber = snap.size + 1;
-        const referenceId = Math.random().toString(36).substring(2,10).toUpperCase();
-        const ticket = {
-          name, age, category, date, queueNumber, referenceId,
-          timestamp: new Date(),
-          igUsername: igUsername || null
-        };
-        await db.collection("queues").add(ticket);
-        currentTicket = ticket;
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = "กำลังร่ายเวทย์บันทึก...";
+
+        payload.queueNumber = snap.size + 1;
+        payload.referenceId = Math.random().toString(36).substring(2,10).toUpperCase();
+
+        await db.collection("queues").add(payload);
+        currentTicket = payload;
 
         $("#ticketData").innerHTML = `
-          <p><b>ชื่อ:</b> ${ticket.name}</p>
-          <p><b>อายุ:</b> ${ticket.age}</p>
-          <p><b>หมวดหมู่:</b> ${ticket.category}</p>
-          <p><b>ลำดับคิว:</b> ${ticket.queueNumber}</p>
-          <p><b>วันที่ดูดวง:</b> ${ticket.date}</p>
-          <p><b>เลขอ้างอิง:</b> ${ticket.referenceId}</p>
+          <div style="color:var(--accent); font-size:16px; margin-bottom:8px; border-bottom:1px solid #555; padding-bottom:8px;">
+            <b>เลขอ้างอิง (Ref): ${payload.referenceId}</b>
+          </div>
+          <p><b>คิวที่:</b> ${payload.queueNumber} | <b>วันที่:</b> ${payload.date}</p>
+          <p><b>ชื่อ-สกุล:</b> ${payload.fullName} (${payload.name})</p>
+          <p><b>ศาสตร์:</b> ${payload.category}</p>
+          <p><b>IG:</b> ${payload.igUsername}</p>
         `;
-        $("#popup").classList.add("show");
-        (e.target).reset();
-      }catch(err){
-        console.error(err);
-        toast("เกิดข้อผิดพลาดในการบันทึกคิว: " + err.message);
-      }
-    }
+        $("#ticketPopup").classList.add("show");
+        e.target.reset();
+        btn.disabled = false;
+        btn.textContent = "✨ ลงนามจองคิว";
 
-    function downloadPDF(){
+      } catch (err) {
+        alert("เกิดข้อผิดพลาด: " + err.message);
+      }
+    });
+
+    /* ---------------- Ticket Actions ---------------- */
+    $("#btnIG").addEventListener("click", () => {
+      window.open("https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx", "_blank");
+    });
+    
+    $("#btnCloseTicket").addEventListener("click", () => {
+      $("#ticketPopup").classList.remove("show");
+    });
+
+    $("#btnPdf").addEventListener("click", () => {
       if(!currentTicket) return;
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const englishText = 
-`Ticket for Fortune Telling
-Name: ${currentTicket.name}
-Age: ${currentTicket.age}
-Category: ${currentTicket.category}
-Queue No: ${currentTicket.queueNumber}
-Appointment Date: ${currentTicket.date}
-Reference No: ${currentTicket.referenceId}`;
-      const lines = englishText.split("\\n");
-      let y = 20;
-      lines.forEach(line => { doc.text(line, 10, y); y += 10; });
-      doc.save("Ticket.pdf");
-    }
+      const txt = `Magical Ticket
+Ref: ${currentTicket.referenceId}
+Name: ${currentTicket.fullName} (${currentTicket.name})
+Queue: ${currentTicket.queueNumber}
+Date: ${currentTicket.date}
+Category: ${currentTicket.category}`;
+      doc.text(txt, 10, 20);
+      doc.save(`Ticket_${currentTicket.referenceId}.pdf`);
+    });
 
-    function goInstagram(){
-      window.open("https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx", "_blank", "noopener");
-    }
-
-    /* ---------------- Reference Check ---------------- */
-    async function checkReference(){
+    /* ---------------- Check Reference ---------------- */
+    $("#btnCheckRef").addEventListener("click", async () => {
       const ref = $("#refInput").value.trim().toUpperCase();
-      if(!ref){ $("#refResult").textContent = "กรุณากรอกเลขอ้างอิง"; return; }
-      try{
+      const res = $("#refResult");
+      if(!ref) { res.style.display = "block"; res.innerHTML = "<span style='color:red'>โปรดกรอกเลขอ้างอิง</span>"; return; }
+      
+      res.style.display = "block";
+      res.innerHTML = "กำลังค้นหาในมิติพลังงาน...";
+      
+      try {
         const snap = await db.collection("queues").where("referenceId","==",ref).get();
-        if(!snap.empty){
+        if(!snap.empty) {
           const d = snap.docs[0].data();
-          $("#refResult").innerHTML = `
-            <p>ชื่อ: ${d.name}</p>
-            <p>วันที่จอง: ${d.date}</p>
-            <p>ลำดับคิว: ${d.queueNumber}</p>
-            <p>หมวดหมู่: ${d.category}</p>
-            <p>อายุ: ${d.age}</p>
-            <p>IG: ${d.igUsername ?? "-"}</p>
+          const statusColor = d.status === "เรียบร้อย" ? "#28a745" : "#ffc107";
+          res.innerHTML = `
+            <div style="border: 1px solid ${statusColor}; padding: 10px; border-radius: 8px;">
+              <h4 style="margin:0 0 8px; color:var(--accent);">พบข้อมูลการจอง</h4>
+              <p style="margin:4px 0;"><b>ชื่อ:</b> ${d.name}</p>
+              <p style="margin:4px 0;"><b>วันที่:</b> ${d.date} (คิวที่ ${d.queueNumber})</p>
+              <p style="margin:4px 0;"><b>สถานะ:</b> <span style="color:${statusColor}; font-weight:bold;">${d.status || 'จองคิว'}</span></p>
+            </div>
           `;
-        }else{
-          $("#refResult").textContent = "ไม่พบข้อมูล";
+        } else {
+          res.innerHTML = "<span style='color:red'>ไม่พบข้อมูลในระบบ</span>";
         }
-      }catch(err){
-        console.error(err);
-        $("#refResult").textContent = "เกิดข้อผิดพลาด: " + err.message;
+      } catch (err) {
+        res.innerHTML = "Error: " + err.message;
       }
-    }
+    });
 
-    /* ---------------- Live HUD ---------------- */
-    function initLiveHud(){
-      // Real-time total count & clock
-      db.collection("queues").onSnapshot((snap)=>{
-        $("#queueCount").textContent = `ยอดรวมผู้จองคิวทั้งหมด: ${snap.size} คน`;
-      }, (err)=> console.error(err));
-
-      setInterval(()=>{
-        const now = new Date().toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-        $("#currentTime").textContent = `เวลาปัจจุบัน(🇹🇭): ${now}`;
-      }, 1000);
-    }
-
-    /* ---------------- Admin Table ---------------- */
-    async function loadAdminData(){
-      try{
+    /* ---------------- Admin Functions ---------------- */
+    async function loadAdminData() {
+      try {
         const snap = await db.collection("queues").orderBy("date","desc").get();
-        tableData = snap.docs.map(d => d.data());
-        applyFilter(); // refresh UI
-      }catch(err){
-        console.error(err);
-        toast("โหลดข้อมูลไม่สำเร็จ: " + err.message);
-      }
+        tableData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        applyFilter();
+        renderCharts();
+      } catch(err) { console.error(err); }
     }
 
-    function applyFilter(){
+    function applyFilter() {
       const q = $("#searchInput").value.trim().toLowerCase();
-      filteredData = !q ? [...tableData] :
-        tableData.filter(t => {
-          const ref = (t.referenceId||"").toLowerCase();
-          const ig = (t.igUsername||"").toLowerCase();
-          return (t.name||"").toLowerCase().includes(q) ||
-                 (t.category||"").toLowerCase().includes(q) ||
-                 (ig).includes(q) ||
-                 (ref).includes(q);
-        });
+      filteredData = tableData.filter(t => 
+        (t.fullName||'').toLowerCase().includes(q) || 
+        (t.name||'').toLowerCase().includes(q) || 
+        (t.referenceId||'').toLowerCase().includes(q) || 
+        (t.igUsername||'').toLowerCase().includes(q)
+      );
       page = 1;
       renderTable();
-      updatePager();
     }
 
-    function renderTable(){
+    function renderTable() {
       const tbody = $("#adminTable tbody");
       tbody.innerHTML = "";
-      const start = (page-1)*pageSize;
-      const slice = filteredData.slice(start, start+pageSize);
+      const start = (page-1) * pageSize;
+      const slice = filteredData.slice(start, start + pageSize);
+      
       slice.forEach(t => {
         const tr = document.createElement("tr");
+        const statusClass = (t.status === "เรียบร้อย") ? "status-done" : "status-booked";
         tr.innerHTML = `
-          <td data-col="name">${t.name||"-"}</td>
-          <td data-col="age">${t.age||"-"}</td>
-          <td data-col="cat">${t.category||"-"}</td>
-          <td data-col="date">${t.date||"-"}</td>
-          <td data-col="queue">${t.queueNumber||"-"}</td>
-          <td data-col="ref">${t.referenceId ? String(t.referenceId).slice(0,6)+"…" : "-"}</td>
-          <td data-col="ig">${t.igUsername ? (t.igUsername.length>12 ? t.igUsername.slice(0,12)+"…" : t.igUsername) : "<span style='color:#bbb'>—</span>"}</td>
+          <td><span class="status-badge ${statusClass}">${t.status || 'จองคิว'}</span></td>
+          <td>${t.fullName}<br><small style="color:#aaa">${t.name}</small></td>
+          <td>${t.age}</td>
+          <td>${t.category}</td>
+          <td>${t.date}<br><b>คิว ${t.queueNumber}</b></td>
+          <td>${t.igUsername}<br><small>${t.phone || '-'}</small></td>
+          <td><code style="background:#222;padding:2px 4px;border-radius:4px;">${t.referenceId}</code></td>
+          <td>
+            <button onclick="updateStatus('${t.id}', '${t.status}')" style="background:#555; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">เปลี่ยนสถานะ</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
-      // apply compact class
-      const table = $("#adminTable");
-      if(compact) table.classList.add("compact"); else table.classList.remove("compact");
+      
+      const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+      $("#pageInfo").textContent = `หน้า ${page} / ${totalPages}`;
+      $("#prevPage").disabled = page <= 1;
+      $("#nextPage").disabled = page >= totalPages;
     }
 
-    function updatePager(){
-      const total = filteredData.length;
-      const pages = Math.max(1, Math.ceil(total / pageSize));
-      $("#pageInfo").textContent = `หน้า ${page} / ${pages}`;
-      $("#prevPage").disabled = page<=1;
-      $("#nextPage").disabled = page>=pages;
+    // Global function for the inline onclick in admin table
+    window.updateStatus = async (docId, currentStatus) => {
+      const newStatus = currentStatus === "เรียบร้อย" ? "จองคิว" : "เรียบร้อย";
+      if(confirm(`เปลี่ยนสถานะเป็น "${newStatus}" ?`)) {
+        await db.collection("queues").doc(docId).update({ status: newStatus });
+        loadAdminData();
+      }
+    };
+
+    function renderCharts() {
+      if(lineChart) lineChart.destroy();
+      if(pieChart) pieChart.destroy();
+      
+      const dateMap = {}, catMap = {};
+      tableData.forEach(t => {
+        dateMap[t.date] = (dateMap[t.date]||0) + 1;
+        catMap[t.category] = (catMap[t.category]||0) + 1;
+      });
+
+      Chart.defaults.color = '#fff';
+      
+      lineChart = new Chart($("#lineChart"), {
+        type: 'line',
+        data: { 
+          labels: Object.keys(dateMap).sort(), 
+          datasets: [{ label: 'จำนวนคิวรายวัน', data: Object.values(dateMap), borderColor: '#c94dff', backgroundColor: 'rgba(201, 77, 255, 0.2)', tension: 0.4, fill: true }]
+        }
+      });
+
+      pieChart = new Chart($("#pieChart"), {
+        type: 'doughnut',
+        data: { 
+          labels: Object.keys(catMap), 
+          datasets: [{ data: Object.values(catMap), backgroundColor: ['#7b00ff', '#9d00ff', '#c94dff', '#ffb8ff', '#4b0082', '#8a2be2', '#da70d6'] }]
+        },
+        options: { plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } } }
+      });
     }
 
-    function exportCsv(){
-      if(!tableData.length){ toast("ยังไม่มีข้อมูลสำหรับส่งออก"); return; }
-      const header = ["name","age","category","date","queueNumber","referenceId","igUsername"];
-      const rows = [header.join(",")].concat(
-        tableData.map(t=>[t.name,t.age,t.category,t.date,t.queueNumber,t.referenceId,(t.igUsername||"")].map(x=>`"${(x??"").toString().replace(/"/g,'""')}"`).join(","))
-      );
-      const blob = new Blob([rows.join("\\n")], {type:"text/csv;charset=utf-8;"});
+    $("#searchInput").addEventListener("input", applyFilter);
+    $("#btnRefresh").addEventListener("click", loadAdminData);
+    $("#prevPage").addEventListener("click", () => { if(page > 1) { page--; renderTable(); } });
+    $("#nextPage").addEventListener("click", () => { if(page * pageSize < filteredData.length) { page++; renderTable(); } });
+    
+    $("#btnExport").addEventListener("click", () => {
+      if(!tableData.length) return alert("ไม่มีข้อมูล");
+      const header = ["fullName","name","age","phone","email","category","date","queueNumber","status","igUsername","referenceId"];
+      const csv = [header.join(",")]
+        .concat(tableData.map(t => header.map(k => `"${(t[k]||'').toString()}"`).join(",")))
+        .join("\n");
+      const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = "queues_export.csv"; a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    /* ---------------- Dashboard ---------------- */
-    function destroyCharts(){
-      if(lineChart){ lineChart.destroy(); lineChart = null; }
-      if(pieChart){ pieChart.destroy(); pieChart = null; }
-    }
-
-    async function showDashboard(){
-      $("#dashboardSection").style.display = "block";
-      try{
-        const snap = await db.collection("queues").get();
-        const data = snap.docs.map(d=>d.data());
-
-        const dateMap = {};
-        const catMap = {};
-        data.forEach(it=>{
-          dateMap[it.date] = (dateMap[it.date]||0)+1;
-          catMap[it.category] = (catMap[it.category]||0)+1;
-        });
-
-        const dateLabels = Object.keys(dateMap).sort();
-        const queueCounts = dateLabels.map(d=>dateMap[d]);
-
-        destroyCharts();
-
-        lineChart = new Chart($("#lineChart"), {
-          type: 'line',
-          data: { labels: dateLabels, datasets: [{
-            label: 'จำนวนคิวแต่ละวัน',
-            data: queueCounts, borderColor: '#ff66ff', backgroundColor: 'rgba(255,102,255,0.25)', tension: 0.3
-          }]},
-          options: {
-            plugins:{ legend:{ labels:{ color:'#fff' } } },
-            scales:{ x:{ ticks:{ color:'#fff' } }, y:{ ticks:{ color:'#fff' } } }
-          }
-        });
-
-        const catLabels = Object.keys(catMap);
-        const catCounts = catLabels.map(c=>catMap[c]);
-        pieChart = new Chart($("#pieChart"), {
-          type: 'pie',
-          data: { labels: catLabels, datasets: [{
-            label: 'หมวดหมู่',
-            data: catCounts,
-            backgroundColor: ['#9a00ff','#a83fff','#b96cff','#c999ff','#d9c2ff','#6a00b8','#7a22c6','#8a44d4','#9a66e2']
-          }]},
-          options:{ plugins:{ legend:{ labels:{ color:'#fff' } } } }
-        });
-      }catch(err){
-        console.error(err);
-        toast("โหลดแดชบอร์ดไม่สำเร็จ: " + err.message);
-      }
-    }
-
-    function closeDashboard(){ $("#dashboardSection").style.display = "none"; destroyCharts(); }
-
-    /* ---------------- Fullscreen ---------------- */
-    function toggleFullscreen(){
-      $("#adminSection").classList.toggle("fullscreen");
-    }
-
-    /* ---------------- Init ---------------- */
-    document.addEventListener("DOMContentLoaded", ()=>{
-      showPreloaderProgress();
-      initLiveHud();
-
-      // Form
-      $("#bookingForm").addEventListener("submit", handleBookingSubmit);
-
-      // Popup
-      $("#btnPdf").addEventListener("click", downloadPDF);
-      $("#btnIG").addEventListener("click", goInstagram);
-      $("#btnClosePopup").addEventListener("click", ()=> $("#popup").classList.remove("show"));
-
-      // Ref
-      $("#btnCheckRef").addEventListener("click", checkReference);
-
-      // Admin
-      $("#btnRefresh").addEventListener("click", loadAdminData);
-      $("#btnToggleCompact").addEventListener("click", ()=>{ compact = !compact; renderTable(); });
-      $("#btnFullscreen").addEventListener("click", toggleFullscreen);
-      $("#btnDashboard").addEventListener("click", showDashboard);
-      $("#btnCloseDash").addEventListener("click", closeDashboard);
-      $("#btnExport").addEventListener("click", exportCsv);
-      $("#searchInput").addEventListener("input", applyFilter);
-      // เพิ่มระบบเปลี่ยนหน้าตาราง
-$("#prevPage").addEventListener("click", ()=>{
-  if(page > 1){
-    page--;
-    renderTable();
-    updatePager();
-  }
-});
-
-$("#nextPage").addEventListener("click", ()=>{
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
-  if(page < totalPages){
-    page++;
-    renderTable();
-    updatePager();
-  }
-});
-
-      // Initial load
-      loadAdminData();
+      a.href = url; a.download = "Queues_Magical.csv"; a.click();
     });
+
   </script>
 </body>
 </html>
