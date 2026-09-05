@@ -2,10 +2,11 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>ระบบจองคิวดูดวง • แม่หมอ</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -16,375 +17,385 @@
 
   <style>
     :root {
-      --bg-1: #06020a;
-      --bg-2: #140727;
-      --card: rgba(18, 8, 28, 0.75);
-      --primary: #c94dff;
-      --primary-2: #7b00ff;
-      --accent: #ffb8ff;
+      --bg-1: #05020a;
+      --bg-2: #1a0b2e;
+      --card: rgba(20, 8, 30, 0.85);
+      --primary: #b94dff;
+      --primary-2: #7a1db3;
+      --gold: #ffd700;
+      --accent: #ff6fff;
       --text: #ffffff;
-      --muted: #d4c2e3;
-      --border: rgba(255, 255, 255, 0.15);
-      --glow: 0 0 20px rgba(162, 0, 255, 0.5), 0 0 40px rgba(123, 0, 255, 0.3);
+      --muted: #c9b6d8;
+      --border: rgba(185, 77, 255, 0.3);
+      --glow: 0 0 15px rgba(185, 77, 255, 0.4), 0 0 30px rgba(122, 29, 179, 0.2);
+      --glow-gold: 0 0 15px rgba(255, 215, 0, 0.5);
       --radius: 20px;
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    html, body { height: 100%; scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+      font-family: 'Sarabun', sans-serif;
       color: var(--text);
       background: 
-        radial-gradient(circle at 15% 50%, rgba(123, 0, 255, 0.15), transparent 50%),
-        radial-gradient(circle at 85% 30%, rgba(201, 77, 255, 0.15), transparent 50%),
-        linear-gradient(180deg, var(--bg-2), var(--bg-1));
+        radial-gradient(circle at 15% 50%, rgba(185, 77, 255, 0.15), transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(255, 215, 0, 0.05), transparent 50%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2), var(--bg-1));
       background-attachment: fixed;
       overflow-x: hidden;
     }
 
+    /* ---------- Magic Animations ---------- */
+    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+    @keyframes pulse-glow { 0% { box-shadow: var(--glow); } 50% { box-shadow: 0 0 25px rgba(185,77,255,0.6); } 100% { box-shadow: var(--glow); } }
+    @keyframes star-twinkle { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+
     /* ---------- Preloader ---------- */
     #preloader {
-      position: fixed; inset: 0;
-      display: flex; flex-direction: column; gap: 16px;
+      position: fixed; inset: 0; display: flex; flex-direction: column; gap: 16px;
       align-items: center; justify-content: center;
-      background: #090310;
-      z-index: 9999;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      background: radial-gradient(circle, #2a0b4d, #05020a);
+      z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;
     }
     #preloader.hide { opacity: 0; visibility: hidden; }
-    .loader-ring {
-      width: 100px; height: 100px; border-radius: 50%;
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--primary);
-      border-right-color: var(--accent);
-      box-shadow: var(--glow);
-      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    .crystal {
+      width: 60px; height: 80px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.8), var(--primary));
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      animation: float 2s infinite ease-in-out, pulse-glow 2s infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    /* ---------- Magical UI Elements ---------- */
-    .sparkle {
-      position: absolute; width: 3px; height: 3px;
-      background: #fff; border-radius: 50%;
-      box-shadow: 0 0 10px #fff, 0 0 20px var(--primary);
-      animation: twinkle 3s infinite alternate;
-    }
-    @keyframes twinkle { 
-      0% { opacity: 0.2; transform: scale(0.8); } 
-      100% { opacity: 1; transform: scale(1.5); } 
-    }
+    .loading-text { font-family: 'Cinzel', 'Sarabun', serif; color: var(--gold); font-size: 18px; letter-spacing: 1px; }
 
-    /* ---------- Top HUD ---------- */
+    /* ---------- Top HUD & Branding ---------- */
     .hud {
       position: fixed; left: 16px; top: 16px; z-index: 60;
-      background: rgba(15, 5, 25, 0.6);
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      border-radius: 12px; padding: 10px 12px; min-width: 180px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(10, 5, 17, 0.75); border: 1px solid var(--border);
+      box-shadow: var(--glow); border-radius: 12px; padding: 10px 12px;
+      backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 5px;
     }
-    .hud .title { font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;}
-    .hud .item { font-size: 12px; padding: 6px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-top: 4px; text-align: center; }
+    .hud .title { font-weight: 700; font-size: 12px; color: var(--gold); }
+    .hud .item { font-size: 12px; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 6px; }
 
-    /* ---------- Branding ---------- */
     .logo {
       position: fixed; right: 16px; top: 16px; z-index: 60;
-      width: 64px; height: 64px; border-radius: 50%;
-      box-shadow: var(--glow);
-      border: 2px solid var(--accent); background: #fff; object-fit: cover;
-      animation: float 4s ease-in-out infinite;
+      width: 70px; height: 70px; border-radius: 50%;
+      box-shadow: var(--glow-gold); border: 2px solid var(--gold); background: #fff;
+      object-fit: cover; animation: float 4s infinite ease-in-out;
     }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-    /* ---------- Cards / Containers ---------- */
-    .wrap { max-width: 100%; margin: 100px auto 56px; padding: 0 16px; width: 600px; }
+    /* ---------- Layout & Cards ---------- */
+    .wrap { max-width: 1080px; margin: 100px auto 56px; padding: 0 16px; }
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: var(--glow); border-radius: var(--radius);
+      padding: 24px; margin-bottom: 20px;
+      backdrop-filter: blur(12px); position: relative; overflow: hidden;
     }
     .card::before {
-      content: ""; position: absolute; top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(circle, rgba(201, 77, 255, 0.05) 0%, transparent 60%);
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(255,215,0,0.03) 0%, transparent 60%);
       pointer-events: none;
     }
-    
-    h2.title { margin: 0 0 8px; font-weight: 700; color: var(--accent); text-shadow: 0 0 10px rgba(255, 184, 255, 0.3); font-size: 20px; }
-    .muted { color: var(--muted); font-size: 13px; margin-top: 0; line-height: 1.4;}
+    h2.title {
+      margin: 0 0 15px; font-weight: 700; color: var(--gold);
+      font-family: 'Cinzel', 'Sarabun', serif; text-align: center;
+      text-shadow: 0 0 10px rgba(255,215,0,0.3);
+    }
+    .muted { color: var(--muted); font-size: 14px; text-align: center; margin-bottom: 15px; }
 
-    label { display: block; margin: 12px 0 6px; color: #f4e8ff; font-weight: 600; font-size: 14px;}
+    /* ---------- Form Elements ---------- */
+    label { display: block; margin: 12px 0 6px; color: #f5e9ff; font-weight: 600; font-size: 14px; }
     input, select {
-      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(0,0,0,0.4); color: #fff; font-size: 15px; font-family: 'Sarabun';
-      transition: all 0.3s ease;
+      width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(0,0,0,0.5); color: #fff; font-size: 16px; transition: 0.3s;
     }
-    input::placeholder { color: #888; }
-    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 12px rgba(201, 77, 255, 0.4); background: rgba(0,0,0,0.6); }
-
+    input::placeholder { color: rgba(255,255,255,0.3); }
+    input:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.3); background: rgba(0,0,0,0.8); }
+    
     .btn {
-      width: 100%; padding: 14px; border-radius: 12px; border: none; cursor: pointer; 
-      font-weight: 700; font-size: 16px; font-family: 'Sarabun';
-      background: linear-gradient(135deg, var(--primary-2), var(--primary));
-      color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-      box-shadow: 0 4px 15px rgba(123, 0, 255, 0.4);
-      transition: all 0.2s ease;
-      margin-top: 8px;
+      width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,215,0,0.5);
+      background: linear-gradient(45deg, #4b008f, #9a00ff); color: #fff;
+      font-weight: 700; font-size: 16px; cursor: pointer;
+      transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
+      box-shadow: var(--glow); position: relative; overflow: hidden;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: var(--glow); filter: brightness(1.1); }
-    .btn:active { transform: translateY(1px); filter: brightness(0.9); }
-    
-    .btn-danger { background: linear-gradient(135deg, #a60000, #ff3333); box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); }
+    .btn:hover { background: linear-gradient(45deg, #5a00a3, #b94dff); transform: translateY(-2px); box-shadow: var(--glow-gold); }
+    .btn:active { transform: translateY(0); }
+    .btn-gold { background: linear-gradient(45deg, #b8860b, #ffd700); color: #000; border: none; }
+    .btn-gold:hover { background: linear-gradient(45deg, #daa520, #ffea00); }
+    .btn-danger { background: linear-gradient(45deg, #8b0000, #ff0000); border-color: #ff6666; }
 
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 480px){ .row { grid-template-columns: 1fr; } }
-    
-    .privacy-notice { font-size: 12px; color: #ff6b6b; text-align: center; margin-top: 12px; font-weight: 600; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media (max-width: 768px) { .row, .row-3 { grid-template-columns: 1fr; } }
 
-    /* ---------- Popups ---------- */
+    .warning-text { font-size: 12px; color: #ff6666; text-align: center; margin-top: 10px; background: rgba(255,0,0,0.1); padding: 8px; border-radius: 8px; }
+    .pdpa-text { font-size: 11px; color: #a0c4ff; text-align: center; margin-top: 15px; }
+
+    /* ---------- Popups & Modals ---------- */
     .popup {
       position: fixed; inset: 0; display: none; place-items: center; z-index: 100;
-      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-      padding: 16px;
+      background: rgba(5, 2, 10, 0.85); backdrop-filter: blur(8px); padding: 16px;
     }
     .popup.show { display: grid; }
     .popup .content {
-      width: 100%; max-width: 400px;
-      background: linear-gradient(160deg, #2a0b3d, #12031a);
-      border: 1px solid var(--primary); border-radius: 20px; padding: 24px;
-      box-shadow: var(--glow);
-      text-align: center;
-      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: 100%; max-width: 450px; background: linear-gradient(170deg, #220d30, #12061a);
+      border: 1px solid var(--gold); border-radius: var(--radius); padding: 24px;
+      box-shadow: var(--glow-gold); text-align: center; position: relative;
     }
-    @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .popup h3 { color: var(--gold); font-family: 'Cinzel', serif; margin-top: 0; }
     
-    .popup h3 { margin: 0 0 12px; color: var(--accent); font-size: 22px; }
-    .popup .note-strict { font-size: 15px; color: #ffb3b3; margin: 16px 0; line-height: 1.5; font-weight: 600; border: 1px dashed #ff4d4d; padding: 12px; border-radius: 10px; background: rgba(255,0,0,0.1); }
-    .popup .ticket-data { text-align: left; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; border: 1px solid rgba(255,255,255,0.1); }
-    .popup .actions { display: flex; flex-direction: column; gap: 10px; }
-
-    /* ---------- Reviews Section ---------- */
-    .review-box { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; }
-    .review-stars { color: #ffdb58; font-size: 14px; margin-bottom: 4px; }
-    .review-text { font-size: 14px; font-style: italic; color: #e2d1f0; line-height: 1.5; }
-    .review-author { font-size: 12px; color: var(--primary); text-align: right; margin-top: 8px; font-weight: 600; }
-
-    /* ---------- Admin / Dashboard ---------- */
-    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-    .toolbar .btn, .toolbar input { width: auto; flex: 1; min-width: 120px; font-size: 14px; padding: 10px; }
+    #ticketData { text-align: left; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; margin-bottom: 15px; font-size: 14px; border: 1px dashed var(--primary); }
+    .force-note { color: #ff6fff; font-weight: bold; font-size: 14px; margin: 15px 0; padding: 10px; border: 1px solid #ff6fff; border-radius: 8px; background: rgba(255,111,255,0.1); animation: pulse-glow 2s infinite; }
     
-    .table-wrap {
-      overflow-x: auto; border: 1px solid var(--border); border-radius: 14px;
-      background: rgba(0,0,0,0.4); max-height: 50vh;
-    }
-    table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 13px; }
-    thead th {
-      position: sticky; top: 0; z-index: 1;
-      background: linear-gradient(90deg, #4b0082, #6a0dad);
-      color: #fff; padding: 12px; font-weight: 600; border-bottom: 2px solid var(--primary);
-    }
-    tbody td { padding: 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); word-break: break-word; }
-    tbody tr:hover { background: rgba(255,255,255,0.08); }
-    .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-    .status-booked { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
-    .status-done { background: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
+    #entryPopup .content { border-color: #ff0000; box-shadow: 0 0 30px rgba(255,0,0,0.3); }
+    #entryPopup h3 { color: #ff6666; }
 
-    .pager { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px; }
-    .pager .btn { width: auto; padding: 6px 12px; }
-
-    .dash-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    canvas { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; padding: 10px; max-height: 250px; }
+    /* ---------- Analytics & Reviews (Public) ---------- */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
+    .chart-box { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 10px; border: 1px solid var(--border); }
     
-    /* Responsive tweaks */
-    @media (min-width: 768px) {
-      .wrap { padding: 0 24px; }
-      .dash-grid { grid-template-columns: 1fr 1fr; }
+    .review-marquee { overflow: hidden; white-space: nowrap; padding: 10px 0; position: relative; }
+    .review-track { display: inline-block; animation: scroll-left 20s linear infinite; }
+    .review-item { 
+      display: inline-block; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      padding: 10px 20px; border-radius: 20px; margin: 0 10px; color: var(--gold); font-size: 14px;
     }
+    @keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ---------- Admin Section ---------- */
+    .admin-login-btn { position: fixed; bottom: 16px; right: 16px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 8px; z-index: 50; cursor: pointer; font-size: 12px; backdrop-filter: blur(5px); }
+    .admin-section { display: none; margin-top: 30px; border-color: var(--gold); }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+    .toolbar .btn { width: auto; padding: 8px 16px; font-size: 14px; }
+    .toolbar input { width: 250px; flex-grow: 1; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: rgba(0,0,0,0.6); max-height: 60vh; }
+    table { width: 100%; min-width: 1200px; border-collapse: collapse; font-size: 13px; }
+    thead th { position: sticky; top: 0; z-index: 1; background: linear-gradient(90deg, #3a0a64, #7a1db3); color: var(--gold); padding: 12px; text-align: left; }
+    tbody td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    tbody tr:hover { background: rgba(185,77,255,0.1); }
+    .action-btns { display: flex; gap: 5px; }
+    .action-btns button { padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; border: none; color: #fff; }
+    .btn-edit { background: #007bff; }
+    .btn-del { background: #dc3545; }
+
   </style>
 </head>
 <body>
-  <div id="preloader">
-    <div class="loader-ring"></div>
-    <div style="color:var(--accent); font-weight:600; font-size: 16px;">อัญเชิญพลังแห่งดวงดาว... <span id="loading-percent">0%</span></div>
+
+  <div class="popup show" id="entryPopup">
+    <div class="content">
+      <h3>⚠️ กฎระเบียบข้อบังคับทางร้าน (สำคัญมาก)</h3>
+      <p style="font-size: 14px; color: #ddd; text-align: left; line-height: 1.6;">
+        1. หากจองคิวดูดวงเรียบร้อยแล้ว ท่าน <b style="color:#ff6666">ต้องแคปหน้าจอใบคิวส่งให้แอดมินทาง IG ทันที</b><br>
+        2. ข้อมูลที่กรอกต้องเป็นความจริงทั้งหมด (ชื่อ-นามสกุล, อีเมล, เบอร์โทร) เพื่อป้องกันสแปม<br>
+        3. หากไม่ทำตามกฎ หรือจองเล่นๆ ทางร้านจะทำการ <b>"ตัดสิทธิ์การดูดวงถาวร"</b> และ <b>"บล็อก IP Address"</b> ของท่านจากการเข้าใช้งานเว็บไซต์นี้ทันที (ดำเนินการจริงไม่มีข้อยกเว้น)
+      </p>
+      <button class="btn btn-gold" id="btnAcceptRules">ฉันรับทราบและยอมรับเงื่อนไข</button>
+    </div>
   </div>
 
-  <div class="popup" id="rulesPopup">
-    <div class="content">
-      <h3>⚠️ กฎเกณฑ์ศักดิ์สิทธิ์ของร้าน</h3>
-      <div class="note-strict">
-        หากดูดวงเรียบร้อยแล้ว ไม่ทำตามกฎของทางร้าน <br><br>
-        ท่านจะถูก <b>ตัดสิทธิ์การดูดวงในอนาคต</b> และระบบจะ <b>บล็อคการใช้งาน IP</b> ของท่านในการเข้าชมเว็บไซต์ของทางร้านอย่างถาวร (เอาจริง)
-      </div>
-      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">โปรดอ่านและทำความเข้าใจก่อนใช้บริการ</p>
-      <button class="btn" id="btnAcceptRules">ข้าพเจ้ารับทราบและยอมรับกฎ</button>
-    </div>
+  <div id="preloader">
+    <div class="crystal"></div>
+    <div class="loading-text">อัญเชิญพลังงาน... <span id="loading-percent">0%</span></div>
   </div>
 
   <div class="hud" id="hud">
     <div class="title">✨ สถานะมิติพลังงาน</div>
-    <div class="item" id="queueCount">ยอดจองคิวสะสม: 0 ท่าน</div>
-    <div class="item" id="currentTime">เวลา: --:--:--</div>
+    <div class="item" id="queueCount">ยอดจองคิวทั้งหมด: -- ดวงจิต</div>
+    <div class="item" id="currentTime">เวลา ณ ปัจจุบัน: --:--:--</div>
   </div>
-  <img class="logo" src="IMG_0920.JPG" alt="โลโก้แม่หมอ" onerror="this.src='https://via.placeholder.com/64x64/7b00ff/ffffff?text=ดวง'" />
+  <img class="logo" src="IMG_0920.JPG" alt="โลโก้แม่หมอ" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3673/3673193.png'" />
 
   <main class="wrap">
 
+    <section class="card" id="reviewsSection">
+      <h2 class="title">🔮 เสียงสะท้อนจากลูกดวง</h2>
+      <div class="review-marquee">
+        <div class="review-track">
+          <span class="review-item">"แม่นมากค่ะ ขนลุกเลย รู้ลึกรู้จริง!" ⭐️⭐️⭐️⭐️⭐️</span>
+          <span class="review-item">"ได้แนวทางชีวิตชัดเจนขึ้นมาก ขอบคุณแม่หมอครับ" ⭐️⭐️⭐️⭐️⭐️</span>
+          <span class="review-item">"เตือนเรื่องอุบัติเหตุแม่นจนน่ากลัว รอดมาได้เพราะแม่หมอ" ⭐️⭐️⭐️⭐️⭐️</span>
+          <span class="review-item">"ตรงปก ไม่จกตา แนะนำเพื่อนมาดูหลายคนแล้ว" ⭐️⭐️⭐️⭐️⭐️</span>
+          <span class="review-item">"แม่นมากค่ะ ขนลุกเลย รู้ลึกรู้จริง!" ⭐️⭐️⭐️⭐️⭐️</span>
+          <span class="review-item">"ได้แนวทางชีวิตชัดเจนขึ้นมาก ขอบคุณแม่หมอครับ" ⭐️⭐️⭐️⭐️⭐️</span>
+        </div>
+      </div>
+    </section>
+
     <section class="card">
-      <h2 class="title">🔮 จองคิวเปิดดวงชะตา</h2>
-      <p class="muted">กรอกข้อมูลแห่งตัวตนให้ครบถ้วน ระบบเวทมนตร์จะจัดคิวให้โดยอัตโนมัติ (รับเพียง 5 คิว/วัน)</p>
+      <h2 class="title">📊 พลังงานมวลรวมการดูดวง</h2>
+      <div class="stats-grid">
+        <div class="chart-box"><canvas id="publicPieChart"></canvas></div>
+        <div class="chart-box"><canvas id="publicLineChart"></canvas></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="title">📜 ลงนามจองคิวดูดวง</h2>
+      <p class="muted">กรุณากรอกข้อมูลตามความเป็นจริง ระบบจะจัดคิวและบันทึกข้อมูลอย่างเคร่งครัด</p>
+      
       <form id="bookingForm">
         <div class="row">
           <div>
-            <label for="fullName">ชื่อ - นามสกุลจริง</label>
-            <input id="fullName" type="text" required placeholder="ชื่อ-สกุล ตามบัตรประชาชน" />
+            <label>ชื่อจริง (Real First Name) *</label>
+            <input id="fName" type="text" required placeholder="ชื่อจริงของคุณ" />
           </div>
           <div>
-            <label for="name">ชื่อเล่น</label>
-            <input id="name" type="text" required placeholder="ชื่อที่ใช้เรียก" />
+            <label>นามสกุลจริง (Real Last Name) *</label>
+            <input id="lName" type="text" required placeholder="นามสกุลของคุณ" />
+          </div>
+        </div>
+
+        <div class="row-3">
+          <div>
+            <label>ชื่อเล่น *</label>
+            <input id="name" type="text" required placeholder="ชื่อเล่น" />
+          </div>
+          <div>
+            <label>อายุจริง *</label>
+            <input id="age" type="number" required min="1" placeholder="อายุ" />
+          </div>
+          <div>
+            <label>เบอร์โทรศัพท์ (Real Phone) *</label>
+            <input id="phone" type="tel" required placeholder="08xxxxxxxx" pattern="[0-9]{10}" />
           </div>
         </div>
 
         <div class="row">
           <div>
-            <label for="age">อายุจริง (ปี)</label>
-            <input id="age" type="number" required min="1" placeholder="เช่น 22" />
+            <label>อีเมล (Email) *</label>
+            <input id="email" type="email" required placeholder="example@mail.com" />
           </div>
           <div>
-            <label for="date">วันที่ต้องการดูดวง</label>
+            <label>Instagram (@username)</label>
+            <input id="igUsername" type="text" placeholder="@yourusername (จำเป็นสำหรับการยืนยัน)" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>หมวดหมู่คำทำนาย *</label>
+            <select id="category">
+              <option>ดูดวงส่วนตัว</option>
+              <option>โชคชะตา</option>
+              <option>ความฝัน</option>
+              <option>อดีตและอนาคต</option>
+              <option>ความรัก</option>
+              <option>การงาน</option>
+              <option>การเงิน</option>
+              <option>การเรียน</option>
+              <option>สุขภาพ</option>
+            </select>
+          </div>
+          <div>
+            <label>เลือกวันเปิดดวง *</label>
             <input id="date" type="date" required />
           </div>
         </div>
 
-        <div class="row">
-          <div>
-            <label for="phone">เบอร์โทรศัพท์ (ติดต่อได้จริง)</label>
-            <input id="phone" type="tel" required placeholder="08X-XXX-XXXX" />
-          </div>
-          <div>
-            <label for="email">อีเมล</label>
-            <input id="email" type="email" required placeholder="your@email.com" />
-          </div>
+        <div class="warning-text">
+          ⚠️ ระบบจะทำการบันทึกพิกัด (Location) ของท่านเพื่อยืนยันตัวตนและป้องกันผู้ไม่หวังดี<br>
+          หากท่านไม่กดยอมรับ Location อาจส่งผลต่อการพิจารณาคิว
         </div>
+        <p class="pdpa-text">ข้อมูลของท่านจะถูกเก็บเป็นความลับสูงสุดตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
 
-        <div class="row">
-          <div>
-            <label for="category">ศาสตร์ที่ต้องการตรวจดวง</label>
-            <select id="category">
-              <option>ดูดวงส่วนตัวแบบเจาะลึก</option>
-              <option>โชคชะตาและวาสนา</option>
-              <option>ทำนายความฝัน</option>
-              <option>วิบากกรรม อดีต-อนาคต</option>
-              <option>ความรัก คู่ครอง</option>
-              <option>หน้าที่การงาน</option>
-              <option>โชคลาภ การเงิน</option>
-              <option>การเรียน สอบแข่งขัน</option>
-              <option>สุขภาพ โรคภัย</option>
-            </select>
-          </div>
-          <div>
-            <label for="igUsername">Instagram (สำหรับส่งหลักฐาน)</label>
-            <input id="igUsername" type="text" required placeholder="@your_ig" />
-          </div>
-        </div>
-
-        <button type="submit" class="btn" style="margin-top: 16px;">✨ ลงนามจองคิว</button>
-        <div class="privacy-notice">🔒 ข้อมูลส่วนบุคคลของท่านจะถูกเก็บเป็นความลับสูงสุดตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)</div>
+        <button type="submit" class="btn btn-gold" style="margin-top: 10px;">🔮 ยืนยันการจองคิวดูดวง</button>
       </form>
     </section>
 
     <section class="card">
-      <h2 class="title">🔍 ตรวจสอบใบคิว</h2>
-      <div class="row">
-        <div>
-          <input type="text" id="refInput" placeholder="กรอกเลขยันต์อ้างอิง (Ref No.)" />
-        </div>
-        <div>
-          <button id="btnCheckRef" class="btn" type="button">ค้นหา</button>
-        </div>
+      <h2 class="title">🔍 ตรวจสอบใบคิวพลังงาน</h2>
+      <div class="row" style="grid-template-columns: 2fr 1fr;">
+        <div><input type="text" id="refInput" placeholder="ใส่เลขอ้างอิง (Reference ID)" /></div>
+        <div><button id="btnCheckRef" class="btn" type="button">ตรวจสอบ</button></div>
       </div>
-      <div id="refResult" class="muted" style="margin-top:12px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display:none;"></div>
+      <div id="refResult" class="muted" style="margin-top:15px; text-align:left;"></div>
     </section>
 
-    <section class="card">
-      <h2 class="title">🌟 เสียงตอบรับจากผู้ผูกดวง</h2>
-      <div class="review-box">
-        <div class="review-stars">⭐⭐⭐⭐⭐</div>
-        <div class="review-text">"แม่นมากค่ะ รู้เรื่องที่ไม่เคยบอกใครเลย แนะนำแนวทางแก้ปัญหาได้ตรงจุดสุดๆ รู้สึกโล่งใจขึ้นเยอะเลยค่ะ"</div>
-        <div class="review-author">- K. ฟ้า (ดูเรื่องความรัก)</div>
-      </div>
-      <div class="review-box">
-        <div class="review-stars">⭐⭐⭐⭐⭐</div>
-        <div class="review-text">"ทักเรื่องงานได้ขนลุกมาก หลังจากไปปรับตามที่แม่หมอบอก ตอนนี้ได้โปรโมทแล้วครับ ขอบคุณมากๆ ครับ"</div>
-        <div class="review-author">- K. บอส (ดูเรื่องการงาน)</div>
-      </div>
-    </section>
-
-    <section class="card admin-section" id="adminSection" style="display:none; margin-top:40px; border-color:#ff4d4d;">
-      <h2 class="title" style="color:#ffb3b3;">🛠️ พื้นที่ศักดิ์สิทธิ์ (Admin Only)</h2>
+    <section class="card admin-section" id="adminSection">
+      <h2 class="title">🛡️ ห้องลับแอดมิน (Admin Panel)</h2>
       
-      <div class="dash-grid" style="margin-bottom: 20px;">
-        <canvas id="lineChart"></canvas>
-        <canvas id="pieChart"></canvas>
-      </div>
-
       <div class="toolbar">
-        <button id="btnRefresh" class="btn" type="button">รีเฟรชข้อมูล</button>
-        <input id="searchInput" type="search" placeholder="ค้นหาชื่อ, IG, Ref..." />
-        <button id="btnExport" class="btn" type="button">Export CSV</button>
+        <input id="searchInput" type="search" placeholder="🔍 ค้นหา: ชื่อ, IG, Ref, เบอร์, อีเมล" />
+        <button id="btnRefresh" class="btn" type="button">🔄 รีเฟรช</button>
+        <button id="btnExport" class="btn" type="button">📥 Export CSV</button>
+        <button id="btnLogoutAdmin" class="btn btn-danger" type="button">🚪 ออกจากระบบ</button>
       </div>
 
       <div class="table-wrap">
         <table id="adminTable">
           <thead>
             <tr>
-              <th>สถานะ</th>
-              <th>ชื่อ-สกุล / ชื่อเล่น</th>
+              <th>จัดการ</th>
+              <th>วันที่/คิว</th>
+              <th>ชื่อ-นามสกุล (เล่น)</th>
               <th>อายุ</th>
               <th>หมวดหมู่</th>
-              <th>วันที่ / คิว</th>
-              <th>IG / โทร</th>
-              <th>Ref No.</th>
-              <th>จัดการ</th>
+              <th>ติดต่อ (IG/เบอร์/เมล)</th>
+              <th>Ref. ID</th>
+              <th>พิกัด (Location)</th>
+              <th>เวลาที่บันทึก</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-      <div class="pager">
-        <button id="prevPage" class="btn" type="button">« ถอย</button>
-        <div id="pageInfo" class="muted">หน้า 1</div>
-        <button id="nextPage" class="btn" type="button">เดินหน้า »</button>
-      </div>
     </section>
 
   </main>
 
-  <div class="popup" id="ticketPopup">
+  <button class="admin-login-btn" id="btnAdminAccess">⚙️</button>
+
+  <div class="popup" id="popupTicket">
     <div class="content">
-      <h3>✨ ใบคิวแห่งโชคชะตา</h3>
-      <div class="note-strict" style="font-size: 14px; margin-top:0;">
-        🚨 บังคับ: กรุณาแคปหน้าจอนี้ และส่งไปที่ IG: @horoscope_1308 ทันที เพื่อยืนยันตัวตน! หากไม่ส่งจะถือว่าสละสิทธิ์
+      <h3>✨ ใบคิวเปิดดวงชะตา ✨</h3>
+      <div id="ticketData"></div>
+      <div class="force-note">
+        ⚠️ สำคัญมาก! คุณต้องแคปหน้าจอนี้ และส่งไปที่ IG: @horoscope_1308 ทันที เพื่อยืนยันคิว (หากไม่ส่งถือว่าสละสิทธิ์และแบนถาวร)
       </div>
-      <div id="ticketData" class="ticket-data"></div>
-      <div class="actions">
-        <button id="btnIG" class="btn">📲 คลิกเพื่อทัก IG แม่หมอทันที</button>
-        <button id="btnPdf" class="btn" style="background: linear-gradient(135deg, #444, #666);">ดาวน์โหลด PDF สำรอง</button>
-        <button id="btnCloseTicket" class="btn btn-danger">ปิดหน้าต่าง (แคปจอแล้ว)</button>
+      <div class="row" style="margin-top: 15px;">
+        <button id="btnIG" class="btn btn-gold">📱 ไปยัง Instagram ทันที</button>
+        <button id="btnPdf" class="btn">📥 โหลด PDF</button>
+      </div>
+      <button id="btnClosePopup" class="btn btn-danger" style="margin-top: 10px;">ข้าพเจ้าแคปหน้าจอเรียบร้อยแล้ว (ปิด)</button>
+    </div>
+  </div>
+
+  <div class="popup" id="adminLoginModal">
+    <div class="content">
+      <h3>🔒 เข้าสู่ระบบแอดมิน</h3>
+      <input type="text" id="adminUser" placeholder="Username" style="margin-bottom: 10px;" />
+      <input type="password" id="adminPass" placeholder="Password" style="margin-bottom: 20px;" />
+      <div class="row">
+        <button id="btnLoginAction" class="btn btn-gold">เข้าสู่ระบบ</button>
+        <button id="btnCancelAdmin" class="btn btn-danger">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" id="editModal">
+    <div class="content">
+      <h3>✏️ แก้ไขข้อมูลคิว</h3>
+      <input type="hidden" id="editId" />
+      <div style="display:flex; flex-direction:column; gap:8px; text-align:left; margin-bottom:15px;">
+        <label>ชื่อเล่น</label><input type="text" id="editName" />
+        <label>วันที่</label><input type="date" id="editDate" />
+        <label>หมวดหมู่</label><input type="text" id="editCat" />
+        <label>IG</label><input type="text" id="editIg" />
+      </div>
+      <div class="row">
+        <button id="btnSaveEdit" class="btn btn-gold">บันทึก</button>
+        <button onclick="document.getElementById('editModal').classList.remove('show')" class="btn btn-danger">ยกเลิก</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* ---------------- Firebase Config ---------------- */
+    /* ---------------- Firebase Config (ใช้ของเดิม) ---------------- */
     const firebaseConfig = {
       apiKey: "AIzaSyD0o88iBVuKsj-2qgEFlP-V3FwArPHCrkY",
       authDomain: "horoscopequeue.firebaseapp.com",
@@ -399,269 +410,333 @@
 
     /* ---------------- State ---------------- */
     let currentTicket = null;
-    let tableData = [];
+    let tableData = []; 
     let filteredData = [];
-    let page = 1;
-    const pageSize = 10;
-    let lineChart, pieChart;
+    let publicLineChart, publicPieChart;
 
-    const $ = (sel) => document.querySelector(sel);
+    const $ = (sel, root=document) => root.querySelector(sel);
 
-    /* ---------------- Preloader & Rules Popup ---------------- */
-    window.addEventListener("load", () => {
+    /* ---------------- Init & Preloader ---------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+      // Show rules popup first
+      $("#btnAcceptRules").addEventListener("click", () => {
+        $("#entryPopup").classList.remove("show");
+        showPreloaderProgress();
+      });
+
+      initLiveHud();
+      loadPublicAnalytics();
+
+      $("#bookingForm").addEventListener("submit", handleBookingSubmit);
+      $("#btnCheckRef").addEventListener("click", checkReference);
+      
+      // Ticket actions
+      $("#btnIG").addEventListener("click", () => window.open("https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx", "_blank"));
+      $("#btnPdf").addEventListener("click", downloadPDF);
+      $("#btnClosePopup").addEventListener("click", () => $("#popupTicket").classList.remove("show"));
+
+      // Admin Auth logic
+      $("#btnAdminAccess").addEventListener("click", () => $("#adminLoginModal").classList.add("show"));
+      $("#btnCancelAdmin").addEventListener("click", () => $("#adminLoginModal").classList.remove("show"));
+      $("#btnLogoutAdmin").addEventListener("click", () => {
+        $("#adminSection").style.display = "none";
+        toast("ออกจากระบบแอดมินแล้ว");
+      });
+      $("#btnLoginAction").addEventListener("click", handleAdminLogin);
+
+      // Admin Table Logic
+      $("#btnRefresh").addEventListener("click", loadAdminData);
+      $("#searchInput").addEventListener("input", applyFilter);
+      $("#btnExport").addEventListener("click", exportCsv);
+      $("#btnSaveEdit").addEventListener("click", saveEditData);
+    });
+
+    function showPreloaderProgress() {
       const el = $("#loading-percent");
       let p = 0;
       const t = setInterval(()=>{
-        p += 5;
-        el.textContent = p + "%";
+        p += Math.floor(Math.random() * 5) + 1;
+        if(p > 100) p = 100;
+        el.textContent = p+"%";
         if(p >= 100) {
           clearInterval(t);
-          setTimeout(() => {
-            $("#preloader").classList.add("hide");
-            // Show rules popup on first load
-            if(!sessionStorage.getItem("rulesAccepted")) {
-              $("#rulesPopup").classList.add("show");
-            }
-          }, 300);
+          setTimeout(() => $("#preloader").classList.add("hide"), 500);
         }
-      }, 30);
-    });
+      }, 50);
+    }
 
-    $("#btnAcceptRules").addEventListener("click", () => {
-      sessionStorage.setItem("rulesAccepted", "true");
-      $("#rulesPopup").classList.remove("show");
-      
-      // Secret Admin trigger: Double click accept button holding Shift could show admin, 
-      // but for simplicity, let's auto-show it if a specific URL parameter is present (?admin=1)
-      const urlParams = new URLSearchParams(window.location.search);
-      if(urlParams.get('admin') === '1') {
-        $("#adminSection").style.display = "block";
-        loadAdminData();
-      }
-    });
+    function toast(msg) { alert(msg); }
 
-    /* ---------------- Live HUD ---------------- */
-    db.collection("queues").onSnapshot((snap) => {
-      $("#queueCount").textContent = `ยอดจองคิวสะสม: ${snap.size} ท่าน`;
-    });
-    setInterval(() => {
-      $("#currentTime").textContent = `เวลา: ${new Date().toLocaleTimeString('th-TH')}`;
-    }, 1000);
-
-    /* ---------------- Booking System ---------------- */
-    $("#bookingForm").addEventListener("submit", async (e) => {
+    /* ---------------- Booking & Geolocation ---------------- */
+    async function handleBookingSubmit(e) {
       e.preventDefault();
       
-      const payload = {
-        fullName: $("#fullName").value.trim(),
-        name: $("#name").value.trim(),
-        age: $("#age").value.trim(),
-        phone: $("#phone").value.trim(),
-        email: $("#email").value.trim(),
-        category: $("#category").value,
-        date: $("#date").value,
-        igUsername: $("#igUsername").value.trim(),
-        status: "จองคิว", // New Status field
-        timestamp: new Date()
-      };
+      // Get all values
+      const fName = $("#fName").value.trim();
+      const lName = $("#lName").value.trim();
+      const name = $("#name").value.trim();
+      const age = $("#age").value.trim();
+      const phone = $("#phone").value.trim();
+      const email = $("#email").value.trim();
+      const category = $("#category").value;
+      const date = $("#date").value;
+      const igUsername = $("#igUsername").value.trim();
 
+      // Check Quota
       try {
-        const snap = await db.collection("queues").where("date","==",payload.date).get();
-        if(snap.size >= 5) {
-          alert("❌ คิวสำหรับวันที่ท่านเลือกเต็มแล้ว (รับ 5 คิว/วัน) โปรดเลือกวันอื่น");
+        const snap = await db.collection("queues").where("date","==",date).get();
+        if(snap.size >= 5){
+          toast("คิวเต็มแล้วสำหรับวันนี้ กรุณาเลือกวันอื่นครับ/ค่ะ");
           return;
         }
 
-        const btn = e.target.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.textContent = "กำลังร่ายเวทย์บันทึก...";
+        const queueNumber = snap.size + 1;
+        const referenceId = Math.random().toString(36).substring(2,10).toUpperCase();
+        
+        const ticketDataObj = {
+          fName, lName, name, age, phone, email, category, date, igUsername,
+          queueNumber, referenceId,
+          timestamp: new Date(),
+          location: "กำลังค้นหา..."
+        };
 
-        payload.queueNumber = snap.size + 1;
-        payload.referenceId = Math.random().toString(36).substring(2,10).toUpperCase();
+        // Try getting location
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async (pos) => {
+            ticketDataObj.location = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+            await saveBooking(ticketDataObj, e.target);
+          }, async (err) => {
+            ticketDataObj.location = "ปฏิเสธการเข้าถึง/ไม่ทราบพิกัด";
+            await saveBooking(ticketDataObj, e.target);
+          }, { timeout: 5000 });
+        } else {
+          ticketDataObj.location = "เบราว์เซอร์ไม่รองรับ";
+          await saveBooking(ticketDataObj, e.target);
+        }
 
-        await db.collection("queues").add(payload);
-        currentTicket = payload;
-
-        $("#ticketData").innerHTML = `
-          <div style="color:var(--accent); font-size:16px; margin-bottom:8px; border-bottom:1px solid #555; padding-bottom:8px;">
-            <b>เลขอ้างอิง (Ref): ${payload.referenceId}</b>
-          </div>
-          <p><b>คิวที่:</b> ${payload.queueNumber} | <b>วันที่:</b> ${payload.date}</p>
-          <p><b>ชื่อ-สกุล:</b> ${payload.fullName} (${payload.name})</p>
-          <p><b>ศาสตร์:</b> ${payload.category}</p>
-          <p><b>IG:</b> ${payload.igUsername}</p>
-        `;
-        $("#ticketPopup").classList.add("show");
-        e.target.reset();
-        btn.disabled = false;
-        btn.textContent = "✨ ลงนามจองคิว";
-
-      } catch (err) {
-        alert("เกิดข้อผิดพลาด: " + err.message);
+      } catch(err) {
+        toast("เกิดข้อผิดพลาด: " + err.message);
       }
-    });
+    }
 
-    /* ---------------- Ticket Actions ---------------- */
-    $("#btnIG").addEventListener("click", () => {
-      window.open("https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx", "_blank");
-    });
-    
-    $("#btnCloseTicket").addEventListener("click", () => {
-      $("#ticketPopup").classList.remove("show");
-    });
+    async function saveBooking(dataObj, formElement) {
+      try {
+        await db.collection("queues").add(dataObj);
+        currentTicket = dataObj;
+        
+        $("#ticketData").innerHTML = `
+          <b>Ref ID:</b> <span style="color:var(--gold); font-size:18px;">${dataObj.referenceId}</span><br>
+          <b>ชื่อจริง:</b> ${dataObj.fName} ${dataObj.lName} (${dataObj.name})<br>
+          <b>หมวดหมู่:</b> ${dataObj.category}<br>
+          <b>วันที่ดูดวง:</b> ${dataObj.date}<br>
+          <b>ลำดับคิว:</b> ${dataObj.queueNumber}<br>
+          <b>IG ที่ใช้ยืนยัน:</b> ${dataObj.igUsername}
+        `;
+        
+        $("#popupTicket").classList.add("show");
+        formElement.reset();
+        loadPublicAnalytics(); // Refresh charts
+      } catch(err) {
+        toast("บันทึกไม่สำเร็จ: " + err.message);
+      }
+    }
 
-    $("#btnPdf").addEventListener("click", () => {
+    function downloadPDF() {
       if(!currentTicket) return;
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const txt = `Magical Ticket
-Ref: ${currentTicket.referenceId}
-Name: ${currentTicket.fullName} (${currentTicket.name})
-Queue: ${currentTicket.queueNumber}
-Date: ${currentTicket.date}
-Category: ${currentTicket.category}`;
-      doc.text(txt, 10, 20);
+      doc.setFontSize(16);
+      doc.text("Horoscope Ticket", 10, 20);
+      doc.setFontSize(12);
+      let y = 30;
+      const lines = [
+        `Ref ID: ${currentTicket.referenceId}`,
+        `Name: ${currentTicket.fName} ${currentTicket.lName} (${currentTicket.name})`,
+        `Age: ${currentTicket.age}`,
+        `Category: ${currentTicket.category}`,
+        `Queue Date: ${currentTicket.date} (Queue No: ${currentTicket.queueNumber})`,
+        `IG: ${currentTicket.igUsername}`,
+        `Phone: ${currentTicket.phone}`,
+        `* Please send screenshot to IG @horoscope_1308 to confirm.`
+      ];
+      lines.forEach(line => { doc.text(line, 10, y); y += 10; });
       doc.save(`Ticket_${currentTicket.referenceId}.pdf`);
-    });
+    }
+
+    /* ---------------- HUD & Live Data ---------------- */
+    function initLiveHud() {
+      db.collection("queues").onSnapshot((snap) => {
+        $("#queueCount").textContent = `ยอดจองคิวทั้งหมด: ${snap.size} ดวงจิต`;
+      });
+      setInterval(() => {
+        const now = new Date().toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        $("#currentTime").textContent = `เวลา ณ ปัจจุบัน: ${now}`;
+      }, 1000);
+    }
 
     /* ---------------- Check Reference ---------------- */
-    $("#btnCheckRef").addEventListener("click", async () => {
+    async function checkReference() {
       const ref = $("#refInput").value.trim().toUpperCase();
-      const res = $("#refResult");
-      if(!ref) { res.style.display = "block"; res.innerHTML = "<span style='color:red'>โปรดกรอกเลขอ้างอิง</span>"; return; }
-      
-      res.style.display = "block";
-      res.innerHTML = "กำลังค้นหาในมิติพลังงาน...";
-      
+      if(!ref) return toast("กรุณากรอกเลขอ้างอิง");
       try {
         const snap = await db.collection("queues").where("referenceId","==",ref).get();
-        if(!snap.empty) {
+        if(!snap.empty){
           const d = snap.docs[0].data();
-          const statusColor = d.status === "เรียบร้อย" ? "#28a745" : "#ffc107";
-          res.innerHTML = `
-            <div style="border: 1px solid ${statusColor}; padding: 10px; border-radius: 8px;">
-              <h4 style="margin:0 0 8px; color:var(--accent);">พบข้อมูลการจอง</h4>
-              <p style="margin:4px 0;"><b>ชื่อ:</b> ${d.name}</p>
-              <p style="margin:4px 0;"><b>วันที่:</b> ${d.date} (คิวที่ ${d.queueNumber})</p>
-              <p style="margin:4px 0;"><b>สถานะ:</b> <span style="color:${statusColor}; font-weight:bold;">${d.status || 'จองคิว'}</span></p>
+          $("#refResult").innerHTML = `
+            <div style="background:rgba(255,215,0,0.1); padding:10px; border-radius:8px; border:1px solid var(--gold);">
+              <b>พบข้อมูล!</b> สถานะ: ยืนยันแล้ว<br>
+              คุณ <b>${d.name}</b> (${d.fName ?? '-'})<br>
+              คิววันที่: ${d.date} ลำดับที่ ${d.queueNumber}<br>
+              หมวด: ${d.category}
             </div>
           `;
         } else {
-          res.innerHTML = "<span style='color:red'>ไม่พบข้อมูลในระบบ</span>";
+          $("#refResult").innerHTML = `<span style="color:#ff6666;">❌ ไม่พบข้อมูลในระบบ (หรืออาจถูกยกเลิก)</span>`;
         }
-      } catch (err) {
-        res.innerHTML = "Error: " + err.message;
-      }
-    });
+      } catch(err) { console.error(err); }
+    }
 
-    /* ---------------- Admin Functions ---------------- */
+    /* ---------------- Public Analytics ---------------- */
+    async function loadPublicAnalytics() {
+      try {
+        const snap = await db.collection("queues").get();
+        const data = snap.docs.map(d => d.data());
+
+        const dateMap = {}; const catMap = {};
+        data.forEach(it => {
+          if(it.date) dateMap[it.date] = (dateMap[it.date] || 0) + 1;
+          if(it.category) catMap[it.category] = (catMap[it.category] || 0) + 1;
+        });
+
+        if(publicLineChart) publicLineChart.destroy();
+        if(publicPieChart) publicPieChart.destroy();
+
+        // Line Chart (Trends)
+        const dLabels = Object.keys(dateMap).sort().slice(-7); // show last 7 days
+        const dData = dLabels.map(k => dateMap[k]);
+        publicLineChart = new Chart($("#publicLineChart"), {
+          type: 'line',
+          data: { labels: dLabels, datasets: [{ label: 'คิวรายวัน', data: dData, borderColor: '#ffd700', backgroundColor: 'rgba(255,215,0,0.2)', tension: 0.4 }] },
+          options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
+        });
+
+        // Pie Chart (Categories)
+        const cLabels = Object.keys(catMap);
+        const cData = cLabels.map(k => catMap[k]);
+        publicPieChart = new Chart($("#publicPieChart"), {
+          type: 'doughnut',
+          data: { labels: cLabels, datasets: [{ data: cData, backgroundColor: ['#b94dff','#ff6fff','#ffd700','#00d2ff','#ff4b2b','#4facfe','#f093fb','#f5576c','#4facfe'] }] },
+          options: { plugins: { legend: { position: 'right', labels: { color: '#fff', font:{size:10} } } } }
+        });
+      } catch(e) { console.log("Analytics Error", e); }
+    }
+
+    /* ---------------- Admin System ---------------- */
+    function handleAdminLogin() {
+      const u = $("#adminUser").value;
+      const p = $("#adminPass").value;
+      if(u === "admin" && p === "horoscope") {
+        $("#adminLoginModal").classList.remove("show");
+        $("#adminSection").style.display = "block";
+        $("#adminUser").value = ""; $("#adminPass").value = "";
+        window.scrollTo(0, document.body.scrollHeight);
+        loadAdminData();
+      } else {
+        toast("Username หรือ Password ไม่ถูกต้อง!");
+      }
+    }
+
     async function loadAdminData() {
       try {
-        const snap = await db.collection("queues").orderBy("date","desc").get();
+        const snap = await db.collection("queues").orderBy("timestamp","desc").get();
         tableData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         applyFilter();
-        renderCharts();
       } catch(err) { console.error(err); }
     }
 
     function applyFilter() {
       const q = $("#searchInput").value.trim().toLowerCase();
-      filteredData = tableData.filter(t => 
-        (t.fullName||'').toLowerCase().includes(q) || 
-        (t.name||'').toLowerCase().includes(q) || 
-        (t.referenceId||'').toLowerCase().includes(q) || 
-        (t.igUsername||'').toLowerCase().includes(q)
-      );
-      page = 1;
-      renderTable();
+      filteredData = !q ? [...tableData] : tableData.filter(t => {
+        const str = `${t.name} ${t.fName} ${t.lName} ${t.igUsername} ${t.phone} ${t.email} ${t.referenceId}`.toLowerCase();
+        return str.includes(q);
+      });
+      renderAdminTable();
     }
 
-    function renderTable() {
+    function renderAdminTable() {
       const tbody = $("#adminTable tbody");
       tbody.innerHTML = "";
-      const start = (page-1) * pageSize;
-      const slice = filteredData.slice(start, start + pageSize);
-      
-      slice.forEach(t => {
+      filteredData.forEach(t => {
+        const dateObj = t.timestamp ? new Date(t.timestamp.seconds * 1000).toLocaleString('th-TH') : '-';
         const tr = document.createElement("tr");
-        const statusClass = (t.status === "เรียบร้อย") ? "status-done" : "status-booked";
         tr.innerHTML = `
-          <td><span class="status-badge ${statusClass}">${t.status || 'จองคิว'}</span></td>
-          <td>${t.fullName}<br><small style="color:#aaa">${t.name}</small></td>
-          <td>${t.age}</td>
-          <td>${t.category}</td>
-          <td>${t.date}<br><b>คิว ${t.queueNumber}</b></td>
-          <td>${t.igUsername}<br><small>${t.phone || '-'}</small></td>
-          <td><code style="background:#222;padding:2px 4px;border-radius:4px;">${t.referenceId}</code></td>
           <td>
-            <button onclick="updateStatus('${t.id}', '${t.status}')" style="background:#555; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">เปลี่ยนสถานะ</button>
+            <div class="action-btns">
+              <button class="btn-edit" onclick="openEdit('${t.id}')">✏️</button>
+              <button class="btn-del" onclick="deleteData('${t.id}')">🗑️</button>
+            </div>
           </td>
+          <td><b>${t.date||"-"}</b><br><small>คิวที่ ${t.queueNumber||"-"}</small></td>
+          <td>${t.fName||"-"} ${t.lName||"-"}<br><small style="color:var(--gold)">(${t.name||"-"})</small></td>
+          <td>${t.age||"-"}</td>
+          <td>${t.category||"-"}</td>
+          <td>IG: ${t.igUsername||"-"}<br>📞 ${t.phone||"-"}<br>✉️ ${t.email||"-"}</td>
+          <td style="color:#ff6fff; font-family:monospace;">${t.referenceId||"-"}</td>
+          <td><small>${t.location||"ไม่ทราบ"}</small></td>
+          <td><small>${dateObj}</small></td>
         `;
         tbody.appendChild(tr);
       });
-      
-      const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
-      $("#pageInfo").textContent = `หน้า ${page} / ${totalPages}`;
-      $("#prevPage").disabled = page <= 1;
-      $("#nextPage").disabled = page >= totalPages;
     }
 
-    // Global function for the inline onclick in admin table
-    window.updateStatus = async (docId, currentStatus) => {
-      const newStatus = currentStatus === "เรียบร้อย" ? "จองคิว" : "เรียบร้อย";
-      if(confirm(`เปลี่ยนสถานะเป็น "${newStatus}" ?`)) {
-        await db.collection("queues").doc(docId).update({ status: newStatus });
+    window.deleteData = async function(id) {
+      if(confirm("ยืนยันการลบข้อมูลคิวนี้ใช่หรือไม่?")) {
+        await db.collection("queues").doc(id).delete();
+        toast("ลบข้อมูลสำเร็จ");
         loadAdminData();
       }
     };
 
-    function renderCharts() {
-      if(lineChart) lineChart.destroy();
-      if(pieChart) pieChart.destroy();
-      
-      const dateMap = {}, catMap = {};
-      tableData.forEach(t => {
-        dateMap[t.date] = (dateMap[t.date]||0) + 1;
-        catMap[t.category] = (catMap[t.category]||0) + 1;
-      });
+    window.openEdit = function(id) {
+      const data = tableData.find(x => x.id === id);
+      if(!data) return;
+      $("#editId").value = data.id;
+      $("#editName").value = data.name || "";
+      $("#editDate").value = data.date || "";
+      $("#editCat").value = data.category || "";
+      $("#editIg").value = data.igUsername || "";
+      $("#editModal").classList.add("show");
+    };
 
-      Chart.defaults.color = '#fff';
-      
-      lineChart = new Chart($("#lineChart"), {
-        type: 'line',
-        data: { 
-          labels: Object.keys(dateMap).sort(), 
-          datasets: [{ label: 'จำนวนคิวรายวัน', data: Object.values(dateMap), borderColor: '#c94dff', backgroundColor: 'rgba(201, 77, 255, 0.2)', tension: 0.4, fill: true }]
-        }
-      });
-
-      pieChart = new Chart($("#pieChart"), {
-        type: 'doughnut',
-        data: { 
-          labels: Object.keys(catMap), 
-          datasets: [{ data: Object.values(catMap), backgroundColor: ['#7b00ff', '#9d00ff', '#c94dff', '#ffb8ff', '#4b0082', '#8a2be2', '#da70d6'] }]
-        },
-        options: { plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } } }
-      });
+    async function saveEditData() {
+      const id = $("#editId").value;
+      try {
+        await db.collection("queues").doc(id).update({
+          name: $("#editName").value,
+          date: $("#editDate").value,
+          category: $("#editCat").value,
+          igUsername: $("#editIg").value
+        });
+        $("#editModal").classList.remove("show");
+        toast("อัปเดตข้อมูลสำเร็จ");
+        loadAdminData();
+      } catch(err) { toast("Error: " + err.message); }
     }
 
-    $("#searchInput").addEventListener("input", applyFilter);
-    $("#btnRefresh").addEventListener("click", loadAdminData);
-    $("#prevPage").addEventListener("click", () => { if(page > 1) { page--; renderTable(); } });
-    $("#nextPage").addEventListener("click", () => { if(page * pageSize < filteredData.length) { page++; renderTable(); } });
-    
-    $("#btnExport").addEventListener("click", () => {
-      if(!tableData.length) return alert("ไม่มีข้อมูล");
-      const header = ["fullName","name","age","phone","email","category","date","queueNumber","status","igUsername","referenceId"];
-      const csv = [header.join(",")]
-        .concat(tableData.map(t => header.map(k => `"${(t[k]||'').toString()}"`).join(",")))
-        .join("\n");
-      const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' });
+    function exportCsv() {
+      if(!filteredData.length) return toast("ไม่มีข้อมูล");
+      const header = ["ID","Date","Queue","First Name","Last Name","Nickname","Age","Category","Phone","Email","IG","RefID","Location","Timestamp"];
+      const rows = [header.join(",")];
+      filteredData.forEach(t => {
+        const time = t.timestamp ? new Date(t.timestamp.seconds * 1000).toISOString() : "";
+        const r = [t.id, t.date, t.queueNumber, t.fName, t.lName, t.name, t.age, t.category, t.phone, t.email, t.igUsername, t.referenceId, t.location, time];
+        rows.push(r.map(x => `"${(x||"").toString().replace(/"/g,'""')}"`).join(","));
+      });
+      const blob = new Blob(["\uFEFF" + rows.join("\n")], {type: "text/csv;charset=utf-8;"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = "Queues_Magical.csv"; a.click();
-    });
-
+      a.href = url; a.download = "horoscope_queues.csv"; a.click();
+    }
   </script>
 </body>
 </html>
