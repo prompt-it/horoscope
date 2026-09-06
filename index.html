@@ -13,17 +13,17 @@
 
   <style>
     :root {
-      --bg-1: #07020d;
-      --bg-2: #190924;
-      --card: rgba(18, 8, 26, 0.75);
-      --primary: #c240ff;
-      --primary-2: #7b00ff;
-      --accent: #ff33c2;
+      --bg-1: #030005;
+      --bg-2: #0e0017;
+      --card: rgba(10, 0, 15, 0.85);
+      --primary: #a600ff;
+      --primary-2: #6b00b3;
+      --accent: #d78aff;
       --vip: #ffd700;
-      --text: #f0e6fa;
-      --muted: #a691ba;
-      --border: rgba(194, 64, 255, 0.3);
-      --glow: 0 0 15px rgba(194, 64, 255, 0.4), 0 0 30px rgba(123, 0, 255, 0.2);
+      --text: #ffffff;
+      --muted: #bda6cc;
+      --border: rgba(166, 0, 255, 0.4);
+      --glow: 0 0 15px rgba(166, 0, 255, 0.5), 0 0 30px rgba(107, 0, 179, 0.3);
       --radius: 20px;
     }
 
@@ -34,12 +34,11 @@
       font-family: 'Sarabun', sans-serif;
       color: var(--text);
       background: 
-        radial-gradient(circle at 50% 0%, #30005a 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, #4d004d 0%, transparent 50%),
+        radial-gradient(circle at 50% 0%, #1a0033 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, #26004d 0%, transparent 50%),
         linear-gradient(180deg, var(--bg-1), var(--bg-2) 100%);
       background-attachment: fixed;
       overflow-x: hidden;
-      /* Mobile constraint */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -67,23 +66,23 @@
 
     /* ---------- Modals ---------- */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
       display: none; place-items: center; z-index: 10000; padding: 16px;
     }
     .modal-overlay.show { display: grid; }
     .modal-content {
-      background: linear-gradient(145deg, #1f0b31, #0f0418);
+      background: linear-gradient(145deg, #160024, #08000d);
       border: 1px solid var(--accent); border-radius: var(--radius);
       padding: 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: var(--glow);
     }
-    .modal-content h2 { color: #ff3366; margin-top: 0; text-shadow: 0 0 10px red; }
-    .modal-content p { color: #ffd1dc; font-size: 14px; line-height: 1.6; }
+    .modal-content h2 { color: var(--accent); margin-top: 0; text-shadow: 0 0 10px var(--primary); }
+    .modal-content p { color: #f0e6fa; font-size: 14px; line-height: 1.6; }
     .warning-text { color: #ff5555; font-weight: bold; margin-bottom: 20px; }
 
     /* ---------- UI Layout ---------- */
     .hud {
       position: fixed; left: 12px; top: 12px; z-index: 60;
-      background: rgba(10,5,17,0.7); border: 1px solid var(--border); box-shadow: var(--glow);
+      background: rgba(0,0,0,0.8); border: 1px solid var(--border); box-shadow: var(--glow);
       border-radius: 12px; padding: 10px; min-width: 200px; backdrop-filter: blur(8px);
     }
     .hud .title { font-weight: 700; font-size: 12px; color: var(--accent); }
@@ -112,27 +111,28 @@
     label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 600; font-size: 13px; }
     input, select, button {
       width: 100%; padding: 10px 14px; border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(0,0,0,0.5); color: #fff; font-size: 14px; font-family: inherit;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(0,0,0,0.6); color: #fff; font-size: 14px; font-family: inherit;
     }
     input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
     
     .btn {
-      background: linear-gradient(45deg, var(--primary-2), var(--accent));
+      background: linear-gradient(45deg, var(--primary-2), var(--primary));
       color: #fff; border: none; cursor: pointer; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 51, 194, 0.4);
+      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(166, 0, 255, 0.4);
       margin-top: 10px;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 51, 194, 0.6); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(166, 0, 255, 0.6); }
     .btn-danger { background: linear-gradient(45deg, #aa0000, #ff3333); box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4); }
     .btn-vip { background: linear-gradient(45deg, #d4af37, #ffdf00); color: #000; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); text-shadow: none; }
     .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); box-shadow: none; }
+    .btn-small { padding: 6px 12px; font-size: 12px; margin-top: 5px; }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
     /* ---------- Success Popup ---------- */
-    #ticketData { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--accent); }
+    #ticketData { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--accent); }
     #ticketData p { margin: 4px 0; font-size: 14px; }
 
     /* ---------- User Auth Section ---------- */
@@ -142,31 +142,40 @@
     .logged-in .main-system { display: block; }
 
     .user-profile {
-      background: rgba(255,215,0,0.1); border: 1px solid var(--vip);
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
       padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
+      position: relative; overflow: hidden;
     }
-    .user-profile h3 { margin: 0; color: var(--vip); }
-    .uid-badge { background: var(--vip); color: #000; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; }
+    .user-profile h3 { margin: 0; color: #fff; }
+    .uid-badge { background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; }
     .point-badge { font-size: 18px; font-weight: bold; color: #fff; margin: 10px 0; }
+
+    /* ---------- History List ---------- */
+    .history-item {
+      background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 12px; margin-bottom: 10px;
+    }
+    .history-item p { margin: 4px 0; font-size: 13px; }
+    .status-badge { font-weight: bold; }
+    .status-past { color: #00ff00; }
+    .status-future { color: #ffaa33; }
 
     /* ---------- Admin Table ---------- */
     .admin-wrap { display: none; margin-top: 40px; }
     .admin-wrap.active { display: block; }
     .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
     .admin-tab { flex: 1; padding: 10px; text-align: center; background: rgba(0,0,0,0.5); cursor: pointer; border-radius: 10px; border: 1px solid var(--border); }
-    .admin-tab.active { background: var(--accent); color: #fff; font-weight: bold; }
+    .admin-tab.active { background: var(--primary); color: #fff; font-weight: bold; }
     .admin-content { display: none; }
     .admin-content.active { display: block; }
 
     .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); }
     table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 13px; }
-    th { background: linear-gradient(90deg, #30005a, #4d004d); padding: 12px; text-align: left; color: var(--accent); position: sticky; top: 0; }
+    th { background: linear-gradient(90deg, #1a0033, #26004d); padding: 12px; text-align: left; color: var(--accent); position: sticky; top: 0; }
     td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     tr:hover { background: rgba(255,255,255,0.05); }
 
     .footer-link { text-align: center; margin-top: 20px; opacity: 0.5; font-size: 12px; cursor: pointer; display: block; color: #fff; width: 100%; }
-
-    /* Utility */
     .vip-text { color: var(--vip); font-weight: bold; }
   </style>
 </head>
@@ -181,14 +190,45 @@
     <div class="modal-content">
       <h2>⚠️ คำแนะนำการใช้งาน ⚠️</h2>
       <p style="text-align: left; font-size: 13px;">
-        1. <b>สมัครสมาชิก/เข้าสู่ระบบ</b> ก่อนจองคิว<br>
-        2. <b>คิวปกติ (ฟรี)</b> ดูดวงช่วงเวลา 17:00-20:00 น.<br>
-        3. <b>ลัดคิว (VIP)</b> ใช้ 30 Point เพื่อได้คิวพิเศษและด่วนที่สุด<br>
-        4. <b>เติม Point</b> ติดต่อแอดมิน (10฿ = 30pt / 30฿ = 100pt)<br>
+        1. <b>คิวปกติ (ฟรี)</b> ให้บริการ 17:00-20:00 น.<br>
+        2. <b>แต้มสะสม</b> ดูดวง 1 ครั้ง รับฟรี 2 แต้ม<br>
+        3. <b>ลัดคิว (VIP)</b> ใช้ 30 แต้มสะสม เพื่อคิวด่วนที่สุด<br>
+        4. <b>สุ่มแจกฟรี</b> กดรับกล่องสมบัติได้ทุกๆ 24 ชั่วโมง<br>
         5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b>
       </p>
-      <p class="warning-text">จองเล่น ก่อกวน แบน IP ทันที!</p>
       <button class="btn" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
+    </div>
+  </div>
+
+  <!-- Popup Treasure -->
+  <div class="modal-overlay" id="treasureModal">
+    <div class="modal-content">
+      <h2 style="color: #ffd700;">🎉 ยินดีด้วย! 🎉</h2>
+      <p id="treasureMsg" style="font-size: 18px; font-weight: bold;"></p>
+      <button class="btn" onclick="document.getElementById('treasureModal').classList.remove('show')">รับรางวัล</button>
+    </div>
+  </div>
+
+  <!-- Popup Edit Queue -->
+  <div class="modal-overlay" id="editQueueModal">
+    <div class="modal-content">
+      <h2>⏳ แก้ไขเวลาจองคิว</h2>
+      <p id="editCostText" style="color:var(--vip); font-weight:bold;"></p>
+      <input type="date" id="editDate" required style="margin-bottom: 10px;" />
+      <select id="editTime" required>
+        <option value="">-- เลือกเวลาใหม่ --</option>
+        <option value="17:00">17:00</option>
+        <option value="17:30">17:30</option>
+        <option value="18:00">18:00</option>
+        <option value="18:30">18:30</option>
+        <option value="19:00">19:00</option>
+        <option value="19:30">19:30</option>
+        <option value="20:00">20:00</option>
+      </select>
+      <div class="row" style="margin-top: 15px;">
+        <button class="btn" onclick="saveEditQueue()">ยืนยัน</button>
+        <button class="btn btn-danger" onclick="document.getElementById('editQueueModal').classList.remove('show')">ยกเลิก</button>
+      </div>
     </div>
   </div>
 
@@ -197,7 +237,7 @@
       <h2 style="color: var(--accent);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
       <p style="color: #ffaa33; font-weight:bold;">🚨 โปรดแคปหน้าจอนี้ทันที 🚨</p>
       <div id="ticketData"></div>
-      <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
+      <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #cc2366);">
         📸 แคปแล้ว! ส่งหลักฐานไปที่ IG
       </button>
       <button id="btnPdf" class="btn btn-outline" style="margin-top: 10px;">ดาวน์โหลดสำรอง (PDF)</button>
@@ -238,24 +278,25 @@
       <div class="user-profile">
         <h3>ยินดีต้อนรับ, <span id="profileName">--</span></h3>
         <p style="margin:5px 0;">UID: <span class="uid-badge" id="profileUid">------</span></p>
-        <div class="point-badge">💎 Point ของคุณ: <span id="profilePoint" style="color:var(--accent);">0</span></div>
+        <div class="point-badge">✨ แต้มสะสมทั้งหมด: <span id="profilePoint" style="color:var(--accent);">0</span></div>
+        <button class="btn btn-outline" style="width: 100%; border-color:#ffd700; color:#ffd700; margin-bottom: 10px;" onclick="claimTreasure()">🎁 สุ่มรับแต้มสะสมรายวัน (ฟรี)</button>
         <div class="row">
-          <button class="btn btn-vip" onclick="showTopupInfo()">➕ เติม Point</button>
+          <button class="btn btn-vip" onclick="showTopupInfo()">➕ เติมแต้ม</button>
           <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
         </div>
       </div>
 
       <section class="card">
         <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
-        <p class="muted">เปิดสัมผัสแห่งดวงดาว ระยะเวลาให้บริการ 17:00-20:00 น.</p>
+        <p class="muted">ให้บริการ 17:00-20:00 น. (จองได้ทีละ 1 คิวเท่านั้น)</p>
         
         <form id="bookingForm">
           <div class="row">
             <div>
               <label>ประเภทคิว</label>
               <select id="queueType" onchange="updateQueueTypeUI()">
-                <option value="normal">คิวปกติ (ฟรี)</option>
-                <option value="vip">ลัดคิว VIP (ใช้ 30 Point)</option>
+                <option value="normal">คิวปกติ (ฟรี / รับ 2 แต้ม)</option>
+                <option value="vip">ลัดคิว VIP (ใช้ 30 แต้ม / รับ 2 แต้ม)</option>
               </select>
             </div>
             <div>
@@ -300,18 +341,15 @@
             </div>
           </div>
           
-          <p class="legal-note">🔒 ข้อมูลจะถูกเก็บเป็นความลับ IP ถูกบันทึกเพื่อป้องกันการก่อกวน</p>
-          <button type="submit" class="btn" id="btnSubmitBook" style="padding: 16px; font-size: 16px;">✨ ยืนยันการจองคิว (ฟรี) ✨</button>
+          <button type="submit" class="btn" id="btnSubmitBook" style="padding: 16px; font-size: 16px;">✨ ยืนยันการจองคิว ✨</button>
         </form>
       </section>
 
-      <section class="card">
-        <h2 class="title">🔍 ตรวจสอบใบคิวตัวเอง</h2>
-        <div class="row">
-          <div><input type="text" id="refInput" placeholder="ใส่เลขอ้างอิง (Ref No.)" /></div>
-          <div><button id="btnCheckRef" class="btn" type="button">ตรวจสอบ</button></div>
+      <section class="card" id="historySection">
+        <h2 class="title">📜 ประวัติการดูดวงและสถานะ</h2>
+        <div id="historyList">
+          <p class="muted">กำลังโหลดข้อมูลมิติเวลา...</p>
         </div>
-        <div id="refResult" class="muted" style="margin-top:12px; font-weight:bold; color:#fff;"></div>
       </section>
     </div>
 
@@ -336,7 +374,7 @@
       
       <div class="admin-tabs">
         <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">จัดการคิว</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">จัดการสมาชิก (Point)</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">จัดการสมาชิก (แต้ม)</div>
       </div>
 
       <div id="tabQueues" class="admin-content active">
@@ -397,9 +435,14 @@
     const $ = (sel) => document.querySelector(sel);
     let currentTicket = null;
     let userGeoLocation = "ไม่สามารถระบุได้";
-    let currentUser = null; // Store logged-in user doc data
+    let currentUser = null; 
     let currentUserDocId = null; 
-    let unsubscribeUser = null; // Snapshot listener for points
+    let unsubscribeUser = null; 
+    let unsubscribeQueues = null;
+    let userQueues = [];
+    
+    let editingQueueId = null;
+    let editingQueueCount = 0;
 
     /* ---------------- 1. Setup & Preloader ---------------- */
     window.addEventListener("load", () => {
@@ -429,18 +472,41 @@
 
     $("#acceptRulesBtn").addEventListener("click", () => { $("#rulesModal").classList.remove("show"); });
 
-    /* ---------------- 2. System HUD ---------------- */
+    /* ---------------- 2. System HUD & Timer ---------------- */
     db.collection("queues").onSnapshot((snap) => {
       $("#queueCount").textContent = `ดวงวิญญาณในระบบ: ${snap.size} ท่าน`;
       if ($("#adminArea").classList.contains("active")) loadAdminQueues();
     });
 
     setInterval(() => {
-      const now = new Date().toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-      $("#currentTime").textContent = `มิติเวลา: ${now}`;
+      const now = new Date();
+      $("#currentTime").textContent = `มิติเวลา: ${now.toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}`;
+      
+      // Update Countdown elements
+      document.querySelectorAll('.countdown-timer').forEach(el => {
+        const target = parseInt(el.getAttribute('data-target'));
+        const diff = target - now.getTime();
+        
+        if (diff <= 0) {
+          el.innerHTML = '<span class="status-past">เสร็จสิ้น</span>';
+          el.classList.remove('countdown-timer');
+          // Hide edit button when time passes
+          const parent = el.closest('.history-item');
+          if(parent) {
+             const btn = parent.querySelector('.edit-btn');
+             if(btn) btn.style.display = 'none';
+          }
+        } else {
+          const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const m = Math.floor((diff / 1000 / 60) % 60);
+          const s = Math.floor((diff / 1000) % 60);
+          el.innerHTML = `<span class="status-future">รอรับคำทำนายอีก: ${d}วัน ${h}ชั่วโมง ${m}นาที ${s}วินาที</span>`;
+        }
+      });
     }, 1000);
 
-    /* ---------------- 3. Auth System (Members & Points) ---------------- */
+    /* ---------------- 3. Auth System & Points ---------------- */
     function toggleAuthMode() {
       const login = $("#loginFormArea");
       const reg = $("#registerFormArea");
@@ -455,7 +521,6 @@
       const u = $("#regUser").value.trim();
       const p = $("#regPass").value.trim();
       const n = $("#regName").value.trim();
-      
       if(!u || !p || !n) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
       if(u.length < 4) return alert("Username ต้องมีอย่างน้อย 4 ตัวอักษร");
 
@@ -463,9 +528,7 @@
         const check = await db.collection("users").where("username", "==", u).get();
         if(!check.empty) return alert("Username นี้มีผู้ใช้งานแล้ว!");
 
-        // Generate 6-digit UID
         const uid = Math.floor(100000 + Math.random() * 900000).toString();
-        
         await db.collection("users").add({
           uid: uid, username: u, password: p, name: n, points: 0, createdAt: new Date()
         });
@@ -484,9 +547,7 @@
       try {
         const snap = await db.collection("users").where("username", "==", u).where("password", "==", p).get();
         if(snap.empty) return alert("Username หรือ Password ไม่ถูกต้อง");
-        
-        const doc = snap.docs[0];
-        setAuthSession(doc.id, doc.data());
+        setAuthSession(snap.docs[0].id, snap.docs[0].data());
       } catch(e) { alert("Error: " + e.message); }
     });
 
@@ -496,18 +557,27 @@
       localStorage.setItem("m_auth", docId);
       document.getElementById("mainContainer").classList.add("logged-in");
       
-      // Update UI
       $("#profileName").textContent = data.name;
       $("#profileUid").textContent = data.uid;
-      $("#profilePoint").textContent = data.points;
+      $("#profilePoint").textContent = data.points || 0;
 
-      // Subscribe to real-time points update
       if(unsubscribeUser) unsubscribeUser();
       unsubscribeUser = db.collection("users").doc(docId).onSnapshot(doc => {
         if(doc.exists) {
           currentUser = doc.data();
-          $("#profilePoint").textContent = currentUser.points;
+          $("#profilePoint").textContent = currentUser.points || 0;
         }
+      });
+
+      if(unsubscribeQueues) unsubscribeQueues();
+      unsubscribeQueues = db.collection("queues").where("uid", "==", data.uid).onSnapshot(snap => {
+        userQueues = [];
+        snap.forEach(doc => {
+          const d = doc.data();
+          const qDate = new Date(`${d.date}T${d.timeSlot}:00`);
+          userQueues.push({ id: doc.id, data: d, targetDate: qDate });
+        });
+        renderHistory();
       });
     }
 
@@ -525,78 +595,95 @@
     function logout() {
       localStorage.removeItem("m_auth");
       if(unsubscribeUser) unsubscribeUser();
-      currentUser = null; currentUserDocId = null;
+      if(unsubscribeQueues) unsubscribeQueues();
+      currentUser = null; currentUserDocId = null; userQueues = [];
       document.getElementById("mainContainer").classList.remove("logged-in");
       $("#loginUser").value = ""; $("#loginPass").value = "";
     }
 
+    /* ---------------- 4. Treasure Box & Point Info ---------------- */
+    async function claimTreasure() {
+      const now = new Date();
+      if(currentUser.lastClaimed) {
+        const last = currentUser.lastClaimed.toDate();
+        if((now - last) < 24 * 60 * 60 * 1000) {
+          return alert("คุณได้รับกล่องสมบัติของวันนี้ไปแล้ว โปรดกลับมาใหม่ในวันพรุ่งนี้");
+        }
+      }
+
+      const rand = Math.random();
+      let pts = (rand < 0.8) ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2) + 4;
+
+      await db.collection("users").doc(currentUserDocId).update({
+        points: firebase.firestore.FieldValue.increment(pts),
+        lastClaimed: new Date()
+      });
+
+      $("#treasureMsg").textContent = `ได้รับแต้มสะสม ${pts} แต้ม!`;
+      $("#treasureModal").classList.add("show");
+    }
+
     function showTopupInfo() {
-      alert("💎 เติม Point ลัดคิว VIP 💎\n\n- 10 บาท = 30 Point\n- 30 บาท = 100 Point\n\nวิธีเติม: แคปหน้าจอนี้ หรือแจ้ง UID ของคุณ ("+currentUser.uid+") ไปที่ IG: @horoscope_1308 แอดมินจะเติมพอยต์ให้ทันที!");
+      alert("💎 เติมแต้มลัดคิว VIP 💎\n\n- 10 บาท = 30 แต้ม\n- 30 บาท = 100 แต้ม\n\nวิธีเติม: แคปหน้าจอนี้ หรือแจ้ง UID ของคุณ ("+currentUser.uid+") ไปที่ IG: @horoscope_1308 แอดมินจะเติมแต้มให้ทันที!");
     }
 
     function updateQueueTypeUI() {
       const type = $("#queueType").value;
       const btn = $("#btnSubmitBook");
       if(type === 'vip') {
-        btn.innerHTML = "✨ ยืนยันลัดคิว VIP (หัก 30 Point) ✨";
+        btn.innerHTML = "✨ ยืนยันลัดคิว VIP (หัก 30 แต้ม / รับ 2 แต้ม) ✨";
         btn.className = "btn btn-vip";
       } else {
-        btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี) ✨";
+        btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี / รับ 2 แต้ม) ✨";
         btn.className = "btn";
       }
     }
 
-    /* ---------------- 4. Booking Logic ---------------- */
+    /* ---------------- 5. Booking Logic ---------------- */
     $("#bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if(!currentUser) return alert("กรุณาเข้าสู่ระบบก่อนจองคิว");
+
+      // Check Active Booking
+      const hasActive = userQueues.some(q => q.targetDate > new Date());
+      if(hasActive) return alert("❌ คุณมีคิวที่กำลังรออยู่แล้ว ระบบอนุญาตให้จองได้รอบละ 1 ครั้งจนกว่าจะดูเสร็จ");
       
       const type = $("#queueType").value;
       const isVip = (type === 'vip');
       
-      if(isVip && currentUser.points < 30) {
-        return alert("Point ของคุณไม่พอสำหรับการลัดคิว (ต้องการ 30 Point)\nกรุณากด 'เติม Point' ด้านบน");
+      if(isVip && (currentUser.points || 0) < 30) {
+        return alert("แต้มสะสมของคุณไม่พอสำหรับการลัดคิว (ต้องการ 30 แต้ม)\nกรุณากด 'เติมแต้ม' ด้านบน");
       }
 
       const payload = {
-        uid: currentUser.uid,
-        name: currentUser.name,
-        realAge: $("#realAge").value.trim(),
-        category: $("#category").value,
-        date: $("#date").value,
-        timeSlot: $("#timeSlot").value,
-        igUsername: $("#igUsername").value.trim(),
-        location: userGeoLocation,
-        isVip: isVip,
-        timestamp: new Date()
+        uid: currentUser.uid, name: currentUser.name, realAge: $("#realAge").value.trim(),
+        category: $("#category").value, date: $("#date").value, timeSlot: $("#timeSlot").value,
+        igUsername: $("#igUsername").value.trim(), location: userGeoLocation,
+        isVip: isVip, editCount: 0, timestamp: new Date()
       };
 
       try {
         const snap = await db.collection("queues").where("date", "==", payload.date).get();
-        // Allow VIP to bypass daily limit, but normal queues are limited
         if (!isVip && snap.docs.filter(d=>!d.data().isVip).length >= 5) {
-          alert("คิวปกติสำหรับวันนี้เต็มแล้ว กรุณาเลือกวันอื่น หรือใช้ระบบลัดคิว VIP");
+          alert("คิวปกติสำหรับวันนี้เต็มแล้ว กรุณาใช้ระบบลัดคิว VIP หรือเลือกวันอื่น");
           return;
         }
 
-        // Generate Ref
         payload.referenceId = (isVip ? "VIP-" : "N-") + Math.random().toString(36).substring(2,8).toUpperCase();
         
-        // Batch write: Add queue + Deduct point if VIP
         const batch = db.batch();
         const queueRef = db.collection("queues").doc();
         batch.set(queueRef, payload);
 
-        if(isVip) {
-          const userRef = db.collection("users").doc(currentUserDocId);
-          batch.update(userRef, { points: firebase.firestore.FieldValue.increment(-30) });
-        }
-
+        // Point calculation: +2 reward. If VIP, cost is 30.
+        let pointDelta = 2;
+        if(isVip) pointDelta -= 30;
+        
+        const userRef = db.collection("users").doc(currentUserDocId);
+        batch.update(userRef, { points: firebase.firestore.FieldValue.increment(pointDelta) });
         await batch.commit();
         
-        payload.id = queueRef.id;
-        currentTicket = payload;
-
+        payload.id = queueRef.id; currentTicket = payload;
         $("#ticketData").innerHTML = `
           <p><b>ผู้ใช้ UID:</b> ${payload.uid} (${payload.name})</p>
           <p><b>ประเภท:</b> <span class="${isVip ? 'vip-text' : ''}">${isVip ? '⭐ VIP ลัดคิว' : 'คิวปกติ'}</span></p>
@@ -605,9 +692,7 @@
         `;
         
         $("#popup").classList.add("show");
-        e.target.reset();
-        updateQueueTypeUI();
-
+        e.target.reset(); updateQueueTypeUI();
       } catch (err) { alert("ขัดข้อง: " + err.message); }
     });
 
@@ -624,49 +709,123 @@
       doc.save(`Ticket_${currentTicket.referenceId}.pdf`);
     });
 
-    /* ---------------- 5. Check Reference ---------------- */
-    $("#btnCheckRef").addEventListener("click", async () => {
-      const ref = $("#refInput").value.trim().toUpperCase();
-      if(!ref) return;
-      $("#refResult").textContent = "กำลังค้นหามิติ...";
-      const snap = await db.collection("queues").where("referenceId","==",ref).get();
-      if(!snap.empty){
-        const d = snap.docs[0].data();
-        const v = d.isVip ? "<span class='vip-text'>[VIP]</span>" : "";
-        $("#refResult").innerHTML = `พบข้อมูล! ${v} คุณ ${d.name} <br>วันที่ ${d.date} เวลา ${d.timeSlot} น.`;
-      } else {
-        $("#refResult").textContent = "ไม่พบรหัสอ้างอิงนี้";
+    /* ---------------- 6. History & Edit Logic ---------------- */
+    function renderHistory() {
+      const list = $("#historyList");
+      if(userQueues.length === 0) {
+        list.innerHTML = `<p class="muted">คุณยังไม่มีประวัติการจองคิว</p>`;
+        return;
       }
-    });
+      
+      list.innerHTML = "";
+      const now = new Date();
+      
+      // Sort by date descending
+      userQueues.sort((a,b) => b.targetDate - a.targetDate).forEach(q => {
+        const d = q.data;
+        const isPast = q.targetDate <= now;
+        const v = d.isVip ? '<span class="vip-text">⭐ ลัดคิว VIP</span>' : 'ฟรี (ปกติ)';
+        const editCnt = d.editCount || 0;
+        
+        let statusHtml = '';
+        let editBtnHtml = '';
 
-    /* ---------------- 6. Admin System ---------------- */
+        if(isPast) {
+          statusHtml = `<span class="status-past">เสร็จสิ้น</span>`;
+        } else {
+          statusHtml = `<span class="countdown-timer status-badge" data-target="${q.targetDate.getTime()}">คำนวณเวลา...</span>`;
+          editBtnHtml = `<button class="btn btn-outline btn-small edit-btn" onclick="openEditModal('${q.id}', ${editCnt})">✏️ แก้ไขเวลาจอง</button>`;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <p><b>วันที่จอง:</b> ${d.date}</p>
+              <p><b>เวลา:</b> ${d.timeSlot} น.</p>
+              <p><b>ประเภท:</b> ${v}</p>
+            </div>
+            <div style="text-align:right;">
+              <p>${statusHtml}</p>
+              ${editBtnHtml}
+            </div>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    window.openEditModal = (queueId, editCount) => {
+      editingQueueId = queueId;
+      editingQueueCount = editCount;
+      const t = document.getElementById("editCostText");
+      if(editCount === 0) {
+        t.textContent = "แก้ไขครั้งแรก: ฟรี! สิทธิ์ของคุณ";
+        t.style.color = "#00ff00";
+      } else {
+        t.textContent = "หัก 15 แต้มสะสม สำหรับการแก้ไขครั้งถัดไป";
+        t.style.color = "#ffaa33";
+      }
+      $("#editQueueModal").classList.add("show");
+    };
+
+    window.saveEditQueue = async () => {
+      const newD = $("#editDate").value;
+      const newT = $("#editTime").value;
+      if(!newD || !newT) return alert("กรุณาเลือกวันที่และเวลาใหม่");
+
+      // Validations
+      const newTarget = new Date(`${newD}T${newT}:00`);
+      if(newTarget <= new Date()) return alert("ไม่สามารถเลือกเวลาในอดีตได้");
+
+      if(editingQueueCount > 0 && (currentUser.points || 0) < 15) {
+        return alert("แต้มสะสมของคุณไม่พอสำหรับการแก้ไข (ต้องการ 15 แต้ม)");
+      }
+
+      try {
+        const batch = db.batch();
+        const qRef = db.collection("queues").doc(editingQueueId);
+        
+        batch.update(qRef, {
+          date: newD,
+          timeSlot: newT,
+          editCount: firebase.firestore.FieldValue.increment(1)
+        });
+
+        if(editingQueueCount > 0) {
+          const uRef = db.collection("users").doc(currentUserDocId);
+          batch.update(uRef, { points: firebase.firestore.FieldValue.increment(-15) });
+        }
+
+        await batch.commit();
+        alert("อัปเดตเวลาจองเรียบร้อยแล้ว!");
+        $("#editQueueModal").classList.remove("show");
+      } catch(e) { alert("เกิดข้อผิดพลาด: " + e.message); }
+    };
+
+    /* ---------------- 7. Admin System ---------------- */
     $("#triggerAdmin").addEventListener("click", () => { $("#adminLoginModal").classList.add("show"); });
     $("#closeAdminBtn").addEventListener("click", () => { $("#adminLoginModal").classList.remove("show"); });
     
     $("#loginAdminBtn").addEventListener("click", () => {
-      const u = $("#adminUser").value;
-      const p = $("#adminPass").value;
-      if (u === 'admin' && p === 'horoscope') {
-        $("#adminLoginModal").classList.remove("show");
-        $("#adminArea").classList.add("active");
-        loadAdminQueues();
-        loadAdminUsers();
+      if ($("#adminUser").value === 'admin' && $("#adminPass").value === 'horoscope') {
+        $("#adminLoginModal").classList.remove("show"); $("#adminArea").classList.add("active");
+        loadAdminQueues(); loadAdminUsers();
         $("#adminUser").value = ""; $("#adminPass").value = "";
         window.scrollTo(0, document.body.scrollHeight);
       } else { alert("รหัสผ่านไม่ถูกต้อง!"); }
     });
 
-    function switchAdminTab(tabId, el) {
+    window.switchAdminTab = (tabId, el) => {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      document.getElementById(tabId).classList.add('active');
+      el.classList.add('active'); document.getElementById(tabId).classList.add('active');
       if(tabId === 'tabUsers') loadAdminUsers();
-    }
+    };
 
     async function loadAdminQueues() {
-      const tbody = $("#adminQueueTable tbody");
-      tbody.innerHTML = "<tr><td colspan='6'>กำลังดึงข้อมูล...</td></tr>";
+      const tbody = $("#adminQueueTable tbody"); tbody.innerHTML = "<tr><td colspan='6'>กำลังดึงข้อมูล...</td></tr>";
       try {
         const snap = await db.collection("queues").orderBy("timestamp", "desc").get();
         tbody.innerHTML = "";
@@ -674,14 +833,12 @@
           const d = doc.data();
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${d.isVip ? '<span class="uid-badge">VIP</span>' : 'ปกติ'}</td>
+            <td>${d.isVip ? '<span class="uid-badge" style="background:var(--vip);color:#000;">VIP</span>' : 'ปกติ'}</td>
             <td>${d.date} <br>${d.timeSlot || '-'}</td>
             <td>${d.uid || '-'}</td>
             <td>${d.name} (อายุ ${d.realAge}) <br><span class="muted">${d.igUsername}</span></td>
             <td>${d.category}</td>
-            <td>
-              <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteQueue('${doc.id}')">ลบ</button>
-            </td>
+            <td><button class="btn btn-danger btn-small" onclick="deleteQueue('${doc.id}')">ลบ</button></td>
           `;
           tbody.appendChild(tr);
         });
@@ -689,8 +846,7 @@
     }
 
     async function loadAdminUsers() {
-      const tbody = $("#adminUserTable tbody");
-      tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูลสมาชิก...</td></tr>";
+      const tbody = $("#adminUserTable tbody"); tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูลสมาชิก...</td></tr>";
       try {
         const snap = await db.collection("users").orderBy("createdAt", "desc").get();
         tbody.innerHTML = "";
@@ -698,38 +854,29 @@
           const d = doc.data();
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td><b>${d.uid}</b></td>
-            <td>${d.username}</td>
-            <td>${d.name}</td>
-            <td style="color:var(--vip); font-weight:bold;">${d.points}</td>
-            <td>
-              <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="adminAddPoints('${doc.id}', '${d.username}', ${d.points})">➕ เพิ่ม Point</button>
-            </td>
+            <td><b>${d.uid}</b></td><td>${d.username}</td><td>${d.name}</td>
+            <td style="color:var(--vip); font-weight:bold;">${d.points || 0}</td>
+            <td><button class="btn btn-outline btn-small" onclick="adminAddPoints('${doc.id}', '${d.username}')">➕ เพิ่มแต้ม</button></td>
           `;
           tbody.appendChild(tr);
         });
       } catch (e) { console.error(e); }
     }
 
-    window.adminAddPoints = async (docId, username, currentPoints) => {
-      const add = prompt(`กรอกจำนวน Point ที่ต้องการเพิ่มให้ [${username}]\n(หากต้องการลบพอยต์ให้ใส่เลขติดลบ เช่น -10):`, "30");
-      if(add === null || add === "") return;
+    window.adminAddPoints = async (docId, username) => {
+      const add = prompt(`กรอกจำนวนแต้มที่ต้องการเพิ่มให้ [${username}]\n(หากต้องการลบให้ใส่เลขติดลบ):`, "30");
+      if(!add) return;
       const pt = parseInt(add);
       if(isNaN(pt)) return alert("ตัวเลขไม่ถูกต้อง");
-      
       try {
-        await db.collection("users").doc(docId).update({
-          points: firebase.firestore.FieldValue.increment(pt)
-        });
-        alert("อัปเดต Point สำเร็จ!");
-        loadAdminUsers(); // refresh
+        await db.collection("users").doc(docId).update({ points: firebase.firestore.FieldValue.increment(pt) });
+        alert("อัปเดตแต้มสำเร็จ!"); loadAdminUsers();
       } catch(e) { alert("Error: " + e.message); }
     };
 
     window.deleteQueue = async (id) => {
       if(confirm("แน่ใจหรือไม่ที่จะลบคิวนี้?")) {
-        await db.collection("queues").doc(id).delete();
-        loadAdminQueues();
+        await db.collection("queues").doc(id).delete(); loadAdminQueues();
       }
     };
   </script>
