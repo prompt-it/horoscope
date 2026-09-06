@@ -2,16 +2,13 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-  <title>ระบบจองคิวดูดวง • แม่หมอ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>ระบบจองคิวดูดวง • แม่หมอ (VIP System)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -22,6 +19,7 @@
       --primary: #c240ff;
       --primary-2: #7b00ff;
       --accent: #ff33c2;
+      --vip: #ffd700;
       --text: #f0e6fa;
       --muted: #a691ba;
       --border: rgba(194, 64, 255, 0.3);
@@ -41,14 +39,16 @@
         linear-gradient(180deg, var(--bg-1), var(--bg-2) 100%);
       background-attachment: fixed;
       overflow-x: hidden;
+      /* Mobile constraint */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    /* ---------- Black Hole Preloader ---------- */
+    /* ---------- Preloader ---------- */
     #preloader {
-      position: fixed; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: #000; z-index: 99999;
-      transition: opacity 1s ease, visibility 1s ease;
+      position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #000; z-index: 99999; transition: opacity 1s ease, visibility 1s ease;
     }
     #preloader.hide { opacity: 0; visibility: hidden; }
     .black-hole {
@@ -62,12 +62,10 @@
       50% { transform: rotate(180deg) scale(1.1); }
       100% { transform: rotate(360deg) scale(1); filter: hue-rotate(90deg); }
     }
-    @keyframes suckIn {
-      to { transform: scale(0); opacity: 0; }
-    }
+    @keyframes suckIn { to { transform: scale(0); opacity: 0; } }
     .loading-text { color: var(--accent); margin-top: 20px; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px var(--accent); }
 
-    /* ---------- Modals (Rules & Admin) ---------- */
+    /* ---------- Modals ---------- */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
       display: none; place-items: center; z-index: 10000; padding: 16px;
@@ -76,10 +74,10 @@
     .modal-content {
       background: linear-gradient(145deg, #1f0b31, #0f0418);
       border: 1px solid var(--accent); border-radius: var(--radius);
-      padding: 24px; text-align: center; max-width: 400px; box-shadow: var(--glow);
+      padding: 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: var(--glow);
     }
     .modal-content h2 { color: #ff3366; margin-top: 0; text-shadow: 0 0 10px red; }
-    .modal-content p { color: #ffd1dc; font-size: 15px; line-height: 1.6; }
+    .modal-content p { color: #ffd1dc; font-size: 14px; line-height: 1.6; }
     .warning-text { color: #ff5555; font-weight: bold; margin-bottom: 20px; }
 
     /* ---------- UI Layout ---------- */
@@ -93,34 +91,29 @@
 
     .logo {
       position: fixed; right: 12px; top: 12px; z-index: 60;
-      width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent);
+      width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent);
       box-shadow: var(--glow); object-fit: cover; background:#fff;
     }
 
-    .wrap { max-width: 600px; margin: 100px auto 60px; padding: 0 16px; }
-    .wrap-wide { max-width: 1200px; }
+    .wrap { width: 100%; max-width: 480px; padding: 80px 16px 60px; }
+    .wrap-wide { max-width: 1000px; }
 
     .card {
       background: var(--card); backdrop-filter: blur(12px);
       border: 1px solid var(--border); box-shadow: var(--glow);
-      border-radius: var(--radius); padding: 24px; margin-bottom: 24px;
+      border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
       position: relative; overflow: hidden;
     }
-    .card::before {
-      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
-      pointer-events: none;
-    }
     
-    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--primary); }
+    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--primary); font-size: 1.3rem;}
     .muted { color: var(--muted); font-size: 13px; }
     .legal-note { font-size: 11px; color: #ff6666; text-align: center; margin-top: 10px; }
 
-    label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 600; font-size: 14px; }
+    label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 600; font-size: 13px; }
     input, select, button {
-      width: 100%; padding: 12px 16px; border-radius: 12px;
+      width: 100%; padding: 10px 14px; border-radius: 10px;
       border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(0,0,0,0.5); color: #fff; font-size: 15px; font-family: inherit;
+      background: rgba(0,0,0,0.5); color: #fff; font-size: 14px; font-family: inherit;
     }
     input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
     
@@ -130,35 +123,51 @@
       letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 51, 194, 0.4);
       margin-top: 10px;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 51, 194, 0.6); filter: brightness(1.2); }
-    .btn:active { transform: translateY(1px); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 51, 194, 0.6); }
     .btn-danger { background: linear-gradient(45deg, #aa0000, #ff3333); box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4); }
+    .btn-vip { background: linear-gradient(45deg, #d4af37, #ffdf00); color: #000; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); text-shadow: none; }
+    .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); box-shadow: none; }
 
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 500px) { .row { grid-template-columns: 1fr; } }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
-    /* ---------- Success / Ticket Popup ---------- */
+    /* ---------- Success Popup ---------- */
     #ticketData { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--accent); }
     #ticketData p { margin: 4px 0; font-size: 14px; }
 
-    /* ---------- Dashboard / Analytics ---------- */
-    .dash-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
-    canvas { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 16px; padding: 10px; }
-    
-    /* ---------- Reviews Section ---------- */
-    .review-box { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border-left: 4px solid var(--accent); margin-bottom: 10px; font-style: italic; }
-    
+    /* ---------- User Auth Section ---------- */
+    .auth-section { display: block; }
+    .main-system { display: none; }
+    .logged-in .auth-section { display: none; }
+    .logged-in .main-system { display: block; }
+
+    .user-profile {
+      background: rgba(255,215,0,0.1); border: 1px solid var(--vip);
+      padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
+    }
+    .user-profile h3 { margin: 0; color: var(--vip); }
+    .uid-badge { background: var(--vip); color: #000; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; }
+    .point-badge { font-size: 18px; font-weight: bold; color: #fff; margin: 10px 0; }
+
     /* ---------- Admin Table ---------- */
     .admin-wrap { display: none; margin-top: 40px; }
     .admin-wrap.active { display: block; }
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .admin-tab { flex: 1; padding: 10px; text-align: center; background: rgba(0,0,0,0.5); cursor: pointer; border-radius: 10px; border: 1px solid var(--border); }
+    .admin-tab.active { background: var(--accent); color: #fff; font-weight: bold; }
+    .admin-content { display: none; }
+    .admin-content.active { display: block; }
+
     .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); }
-    table { width: 100%; min-width: 1000px; border-collapse: collapse; font-size: 13px; }
+    table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 13px; }
     th { background: linear-gradient(90deg, #30005a, #4d004d); padding: 12px; text-align: left; color: var(--accent); position: sticky; top: 0; }
     td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     tr:hover { background: rgba(255,255,255,0.05); }
-    .action-btns button { padding: 6px 10px; font-size: 11px; margin: 2px; width: auto; display: inline-block; }
 
-    .footer-link { text-align: center; margin-top: 40px; opacity: 0.5; font-size: 12px; cursor: pointer; display: block; color: #fff; }
+    .footer-link { text-align: center; margin-top: 20px; opacity: 0.5; font-size: 12px; cursor: pointer; display: block; color: #fff; width: 100%; }
+
+    /* Utility */
+    .vip-text { color: var(--vip); font-weight: bold; }
   </style>
 </head>
 <body>
@@ -170,13 +179,143 @@
 
   <div class="modal-overlay" id="rulesModal">
     <div class="modal-content">
-      <h2>⚠️ กฎเหล็กของทางร้าน ⚠️</h2>
-      <p>ยินดีต้อนรับสู่พื้นที่แห่งโชคชะตา</p>
-      <p>หากทำการจองคิวเรียบร้อยแล้ว <b>คุณต้องแคปหน้าจอใบคิวส่งมายืนยันที่ Instagram ของร้านทันที</b></p>
-      <p class="warning-text">หากตรวจสอบพบว่าจองเล่น หรือไม่ทำตามกฎ<br>ระบบจะทำการ <u>ตัดสิทธิ์การดูดวงในอนาคตทั้งหมด</u> และ <u>บล็อค IP Address</u> ของคุณทันที!</p>
-      <button class="btn" id="acceptRulesBtn">ฉันรับทราบและยอมรับกฎ</button>
+      <h2>⚠️ คำแนะนำการใช้งาน ⚠️</h2>
+      <p style="text-align: left; font-size: 13px;">
+        1. <b>สมัครสมาชิก/เข้าสู่ระบบ</b> ก่อนจองคิว<br>
+        2. <b>คิวปกติ (ฟรี)</b> ดูดวงช่วงเวลา 17:00-20:00 น.<br>
+        3. <b>ลัดคิว (VIP)</b> ใช้ 30 Point เพื่อได้คิวพิเศษและด่วนที่สุด<br>
+        4. <b>เติม Point</b> ติดต่อแอดมิน (10฿ = 30pt / 30฿ = 100pt)<br>
+        5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b>
+      </p>
+      <p class="warning-text">จองเล่น ก่อกวน แบน IP ทันที!</p>
+      <button class="btn" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
     </div>
   </div>
+
+  <div class="modal-overlay" id="popup">
+    <div class="modal-content" style="max-width: 450px;">
+      <h2 style="color: var(--accent);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
+      <p style="color: #ffaa33; font-weight:bold;">🚨 โปรดแคปหน้าจอนี้ทันที 🚨</p>
+      <div id="ticketData"></div>
+      <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
+        📸 แคปแล้ว! ส่งหลักฐานไปที่ IG
+      </button>
+      <button id="btnPdf" class="btn btn-outline" style="margin-top: 10px;">ดาวน์โหลดสำรอง (PDF)</button>
+      <button id="btnClosePopup" class="btn" style="background: #333; margin-top: 10px;">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+
+  <div class="hud" id="hud">
+    <div class="title">สถานะมิติเวลา</div>
+    <div class="item muted" id="queueCount">รอโหลดข้อมูล...</div>
+    <div class="item muted" id="currentTime">--:--:--</div>
+  </div>
+  <img class="logo" src="https://cdn-icons-png.flaticon.com/512/1076/1076829.png" alt="โลโก้"/>
+
+  <main class="wrap" id="mainContainer">
+    
+    <section class="card auth-section" id="loginCard">
+      <h2 class="title">เข้าสู่ระบบ / สมัครสมาชิก</h2>
+      <p class="muted">ต้องเป็นสมาชิกเพื่อเปิดประตูมิติรับคำทำนาย</p>
+      
+      <div id="loginFormArea">
+        <input type="text" id="loginUser" placeholder="ชื่อผู้ใช้งาน (Username)" />
+        <input type="password" id="loginPass" placeholder="รหัสผ่าน" />
+        <button class="btn" id="btnLogin">เข้าสู่ระบบ</button>
+        <button class="btn btn-outline" onclick="toggleAuthMode()">ยังไม่มีบัญชี? สมัครสมาชิก</button>
+      </div>
+
+      <div id="registerFormArea" style="display:none;">
+        <input type="text" id="regUser" placeholder="ตั้งชื่อผู้ใช้งาน (Username)" />
+        <input type="text" id="regName" placeholder="ชื่อเล่นของคุณ" />
+        <input type="password" id="regPass" placeholder="ตั้งรหัสผ่าน" />
+        <button class="btn" id="btnRegister">ยืนยันสมัครสมาชิก</button>
+        <button class="btn btn-outline" onclick="toggleAuthMode()">มีบัญชีแล้ว? เข้าสู่ระบบ</button>
+      </div>
+    </section>
+
+    <div class="main-system">
+      <div class="user-profile">
+        <h3>ยินดีต้อนรับ, <span id="profileName">--</span></h3>
+        <p style="margin:5px 0;">UID: <span class="uid-badge" id="profileUid">------</span></p>
+        <div class="point-badge">💎 Point ของคุณ: <span id="profilePoint" style="color:var(--accent);">0</span></div>
+        <div class="row">
+          <button class="btn btn-vip" onclick="showTopupInfo()">➕ เติม Point</button>
+          <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
+        </div>
+      </div>
+
+      <section class="card">
+        <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
+        <p class="muted">เปิดสัมผัสแห่งดวงดาว ระยะเวลาให้บริการ 17:00-20:00 น.</p>
+        
+        <form id="bookingForm">
+          <div class="row">
+            <div>
+              <label>ประเภทคิว</label>
+              <select id="queueType" onchange="updateQueueTypeUI()">
+                <option value="normal">คิวปกติ (ฟรี)</option>
+                <option value="vip">ลัดคิว VIP (ใช้ 30 Point)</option>
+              </select>
+            </div>
+            <div>
+              <label>หมวดหมู่ที่ต้องการดู</label>
+              <select id="category">
+                <option>ดูดวงส่วนตัวครอบคลุม</option>
+                <option>เจาะลึกความรัก</option>
+                <option>ชี้แนะการงาน/ธุรกิจ</option>
+                <option>การเงินและโชคลาภ</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>เลือกวันที่</label>
+              <input id="date" type="date" required />
+            </div>
+            <div>
+              <label>เลือกเวลา (17:00-20:00)</label>
+              <select id="timeSlot" required>
+                <option value="">-- เลือกเวลา --</option>
+                <option value="17:00">17:00</option>
+                <option value="17:30">17:30</option>
+                <option value="18:00">18:00</option>
+                <option value="18:30">18:30</option>
+                <option value="19:00">19:00</option>
+                <option value="19:30">19:30</option>
+                <option value="20:00">20:00</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>อายุจริง (ปีเต็ม)</label>
+              <input id="realAge" type="number" required min="1" placeholder="เช่น 25" />
+            </div>
+            <div>
+              <label>Instagram ของคุณ</label>
+              <input id="igUsername" type="text" required placeholder="@username" />
+            </div>
+          </div>
+          
+          <p class="legal-note">🔒 ข้อมูลจะถูกเก็บเป็นความลับ IP ถูกบันทึกเพื่อป้องกันการก่อกวน</p>
+          <button type="submit" class="btn" id="btnSubmitBook" style="padding: 16px; font-size: 16px;">✨ ยืนยันการจองคิว (ฟรี) ✨</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2 class="title">🔍 ตรวจสอบใบคิวตัวเอง</h2>
+        <div class="row">
+          <div><input type="text" id="refInput" placeholder="ใส่เลขอ้างอิง (Ref No.)" /></div>
+          <div><button id="btnCheckRef" class="btn" type="button">ตรวจสอบ</button></div>
+        </div>
+        <div id="refResult" class="muted" style="margin-top:12px; font-weight:bold; color:#fff;"></div>
+      </section>
+    </div>
+
+  </main>
 
   <div class="modal-overlay" id="adminLoginModal">
     <div class="modal-content">
@@ -190,146 +329,58 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="popup">
-    <div class="modal-content" style="max-width: 450px;">
-      <h2 style="color: var(--accent);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
-      <p style="color: #ffaa33; font-weight:bold;">🚨 โปรดแคปหน้าจอนี้ทันที 🚨</p>
-      <div id="ticketData"></div>
-      <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
-        📸 แคปแล้ว! ส่งหลักฐานไปที่ IG
-      </button>
-      <button id="btnPdf" class="btn" style="background: transparent; border: 1px solid var(--accent); margin-top: 10px;">ดาวน์โหลดสำรอง (PDF)</button>
-      <button id="btnClosePopup" class="btn" style="background: #333; margin-top: 10px;">ปิดหน้าต่าง</button>
-    </div>
-  </div>
-
-  <div class="hud" id="hud">
-    <div class="title">สถานะมิติเวลา</div>
-    <div class="item muted" id="queueCount">รอโหลดข้อมูล...</div>
-    <div class="item muted" id="currentTime">--:--:--</div>
-  </div>
-  <img class="logo" src="IMG_0920.JPG" alt="โลโก้" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1076/1076829.png'"/>
-
-  <main class="wrap">
-    
-    <section class="card">
-      <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
-      <p class="muted">เปิดสัมผัสแห่งดวงดาว กรุณากรอกข้อมูลตามความจริง (รับ 5 คิว/วัน)</p>
-      
-      <form id="bookingForm">
-        <div class="row">
-          <div>
-            <label>ชื่อจริง - นามสกุล</label>
-            <input id="fullName" type="text" required placeholder="ชื่อ-นามสกุล จริง" />
-          </div>
-          <div>
-            <label>ชื่อเล่น (สำหรับเรียก)</label>
-            <input id="name" type="text" required placeholder="ชื่อเล่น" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>อายุจริง (ปีเต็ม)</label>
-            <input id="realAge" type="number" required min="1" placeholder="เช่น 25" />
-          </div>
-          <div>
-            <label>เบอร์โทรศัพท์จริง</label>
-            <input id="phone" type="tel" required placeholder="08xxxxxxxx" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div style="grid-column: 1 / -1;">
-            <label>อีเมล (สำหรับการยืนยัน)</label>
-            <input id="email" type="email" required placeholder="example@email.com" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>หมวดหมู่ที่ต้องการดู</label>
-            <select id="category">
-              <option>ดูดวงส่วนตัวครอบคลุม</option>
-              <option>เจาะลึกความรัก</option>
-              <option>ชี้แนะการงาน/ธุรกิจ</option>
-              <option>การเงินและโชคลาภ</option>
-              <option>สุขภาพและเคราะห์กรรม</option>
-            </select>
-          </div>
-          <div>
-            <label>เลือกวันที่</label>
-            <input id="date" type="date" required />
-          </div>
-        </div>
-
-        <div class="row">
-          <div style="grid-column: 1 / -1;">
-            <label>Instagram ของคุณ (@username)</label>
-            <input id="igUsername" type="text" required placeholder="@yourusername (จำเป็นต้องกรอก)" />
-          </div>
-        </div>
-        
-        <p class="legal-note">🔒 ข้อมูลทั้งหมดจะถูกเก็บเป็นความลับสุดยอดตามหลักกฎหมาย (PDPA) ทางร้านจะไม่เปิดเผยข้อมูลส่วนตัวของคุณต่อสาธารณะโดยเด็ดขาด การเก็บพิกัดและ IP เป็นไปเพื่อรักษามาตรฐานและป้องกันการจองก่อกวน</p>
-        
-        <button type="submit" class="btn" style="padding: 16px; font-size: 18px;">✨ ยืนยันการจองคิว ✨</button>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2 class="title">สถิติและพลังงานโดยรวม</h2>
-      <p class="muted">วิเคราะห์แนวโน้มผู้เข้ารับการปรึกษา</p>
-      <div class="dash-grid">
-        <canvas id="publicPieChart" height="200"></canvas>
-      </div>
-      
-      <h3 style="color: var(--accent); margin-top: 24px;">รีวิวจากลูกดวง (ล่าสุด)</h3>
-      <div class="review-box">"แม่นมากค่ะ บอกเรื่องอดีตได้ตรงเป๊ะ เหมือนมานั่งอยู่ในใจเลย ขอบคุณที่ให้คำปรึกษาชี้ทางสว่างนะคะ" - K.น้ำ***</div>
-      <div class="review-box">"ตรงจนขนลุกครับ เรื่องงานที่แม่หมอทักว่าจะมีปัญหาเดือนหน้า เกิดขึ้นจริง ตอนนี้ตั้งรับทันแล้วครับ" - K.เอก***</div>
-    </section>
-
-    <section class="card">
-      <h2 class="title">🔍 ตรวจสอบใบคิว</h2>
-      <div class="row">
-        <div><input type="text" id="refInput" placeholder="ใส่เลขอ้างอิง (Ref No.)" /></div>
-        <div><button id="btnCheckRef" class="btn" type="button">ตรวจสอบสถานะ</button></div>
-      </div>
-      <div id="refResult" class="muted" style="margin-top:12px; font-weight:bold; color:#fff;"></div>
-    </section>
-
-  </main>
-
   <main class="wrap wrap-wide admin-wrap" id="adminArea">
     <section class="card">
       <h2 class="title" style="color: red;">🔥 ศูนย์ควบคุม (Admin Dashboard)</h2>
-      <button class="btn btn-danger" onclick="document.getElementById('adminArea').classList.remove('active');">ออกจากระบบ Admin</button>
+      <button class="btn btn-danger" onclick="document.getElementById('adminArea').classList.remove('active');" style="margin-bottom: 15px;">ออกจากระบบ Admin</button>
       
-      <div class="table-responsive" style="margin-top: 20px;">
-        <table id="adminTable">
-          <thead>
-            <tr>
-              <th>วันที่จอง</th>
-              <th>คิวที่</th>
-              <th>Ref.</th>
-              <th>ชื่อ-นามสกุล / ชื่อเล่น</th>
-              <th>อายุ</th>
-              <th>ช่องทางติดต่อ</th>
-              <th>หมวดหมู่</th>
-              <th>พิกัด (Geo)</th>
-              <th>จัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            </tbody>
-        </table>
+      <div class="admin-tabs">
+        <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">จัดการคิว</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">จัดการสมาชิก (Point)</div>
       </div>
+
+      <div id="tabQueues" class="admin-content active">
+        <div class="table-responsive">
+          <table id="adminQueueTable">
+            <thead>
+              <tr>
+                <th>ประเภท</th>
+                <th>วันที่/เวลา</th>
+                <th>UID</th>
+                <th>ชื่อ(IG) / อายุ</th>
+                <th>หมวดหมู่</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tabUsers" class="admin-content">
+        <div class="table-responsive">
+          <table id="adminUserTable">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Username</th>
+                <th>ชื่อเล่น</th>
+                <th>Points 💎</th>
+                <th>จัดการ Point</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
     </section>
   </main>
 
   <span class="footer-link" id="triggerAdmin">© 2024 Horoscope Magic | System Control</span>
 
   <script>
-    /* ---------------- Firebase Config (DO NOT CHANGE) ---------------- */
+    /* ---------------- Firebase Config ---------------- */
     const firebaseConfig = {
       apiKey: "AIzaSyD0o88iBVuKsj-2qgEFlP-V3FwArPHCrkY",
       authDomain: "horoscopequeue.firebaseapp.com",
@@ -346,8 +397,11 @@
     const $ = (sel) => document.querySelector(sel);
     let currentTicket = null;
     let userGeoLocation = "ไม่สามารถระบุได้";
+    let currentUser = null; // Store logged-in user doc data
+    let currentUserDocId = null; 
+    let unsubscribeUser = null; // Snapshot listener for points
 
-    /* ---------------- 1. Preloader & Rules ---------------- */
+    /* ---------------- 1. Setup & Preloader ---------------- */
     window.addEventListener("load", () => {
       let p = 0;
       const el = $("#loading-percent");
@@ -358,216 +412,326 @@
           clearInterval(t);
           setTimeout(() => {
             $("#preloader").classList.add("hide");
-            // Show Strict Rules Popup after loader
-            setTimeout(() => {
-              $("#rulesModal").classList.add("show");
-            }, 500);
-          }, 3500); // Allow black hole animation to finish
+            setTimeout(() => { $("#rulesModal").classList.add("show"); }, 500);
+          }, 3500);
         }
         el.textContent = p + "%";
       }, 300);
 
-      // Try get Geolocation silently for security measures
       if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {
           userGeoLocation = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-        }, () => {
-          userGeoLocation = "ถูกปฏิเสธการเข้าถึงตำแหน่ง";
-        });
+        }, () => { userGeoLocation = "ถูกปฏิเสธ"; });
       }
+
+      checkLocalAuth();
     });
 
-    $("#acceptRulesBtn").addEventListener("click", () => {
-      $("#rulesModal").classList.remove("show");
-    });
+    $("#acceptRulesBtn").addEventListener("click", () => { $("#rulesModal").classList.remove("show"); });
 
-    /* ---------------- 2. Live HUD ---------------- */
+    /* ---------------- 2. System HUD ---------------- */
     db.collection("queues").onSnapshot((snap) => {
       $("#queueCount").textContent = `ดวงวิญญาณในระบบ: ${snap.size} ท่าน`;
-      renderPublicChart(snap.docs.map(d => d.data()));
-      if ($("#adminArea").classList.contains("active")) loadAdminData(); // live update admin
+      if ($("#adminArea").classList.contains("active")) loadAdminQueues();
     });
 
     setInterval(() => {
       const now = new Date().toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-      $("#currentTime").textContent = `เวลามิติปัจจุบัน: ${now}`;
+      $("#currentTime").textContent = `มิติเวลา: ${now}`;
     }, 1000);
 
-    /* ---------------- 3. Booking Logic ---------------- */
+    /* ---------------- 3. Auth System (Members & Points) ---------------- */
+    function toggleAuthMode() {
+      const login = $("#loginFormArea");
+      const reg = $("#registerFormArea");
+      if(login.style.display === "none") {
+        login.style.display = "block"; reg.style.display = "none";
+      } else {
+        login.style.display = "none"; reg.style.display = "block";
+      }
+    }
+
+    $("#btnRegister").addEventListener("click", async () => {
+      const u = $("#regUser").value.trim();
+      const p = $("#regPass").value.trim();
+      const n = $("#regName").value.trim();
+      
+      if(!u || !p || !n) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      if(u.length < 4) return alert("Username ต้องมีอย่างน้อย 4 ตัวอักษร");
+
+      try {
+        const check = await db.collection("users").where("username", "==", u).get();
+        if(!check.empty) return alert("Username นี้มีผู้ใช้งานแล้ว!");
+
+        // Generate 6-digit UID
+        const uid = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        await db.collection("users").add({
+          uid: uid, username: u, password: p, name: n, points: 0, createdAt: new Date()
+        });
+        
+        alert("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
+        toggleAuthMode();
+        $("#regUser").value = ""; $("#regPass").value = ""; $("#regName").value = "";
+      } catch(e) { alert("Error: " + e.message); }
+    });
+
+    $("#btnLogin").addEventListener("click", async () => {
+      const u = $("#loginUser").value.trim();
+      const p = $("#loginPass").value.trim();
+      if(!u || !p) return alert("กรุณากรอกข้อมูล");
+
+      try {
+        const snap = await db.collection("users").where("username", "==", u).where("password", "==", p).get();
+        if(snap.empty) return alert("Username หรือ Password ไม่ถูกต้อง");
+        
+        const doc = snap.docs[0];
+        setAuthSession(doc.id, doc.data());
+      } catch(e) { alert("Error: " + e.message); }
+    });
+
+    function setAuthSession(docId, data) {
+      currentUserDocId = docId;
+      currentUser = data;
+      localStorage.setItem("m_auth", docId);
+      document.getElementById("mainContainer").classList.add("logged-in");
+      
+      // Update UI
+      $("#profileName").textContent = data.name;
+      $("#profileUid").textContent = data.uid;
+      $("#profilePoint").textContent = data.points;
+
+      // Subscribe to real-time points update
+      if(unsubscribeUser) unsubscribeUser();
+      unsubscribeUser = db.collection("users").doc(docId).onSnapshot(doc => {
+        if(doc.exists) {
+          currentUser = doc.data();
+          $("#profilePoint").textContent = currentUser.points;
+        }
+      });
+    }
+
+    async function checkLocalAuth() {
+      const savedId = localStorage.getItem("m_auth");
+      if(savedId) {
+        try {
+          const doc = await db.collection("users").doc(savedId).get();
+          if(doc.exists) setAuthSession(doc.id, doc.data());
+          else localStorage.removeItem("m_auth");
+        } catch(e) { console.log("Auth err"); }
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("m_auth");
+      if(unsubscribeUser) unsubscribeUser();
+      currentUser = null; currentUserDocId = null;
+      document.getElementById("mainContainer").classList.remove("logged-in");
+      $("#loginUser").value = ""; $("#loginPass").value = "";
+    }
+
+    function showTopupInfo() {
+      alert("💎 เติม Point ลัดคิว VIP 💎\n\n- 10 บาท = 30 Point\n- 30 บาท = 100 Point\n\nวิธีเติม: แคปหน้าจอนี้ หรือแจ้ง UID ของคุณ ("+currentUser.uid+") ไปที่ IG: @horoscope_1308 แอดมินจะเติมพอยต์ให้ทันที!");
+    }
+
+    function updateQueueTypeUI() {
+      const type = $("#queueType").value;
+      const btn = $("#btnSubmitBook");
+      if(type === 'vip') {
+        btn.innerHTML = "✨ ยืนยันลัดคิว VIP (หัก 30 Point) ✨";
+        btn.className = "btn btn-vip";
+      } else {
+        btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี) ✨";
+        btn.className = "btn";
+      }
+    }
+
+    /* ---------------- 4. Booking Logic ---------------- */
     $("#bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      if(!currentUser) return alert("กรุณาเข้าสู่ระบบก่อนจองคิว");
       
+      const type = $("#queueType").value;
+      const isVip = (type === 'vip');
+      
+      if(isVip && currentUser.points < 30) {
+        return alert("Point ของคุณไม่พอสำหรับการลัดคิว (ต้องการ 30 Point)\nกรุณากด 'เติม Point' ด้านบน");
+      }
+
       const payload = {
-        fullName: $("#fullName").value.trim(),
-        name: $("#name").value.trim(),
+        uid: currentUser.uid,
+        name: currentUser.name,
         realAge: $("#realAge").value.trim(),
-        phone: $("#phone").value.trim(),
-        email: $("#email").value.trim(),
         category: $("#category").value,
         date: $("#date").value,
+        timeSlot: $("#timeSlot").value,
         igUsername: $("#igUsername").value.trim(),
         location: userGeoLocation,
+        isVip: isVip,
         timestamp: new Date()
       };
 
       try {
         const snap = await db.collection("queues").where("date", "==", payload.date).get();
-        if (snap.size >= 5) {
-          alert("พลังงานของวันนี้เต็มแล้ว (5 คิว) กรุณาเลือกวันอื่นค่ะ");
+        // Allow VIP to bypass daily limit, but normal queues are limited
+        if (!isVip && snap.docs.filter(d=>!d.data().isVip).length >= 5) {
+          alert("คิวปกติสำหรับวันนี้เต็มแล้ว กรุณาเลือกวันอื่น หรือใช้ระบบลัดคิว VIP");
           return;
         }
 
-        payload.queueNumber = snap.size + 1;
-        payload.referenceId = Math.random().toString(36).substring(2,10).toUpperCase();
+        // Generate Ref
+        payload.referenceId = (isVip ? "VIP-" : "N-") + Math.random().toString(36).substring(2,8).toUpperCase();
         
-        const docRef = await db.collection("queues").add(payload);
-        payload.id = docRef.id;
+        // Batch write: Add queue + Deduct point if VIP
+        const batch = db.batch();
+        const queueRef = db.collection("queues").doc();
+        batch.set(queueRef, payload);
+
+        if(isVip) {
+          const userRef = db.collection("users").doc(currentUserDocId);
+          batch.update(userRef, { points: firebase.firestore.FieldValue.increment(-30) });
+        }
+
+        await batch.commit();
+        
+        payload.id = queueRef.id;
         currentTicket = payload;
 
         $("#ticketData").innerHTML = `
-          <p><b>ชื่อเล่น:</b> ${payload.name} (อายุ ${payload.realAge})</p>
-          <p><b>หมวดหมู่:</b> ${payload.category}</p>
-          <p><b>วันที่ดูดวง:</b> ${payload.date}</p>
-          <p style="color:var(--accent); font-size:18px; font-weight:bold;"><b>คิวที่:</b> ${payload.queueNumber}</p>
-          <p><b>เลขอ้างอิง (Ref):</b> ${payload.referenceId}</p>
-          <p style="font-size: 11px; color: gray;">IP/Location Logged for Security</p>
+          <p><b>ผู้ใช้ UID:</b> ${payload.uid} (${payload.name})</p>
+          <p><b>ประเภท:</b> <span class="${isVip ? 'vip-text' : ''}">${isVip ? '⭐ VIP ลัดคิว' : 'คิวปกติ'}</span></p>
+          <p><b>วันที่-เวลา:</b> ${payload.date} [${payload.timeSlot} น.]</p>
+          <p><b>Ref:</b> ${payload.referenceId}</p>
         `;
         
         $("#popup").classList.add("show");
         e.target.reset();
+        updateQueueTypeUI();
 
-      } catch (err) {
-        alert("เกิดคลื่นรบกวนขัดข้อง: " + err.message);
-      }
+      } catch (err) { alert("ขัดข้อง: " + err.message); }
     });
 
-    $("#btnIG").addEventListener("click", () => {
-      window.open("https://www.instagram.com/horoscope_1308?igsh=c3JkdDJxYzE4cXUx", "_blank");
-    });
-    
-    $("#btnClosePopup").addEventListener("click", () => {
-      $("#popup").classList.remove("show");
-    });
-
+    $("#btnIG").addEventListener("click", () => { window.open("https://www.instagram.com/horoscope_1308", "_blank"); });
+    $("#btnClosePopup").addEventListener("click", () => { $("#popup").classList.remove("show"); });
     $("#btnPdf").addEventListener("click", () => {
       if(!currentTicket) return;
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       doc.text("--- Horoscope Ticket ---", 10, 10);
-      doc.text(`Ref: ${currentTicket.referenceId}`, 10, 20);
-      doc.text(`Name: ${currentTicket.name}`, 10, 30);
-      doc.text(`Date: ${currentTicket.date} | Queue: ${currentTicket.queueNumber}`, 10, 40);
+      doc.text(`Ref: ${currentTicket.referenceId} (${currentTicket.isVip ? 'VIP' : 'NORMAL'})`, 10, 20);
+      doc.text(`Name: ${currentTicket.name} (UID: ${currentTicket.uid})`, 10, 30);
+      doc.text(`Datetime: ${currentTicket.date} @ ${currentTicket.timeSlot}`, 10, 40);
       doc.save(`Ticket_${currentTicket.referenceId}.pdf`);
     });
 
-    /* ---------------- 4. Check Reference ---------------- */
+    /* ---------------- 5. Check Reference ---------------- */
     $("#btnCheckRef").addEventListener("click", async () => {
       const ref = $("#refInput").value.trim().toUpperCase();
       if(!ref) return;
-      $("#refResult").textContent = "กำลังค้นหาในมิติ...";
+      $("#refResult").textContent = "กำลังค้นหามิติ...";
       const snap = await db.collection("queues").where("referenceId","==",ref).get();
       if(!snap.empty){
         const d = snap.docs[0].data();
-        $("#refResult").innerHTML = `พบข้อมูล! คุณ ${d.name} <br>คิวที่ ${d.queueNumber} วันที่ ${d.date} <br>สถานะ: รอรับคำทำนาย`;
+        const v = d.isVip ? "<span class='vip-text'>[VIP]</span>" : "";
+        $("#refResult").innerHTML = `พบข้อมูล! ${v} คุณ ${d.name} <br>วันที่ ${d.date} เวลา ${d.timeSlot} น.`;
       } else {
-        $("#refResult").textContent = "ไม่พบรหัสอ้างอิงนี้ในระบบ";
+        $("#refResult").textContent = "ไม่พบรหัสอ้างอิงนี้";
       }
     });
 
-    /* ---------------- 5. Public Analytics ---------------- */
-    let publicPie;
-    function renderPublicChart(dataArr) {
-      const catMap = {};
-      dataArr.forEach(d => { catMap[d.category] = (catMap[d.category]||0)+1; });
-      
-      const ctx = $("#publicPieChart").getContext('2d');
-      if(publicPie) publicPie.destroy();
-      
-      publicPie = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(catMap),
-          datasets: [{
-            data: Object.values(catMap),
-            backgroundColor: ['#c240ff','#ff33c2','#7b00ff','#ff6666','#4d004d'],
-            borderColor: '#190924',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          plugins: {
-            legend: { position: 'right', labels: { color: '#fff', font: {family:'Sarabun'} } }
-          }
-        }
-      });
-    }
-
     /* ---------------- 6. Admin System ---------------- */
-    $("#triggerAdmin").addEventListener("click", () => {
-      $("#adminLoginModal").classList.add("show");
-    });
-    $("#closeAdminBtn").addEventListener("click", () => {
-      $("#adminLoginModal").classList.remove("show");
-    });
+    $("#triggerAdmin").addEventListener("click", () => { $("#adminLoginModal").classList.add("show"); });
+    $("#closeAdminBtn").addEventListener("click", () => { $("#adminLoginModal").classList.remove("show"); });
+    
     $("#loginAdminBtn").addEventListener("click", () => {
       const u = $("#adminUser").value;
       const p = $("#adminPass").value;
       if (u === 'admin' && p === 'horoscope') {
         $("#adminLoginModal").classList.remove("show");
         $("#adminArea").classList.add("active");
-        loadAdminData();
+        loadAdminQueues();
+        loadAdminUsers();
         $("#adminUser").value = ""; $("#adminPass").value = "";
         window.scrollTo(0, document.body.scrollHeight);
-      } else {
-        alert("รหัสผ่านไม่ถูกต้อง!");
-      }
+      } else { alert("รหัสผ่านไม่ถูกต้อง!"); }
     });
 
-    async function loadAdminData() {
-      const tbody = $("#adminTable tbody");
-      tbody.innerHTML = "<tr><td colspan='9' style='text-align:center;'>กำลังดึงข้อมูล...</td></tr>";
+    function switchAdminTab(tabId, el) {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      if(tabId === 'tabUsers') loadAdminUsers();
+    }
+
+    async function loadAdminQueues() {
+      const tbody = $("#adminQueueTable tbody");
+      tbody.innerHTML = "<tr><td colspan='6'>กำลังดึงข้อมูล...</td></tr>";
       try {
-        const snap = await db.collection("queues").orderBy("date", "desc").get();
+        const snap = await db.collection("queues").orderBy("timestamp", "desc").get();
         tbody.innerHTML = "";
         snap.forEach(doc => {
           const d = doc.data();
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${d.date}</td>
-            <td><b>${d.queueNumber}</b></td>
-            <td>${d.referenceId}</td>
-            <td>${d.fullName} <br><span class="muted">(${d.name})</span></td>
-            <td>${d.realAge}</td>
-            <td>${d.phone} <br><span class="muted">${d.igUsername}</span></td>
+            <td>${d.isVip ? '<span class="uid-badge">VIP</span>' : 'ปกติ'}</td>
+            <td>${d.date} <br>${d.timeSlot || '-'}</td>
+            <td>${d.uid || '-'}</td>
+            <td>${d.name} (อายุ ${d.realAge}) <br><span class="muted">${d.igUsername}</span></td>
             <td>${d.category}</td>
-            <td style="font-size:10px;">${d.location || '-'}</td>
-            <td class="action-btns">
-              <button class="btn" style="background:#ff9900; padding:4px 8px;" onclick="editQueue('${doc.id}')">แก้ไข</button>
-              <button class="btn btn-danger" style="padding:4px 8px;" onclick="deleteQueue('${doc.id}')">ลบ</button>
+            <td>
+              <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteQueue('${doc.id}')">ลบ</button>
             </td>
           `;
           tbody.appendChild(tr);
         });
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
     }
 
+    async function loadAdminUsers() {
+      const tbody = $("#adminUserTable tbody");
+      tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูลสมาชิก...</td></tr>";
+      try {
+        const snap = await db.collection("users").orderBy("createdAt", "desc").get();
+        tbody.innerHTML = "";
+        snap.forEach(doc => {
+          const d = doc.data();
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><b>${d.uid}</b></td>
+            <td>${d.username}</td>
+            <td>${d.name}</td>
+            <td style="color:var(--vip); font-weight:bold;">${d.points}</td>
+            <td>
+              <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="adminAddPoints('${doc.id}', '${d.username}', ${d.points})">➕ เพิ่ม Point</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    window.adminAddPoints = async (docId, username, currentPoints) => {
+      const add = prompt(`กรอกจำนวน Point ที่ต้องการเพิ่มให้ [${username}]\n(หากต้องการลบพอยต์ให้ใส่เลขติดลบ เช่น -10):`, "30");
+      if(add === null || add === "") return;
+      const pt = parseInt(add);
+      if(isNaN(pt)) return alert("ตัวเลขไม่ถูกต้อง");
+      
+      try {
+        await db.collection("users").doc(docId).update({
+          points: firebase.firestore.FieldValue.increment(pt)
+        });
+        alert("อัปเดต Point สำเร็จ!");
+        loadAdminUsers(); // refresh
+      } catch(e) { alert("Error: " + e.message); }
+    };
+
     window.deleteQueue = async (id) => {
-      if(confirm("แน่ใจหรือไม่ที่จะลบคิวนี้? (ลบแล้วกู้คืนไม่ได้)")) {
+      if(confirm("แน่ใจหรือไม่ที่จะลบคิวนี้?")) {
         await db.collection("queues").doc(id).delete();
-        loadAdminData();
+        loadAdminQueues();
       }
     };
-
-    window.editQueue = async (id) => {
-      const newDate = prompt("แก้ไขวันที่ (YYYY-MM-DD):");
-      if(newDate) {
-        await db.collection("queues").doc(id).update({ date: newDate });
-        loadAdminData();
-      }
-    };
-
   </script>
 </body>
 </html>
