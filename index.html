@@ -13,17 +13,18 @@
 
   <style>
     :root {
-      --bg-1: #030005;
-      --bg-2: #0e0017;
-      --card: rgba(10, 0, 15, 0.85);
-      --primary: #a600ff;
-      --primary-2: #6b00b3;
-      --accent: #d78aff;
-      --vip: #ffd700;
-      --text: #ffffff;
-      --muted: #bda6cc;
-      --border: rgba(166, 0, 255, 0.4);
-      --glow: 0 0 15px rgba(166, 0, 255, 0.5), 0 0 30px rgba(107, 0, 179, 0.3);
+      --bg-1: #05020a;
+      --bg-2: #12051f;
+      --card: rgba(18, 8, 30, 0.88);
+      --primary: #8a2be2;
+      --primary-2: #4b0082;
+      --accent: #d8bfd8;
+      --gold: #ffd700;
+      --gold-light: #ffea75;
+      --text: #f8f5fc;
+      --muted: #b8a9c9;
+      --border: rgba(216, 191, 216, 0.25);
+      --glow: 0 0 20px rgba(138, 43, 226, 0.4), 0 0 40px rgba(75, 0, 130, 0.2);
       --radius: 20px;
     }
 
@@ -34,8 +35,8 @@
       font-family: 'Sarabun', sans-serif;
       color: var(--text);
       background: 
-        radial-gradient(circle at 50% 0%, #1a0033 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, #26004d 0%, transparent 50%),
+        radial-gradient(circle at 50% 0%, #240a3a 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, #150024 0%, transparent 60%),
         linear-gradient(180deg, var(--bg-1), var(--bg-2) 100%);
       background-attachment: fixed;
       overflow-x: hidden;
@@ -52,53 +53,57 @@
     #preloader.hide { opacity: 0; visibility: hidden; }
     .black-hole {
       width: 150px; height: 150px; border-radius: 50%;
-      background: radial-gradient(circle, #000 40%, var(--primary-2) 80%, var(--accent) 100%);
-      box-shadow: 0 0 50px var(--primary-2), 0 0 100px var(--accent), inset 0 0 30px #000;
+      background: radial-gradient(circle, #000 30%, var(--primary-2) 70%, var(--gold) 100%);
+      box-shadow: 0 0 40px var(--primary), 0 0 80px var(--gold), inset 0 0 30px #000;
       animation: vortex 2s linear infinite, suckIn 1s forwards 2.5s;
     }
     @keyframes vortex {
       0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
-      50% { transform: rotate(180deg) scale(1.1); }
-      100% { transform: rotate(360deg) scale(1); filter: hue-rotate(90deg); }
+      50% { transform: rotate(180deg) scale(1.08); }
+      100% { transform: rotate(360deg) scale(1); filter: hue-rotate(60deg); }
     }
     @keyframes suckIn { to { transform: scale(0); opacity: 0; } }
-    .loading-text { color: var(--accent); margin-top: 20px; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px var(--accent); }
+    .loading-text { color: var(--gold); margin-top: 20px; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px var(--gold); }
 
     /* ---------- Modals ---------- */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
-      display: none; place-items: center; z-index: 10000; padding: 16px;
+      position: fixed; inset: 0; background: rgba(5,2,10,0.92); backdrop-filter: blur(12px);
+      display: none; place-items: center; z-index: 10000; padding: 16px; overflow-y: auto;
     }
     .modal-overlay.show { display: grid; }
     .modal-content {
-      background: linear-gradient(145deg, #160024, #08000d);
-      border: 1px solid var(--accent); border-radius: var(--radius);
-      padding: 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: var(--glow);
+      background: linear-gradient(145deg, #1f0d33, #0a0314);
+      border: 1px solid var(--gold); border-radius: var(--radius);
+      padding: 24px; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 0 30px rgba(255,215,0,0.25), var(--glow);
+      position: relative; max-height: 90vh; overflow-y: auto;
     }
-    .modal-content h2 { color: var(--accent); margin-top: 0; text-shadow: 0 0 10px var(--primary); }
-    .modal-content p { color: #f0e6fa; font-size: 14px; line-height: 1.6; }
-    .warning-text { color: #ff5555; font-weight: bold; margin-bottom: 20px; }
+    .modal-content h2 { color: var(--gold); margin-top: 0; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+    .modal-content p { color: var(--text); font-size: 14px; line-height: 1.6; }
+    .close-modal-x {
+      position: absolute; right: 15px; top: 15px; background: none; border: none;
+      color: var(--gold); font-size: 22px; cursor: pointer; width: auto; padding: 0;
+    }
 
     /* ---------- UI Layout ---------- */
     .hud {
       position: fixed; left: 12px; top: 12px; z-index: 60;
-      background: rgba(0,0,0,0.8); border: 1px solid var(--border); box-shadow: var(--glow);
+      background: rgba(18,8,30,0.85); border: 1px solid var(--border); box-shadow: var(--glow);
       border-radius: 12px; padding: 10px; min-width: 200px; backdrop-filter: blur(8px);
     }
-    .hud .title { font-weight: 700; font-size: 12px; color: var(--accent); }
+    .hud .title { font-weight: 700; font-size: 12px; color: var(--gold); }
     .hud .item { font-size: 12px; margin-top: 6px; }
 
     .logo {
       position: fixed; right: 12px; top: 12px; z-index: 60;
-      width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent);
-      box-shadow: var(--glow); object-fit: cover; background:#fff;
+      width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold);
+      box-shadow: 0 0 15px rgba(255,215,0,0.5); object-fit: cover; background:#fff;
     }
 
     .wrap { width: 100%; max-width: 480px; padding: 80px 16px 60px; }
     .wrap-wide { max-width: 1000px; }
 
     .card {
-      background: var(--card); backdrop-filter: blur(12px);
+      background: var(--card); backdrop-filter: blur(14px);
       border: 1px solid var(--border); box-shadow: var(--glow);
       border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
       position: relative; overflow: hidden;
@@ -106,117 +111,134 @@
     
     h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--primary); font-size: 1.3rem;}
     .muted { color: var(--muted); font-size: 13px; }
-    .legal-note { font-size: 11px; color: #ff6666; text-align: center; margin-top: 10px; }
 
-    label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 600; font-size: 13px; }
-    input, select, button {
+    label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 600; font-size: 13px; text-align: left; }
+    input, select, textarea, button {
       width: 100%; padding: 10px 14px; border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid rgba(216,191,216,0.3);
       background: rgba(0,0,0,0.6); color: #fff; font-size: 14px; font-family: inherit;
     }
-    input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
     
     .btn {
       background: linear-gradient(45deg, var(--primary-2), var(--primary));
       color: #fff; border: none; cursor: pointer; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(166, 0, 255, 0.4);
+      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
       margin-top: 10px;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(166, 0, 255, 0.6); }
-    .btn-danger { background: linear-gradient(45deg, #aa0000, #ff3333); box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4); }
-    .btn-vip { background: linear-gradient(45deg, #d4af37, #ffdf00); color: #000; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); text-shadow: none; }
-    .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); box-shadow: none; }
-    .btn-small { padding: 6px 12px; font-size: 12px; margin-top: 5px; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4); border-color: var(--gold); }
+    .btn-danger { background: linear-gradient(45deg, #660000, #cc0000); box-shadow: 0 4px 15px rgba(204, 0, 0, 0.4); }
+    .btn-gold { background: linear-gradient(45deg, #b8860b, var(--gold)); color: #12051f; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); text-shadow: none; font-weight: 800; }
+    .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); box-shadow: none; }
+    .btn-small { padding: 6px 12px; font-size: 12px; margin-top: 5px; width: auto; }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
     /* ---------- Success Popup ---------- */
-    #ticketData { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--accent); }
+    #ticketData { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--gold); }
     #ticketData p { margin: 4px 0; font-size: 14px; }
 
-    /* ---------- User Auth Section ---------- */
+    /* ---------- User Auth & Profile ---------- */
     .auth-section { display: block; }
     .main-system { display: none; }
     .logged-in .auth-section { display: none; }
     .logged-in .main-system { display: block; }
 
     .user-profile {
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-      padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
-      position: relative; overflow: hidden;
+      background: rgba(255,215,0,0.04); border: 1px solid var(--border);
+      padding: 20px 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
     }
-    .user-profile h3 { margin: 0; color: #fff; }
-    .uid-badge { background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; }
-    .point-badge { font-size: 18px; font-weight: bold; color: #fff; margin: 10px 0; }
+    .avatar-container {
+      position: relative; width: 90px; height: 90px; margin: 0 auto 12px;
+    }
+    .user-avatar {
+      width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold);
+      object-fit: cover; background: #222; box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+    .avatar-upload-label {
+      position: absolute; bottom: 0; right: 0; background: var(--primary); color: #fff;
+      border-radius: 50%; width: 28px; height: 28px; display: grid; place-items: center;
+      font-size: 12px; cursor: pointer; border: 1px solid var(--gold);
+    }
+    .user-profile h3 { margin: 0; color: #fff; font-size: 1.2rem; }
+    .uid-badge { background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: 1px solid var(--gold); }
+    .point-badge { font-size: 18px; font-weight: bold; color: var(--gold); margin: 10px 0; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+
+    .profile-info-box {
+      background: rgba(0,0,0,0.4); border: 1px solid rgba(216,191,216,0.15);
+      border-radius: 10px; padding: 12px; margin: 12px 0; text-align: left; font-size: 13px;
+    }
+    .profile-info-box p { margin: 4px 0; }
 
     /* ---------- History List ---------- */
     .history-item {
-      background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px; padding: 12px; margin-bottom: 10px;
+      background: rgba(0,0,0,0.5); border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
-    .history-item p { margin: 4px 0; font-size: 13px; }
+    .history-item p { margin: 5px 0; font-size: 13px; }
     .status-badge { font-weight: bold; }
-    .status-past { color: #00ff00; }
-    .status-future { color: #ffaa33; }
+    .status-past { color: #00ffaa; text-shadow: 0 0 8px rgba(0,255,170,0.4); }
+    .status-future { color: var(--gold); text-shadow: 0 0 8px rgba(255,215,0,0.4); }
 
-    /* ---------- Admin Table ---------- */
-    .admin-wrap { display: none; margin-top: 40px; }
-    .admin-wrap.active { display: block; }
-    .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-    .admin-tab { flex: 1; padding: 10px; text-align: center; background: rgba(0,0,0,0.5); cursor: pointer; border-radius: 10px; border: 1px solid var(--border); }
-    .admin-tab.active { background: var(--primary); color: #fff; font-weight: bold; }
+    /* ---------- Admin Table in Popup ---------- */
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+    .admin-tab { flex: 1; padding: 8px; text-align: center; background: rgba(0,0,0,0.6); cursor: pointer; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; }
+    .admin-tab.active { background: var(--primary); color: var(--gold); font-weight: bold; border-color: var(--gold); }
     .admin-content { display: none; }
     .admin-content.active { display: block; }
 
-    .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); }
-    table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 13px; }
-    th { background: linear-gradient(90deg, #1a0033, #26004d); padding: 12px; text-align: left; color: var(--accent); position: sticky; top: 0; }
-    td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.6); max-height: 350px; }
+    table { width: 100%; min-width: 750px; border-collapse: collapse; font-size: 12px; }
+    th { background: linear-gradient(90deg, #1f0d33, #240a3a); padding: 10px; text-align: left; color: var(--gold); position: sticky; top: 0; z-index: 2; }
+    td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
     tr:hover { background: rgba(255,255,255,0.05); }
 
-    .footer-link { text-align: center; margin-top: 20px; opacity: 0.5; font-size: 12px; cursor: pointer; display: block; color: #fff; width: 100%; }
-    .vip-text { color: var(--vip); font-weight: bold; }
+    .footer-link { text-align: center; margin-top: 20px; opacity: 0.6; font-size: 12px; cursor: pointer; display: block; color: var(--gold); width: 100%; }
+    .vip-text { color: var(--gold); font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div id="preloader">
     <div class="black-hole"></div>
-    <div class="loading-text">กำลังเชื่อมต่อพลังงานจักรวาล... <span id="loading-percent">0%</span></div>
+    <div class="loading-text">กำลังเปิดประตูมิติแห่งโชคชะตา... <span id="loading-percent">0%</span></div>
   </div>
 
   <div class="modal-overlay" id="rulesModal">
     <div class="modal-content">
       <h2>⚠️ คำแนะนำการใช้งาน ⚠️</h2>
       <p style="text-align: left; font-size: 13px;">
-        1. <b>คิวปกติ (ฟรี)</b> ให้บริการ 17:00-20:00 น.<br>
-        2. <b>แต้มสะสม</b> ดูดวง 1 ครั้ง รับฟรี 2 แต้ม<br>
-        3. <b>ลัดคิว (VIP)</b> ใช้ 30 แต้มสะสม เพื่อคิวด่วนที่สุด<br>
-        4. <b>สุ่มแจกฟรี</b> กดรับกล่องสมบัติได้ทุกๆ 24 ชั่วโมง<br>
+        1. <b>คิวปกติ</b> ให้บริการช่วงเวลา 17:00-20:00 น. (รับ 3 แต้ม)<br>
+        2. <b>ลัดคิว VIP</b> ใช้ 30 แต้มสะสม (รับ 6 แต้มหลังดูเสร็จ)<br>
+        3. <b>กล่องสมบัติรายวัน</b> สุ่มรับแต้มสะสมฟรี ทุก 24 ชั่วโมง<br>
+        4. <b>การแก้ไขข้อมูลส่วนตัว</b> แก้ไขฟรีได้ 1 ครั้ง ครั้งถัดไปติดต่อแอดมิน<br>
         5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b>
       </p>
-      <button class="btn" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
+      <button class="btn btn-gold" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
     </div>
   </div>
 
   <!-- Popup Treasure -->
   <div class="modal-overlay" id="treasureModal">
     <div class="modal-content">
-      <h2 style="color: #ffd700;">🎉 ยินดีด้วย! 🎉</h2>
-      <p id="treasureMsg" style="font-size: 18px; font-weight: bold;"></p>
-      <button class="btn" onclick="document.getElementById('treasureModal').classList.remove('show')">รับรางวัล</button>
+      <h2>🎁 กล่องสมบัติจักรวาล 🎁</h2>
+      <p id="treasureMsg" style="font-size: 18px; font-weight: bold; color: var(--gold); margin: 20px 0;"></p>
+      <button class="btn btn-gold" onclick="document.getElementById('treasureModal').classList.remove('show')">รับรางวัล</button>
     </div>
   </div>
 
-  <!-- Popup Edit Queue -->
+  <!-- Popup Edit Queue Time -->
   <div class="modal-overlay" id="editQueueModal">
     <div class="modal-content">
+      <button class="close-modal-x" onclick="document.getElementById('editQueueModal').classList.remove('show')">&times;</button>
       <h2>⏳ แก้ไขเวลาจองคิว</h2>
-      <p id="editCostText" style="color:var(--vip); font-weight:bold;"></p>
+      <p id="editCostText" style="color:var(--gold); font-weight:bold; margin-bottom:15px;"></p>
+      <label>เลือกวันที่ใหม่</label>
       <input type="date" id="editDate" required style="margin-bottom: 10px;" />
-      <select id="editTime" required>
-        <option value="">-- เลือกเวลาใหม่ --</option>
+      <label>เลือกเวลาใหม่</label>
+      <select id="editTime" required style="margin-bottom: 15px;">
+        <option value="">-- เลือกเวลา --</option>
         <option value="17:00">17:00</option>
         <option value="17:30">17:30</option>
         <option value="18:00">18:00</option>
@@ -225,17 +247,38 @@
         <option value="19:30">19:30</option>
         <option value="20:00">20:00</option>
       </select>
-      <div class="row" style="margin-top: 15px;">
-        <button class="btn" onclick="saveEditQueue()">ยืนยัน</button>
+      <div class="row">
+        <button class="btn btn-gold" onclick="saveEditQueue()">ยืนยันการแก้ไข</button>
         <button class="btn btn-danger" onclick="document.getElementById('editQueueModal').classList.remove('show')">ยกเลิก</button>
       </div>
     </div>
   </div>
 
+  <!-- Popup Edit User Profile (Member side) -->
+  <div class="modal-overlay" id="editProfileModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="document.getElementById('editProfileModal').classList.remove('show')">&times;</button>
+      <h2>✏️ แก้ไขข้อมูลส่วนตัว</h2>
+      <p id="profileEditNote" class="muted" style="margin-bottom: 10px;"></p>
+      <label>ชื่อจริง - นามสกุลจริง</label>
+      <input type="text" id="upFullName" placeholder="ชื่อ-นามสกุลจริง" />
+      <label>เบอร์โทรศัพท์จริง</label>
+      <input type="text" id="upPhone" placeholder="08xxxxxxxx" />
+      <label>วันเดือนปีเกิดจริง</label>
+      <input type="date" id="upDob" />
+      <div class="row" style="margin-top: 15px;">
+        <button class="btn btn-gold" onclick="saveUserProfileEdit()">บันทึกข้อมูล</button>
+        <button class="btn btn-danger" onclick="document.getElementById('editProfileModal').classList.remove('show')">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup Success Ticket -->
   <div class="modal-overlay" id="popup">
     <div class="modal-content" style="max-width: 450px;">
-      <h2 style="color: var(--accent);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
-      <p style="color: #ffaa33; font-weight:bold;">🚨 โปรดแคปหน้าจอนี้ทันที 🚨</p>
+      <button class="close-modal-x" onclick="$('#popup').classList.remove('show')">&times;</button>
+      <h2 style="color: var(--gold);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
+      <p style="color: var(--gold); font-weight:bold;">🚨 โปรดแคปหน้าจอนี้ทันที 🚨</p>
       <div id="ticketData"></div>
       <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #cc2366);">
         📸 แคปแล้ว! ส่งหลักฐานไปที่ IG
@@ -245,6 +288,85 @@
     </div>
   </div>
 
+  <!-- Popup Admin Dashboard -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-content" style="max-width: 900px; width: 95%;">
+      <button class="close-modal-x" onclick="$('#adminModal').classList.remove('show')">&times;</button>
+      <h2 style="color: #ff4d4d; margin-bottom: 15px;">🔥 ศูนย์ควบคุมแอดมิน (Admin Dashboard)</h2>
+      
+      <div class="admin-tabs">
+        <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">จัดการคิวทั้งหมด</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">จัดการสมาชิกทั้งหมด</div>
+      </div>
+
+      <div id="tabQueues" class="admin-content active">
+        <div class="table-responsive">
+          <table id="adminQueueTable">
+            <thead>
+              <tr>
+                <th>ประเภท</th>
+                <th>วันที่/เวลา</th>
+                <th>UID</th>
+                <th>ชื่อ(IG)</th>
+                <th>หมวดหมู่</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tabUsers" class="admin-content">
+        <div class="table-responsive">
+          <table id="adminUserTable">
+            <thead>
+              <tr>
+                <th>UID / Username</th>
+                <th>ชื่อ-นามสกุลจริง</th>
+                <th>เบอร์โทร</th>
+                <th>วันเกิด / อายุ</th>
+                <th>แต้ม 💎</th>
+                <th>พิกัด GPS</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <button class="btn btn-danger" style="margin-top: 15px;" onclick="$('#adminModal').classList.remove('show')">ปิดหน้าต่างแอดมิน</button>
+    </div>
+  </div>
+
+  <!-- Popup Admin Edit User Full Data -->
+  <div class="modal-overlay" id="adminEditUserModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="$('#adminEditUserModal').classList.remove('show')">&times;</button>
+      <h2>⚙️ แอดมินแก้ไขข้อมูลสมาชิก</h2>
+      <input type="hidden" id="admEditDocId" />
+      <label>Username</label>
+      <input type="text" id="admEditUsername" readonly style="opacity: 0.7;" />
+      <label>ชื่อเล่น</label>
+      <input type="text" id="admEditName" />
+      <label>ชื่อ-นามสกุลจริง</label>
+      <input type="text" id="admEditFullName" />
+      <label>เบอร์โทรศัพท์</label>
+      <input type="text" id="admEditPhone" />
+      <label>วันเดือนปีเกิด</label>
+      <input type="date" id="admEditDob" />
+      <label>แต้มสะสม (Points)</label>
+      <input type="number" id="admEditPoints" />
+      <label>สิทธิ์แก้ไขโปรไฟล์ (0 = แก้ไขไม่ได้แล้ว, 1 = แก้ได้)</label>
+      <input type="number" id="admEditCanEdit" min="0" max="1" />
+      <div class="row" style="margin-top: 15px;">
+        <button class="btn btn-gold" onclick="saveAdminEditedUser()">บันทึกการเปลี่ยนแปลง</button>
+        <button class="btn btn-danger" onclick="$('#adminEditUserModal').classList.remove('show')">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD & Logo -->
   <div class="hud" id="hud">
     <div class="title">สถานะมิติเวลา</div>
     <div class="item muted" id="queueCount">รอโหลดข้อมูล...</div>
@@ -254,49 +376,70 @@
 
   <main class="wrap" id="mainContainer">
     
+    <!-- Auth Section -->
     <section class="card auth-section" id="loginCard">
       <h2 class="title">เข้าสู่ระบบ / สมัครสมาชิก</h2>
-      <p class="muted">ต้องเป็นสมาชิกเพื่อเปิดประตูมิติรับคำทำนาย</p>
+      <p class="muted">เปิดประตูมิติรับคำทำนายและความแม่นยำสูงสุด</p>
       
       <div id="loginFormArea">
-        <input type="text" id="loginUser" placeholder="ชื่อผู้ใช้งาน (Username)" />
-        <input type="password" id="loginPass" placeholder="รหัสผ่าน" />
-        <button class="btn" id="btnLogin">เข้าสู่ระบบ</button>
+        <input type="text" id="loginUser" placeholder="ชื่อผู้ใช้งาน (Username)" style="margin-bottom:10px;" />
+        <input type="password" id="loginPass" placeholder="รหัสผ่าน" style="margin-bottom:10px;" />
+        <button class="btn btn-gold" id="btnLogin">เข้าสู่ระบบ</button>
         <button class="btn btn-outline" onclick="toggleAuthMode()">ยังไม่มีบัญชี? สมัครสมาชิก</button>
       </div>
 
       <div id="registerFormArea" style="display:none;">
-        <input type="text" id="regUser" placeholder="ตั้งชื่อผู้ใช้งาน (Username)" />
-        <input type="text" id="regName" placeholder="ชื่อเล่นของคุณ" />
-        <input type="password" id="regPass" placeholder="ตั้งรหัสผ่าน" />
-        <button class="btn" id="btnRegister">ยืนยันสมัครสมาชิก</button>
+        <input type="text" id="regUser" placeholder="ตั้งชื่อผู้ใช้งาน (Username)" style="margin-bottom:8px;" />
+        <input type="text" id="regName" placeholder="ชื่อเล่นของคุณ" style="margin-bottom:8px;" />
+        <input type="text" id="regFullName" placeholder="ชื่อจริง - นามสกุลจริง" style="margin-bottom:8px;" />
+        <input type="text" id="regPhone" placeholder="เบอร์โทรศัพท์จริง" style="margin-bottom:8px;" />
+        <label style="font-size:12px; margin-top:4px;">วันเดือนปีเกิดจริง</label>
+        <input type="date" id="regDob" style="margin-bottom:8px;" />
+        <input type="password" id="regPass" placeholder="ตั้งรหัสผ่าน" style="margin-bottom:12px;" />
+        <button class="btn btn-gold" id="btnRegister">ยืนยันสมัครสมาชิก</button>
         <button class="btn btn-outline" onclick="toggleAuthMode()">มีบัญชีแล้ว? เข้าสู่ระบบ</button>
       </div>
     </section>
 
+    <!-- Main System Section -->
     <div class="main-system">
       <div class="user-profile">
+        <div class="avatar-container">
+          <img id="profileAvatarImg" class="user-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar"/>
+          <label class="avatar-upload-label" title="เปลี่ยนรูปโปรไฟล์">
+            📷 <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="uploadAvatar(this)" />
+          </label>
+        </div>
         <h3>ยินดีต้อนรับ, <span id="profileName">--</span></h3>
         <p style="margin:5px 0;">UID: <span class="uid-badge" id="profileUid">------</span></p>
-        <div class="point-badge">✨ แต้มสะสมทั้งหมด: <span id="profilePoint" style="color:var(--accent);">0</span></div>
-        <button class="btn btn-outline" style="width: 100%; border-color:#ffd700; color:#ffd700; margin-bottom: 10px;" onclick="claimTreasure()">🎁 สุ่มรับแต้มสะสมรายวัน (ฟรี)</button>
+        <div class="point-badge">💎 แต้มสะสม: <span id="profilePoint">0</span> แต้ม</div>
+
+        <div class="profile-info-box">
+          <p><b>ชื่อ-นามสกุล:</b> <span id="infoFullName">-</span></p>
+          <p><b>เบอร์โทร:</b> <span id="infoPhone">-</span></p>
+          <p><b>วันเกิด:</b> <span id="infoDob">-</span> | <b>อายุ:</b> <span id="infoAge">-</span> ปี</p>
+          <p><b>สิทธิ์แก้ไขข้อมูล:</b> <span id="infoEditStatus" style="color:var(--gold);">-</span></p>
+          <button class="btn btn-outline btn-small" style="margin-top:8px; width:100%;" onclick="openProfileEditModal()">✏️ แก้ไขข้อมูลส่วนตัว</button>
+        </div>
+
+        <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold); margin-bottom: 10px;" onclick="claimTreasureBox()">🎁 กดรับกล่องสมบัติรายวัน</button>
         <div class="row">
-          <button class="btn btn-vip" onclick="showTopupInfo()">➕ เติมแต้ม</button>
+          <button class="btn btn-gold" onclick="showTopupInfo()">➕ เติมแต้ม VIP</button>
           <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
         </div>
       </div>
 
       <section class="card">
         <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
-        <p class="muted">ให้บริการ 17:00-20:00 น. (จองได้ทีละ 1 คิวเท่านั้น)</p>
+        <p class="muted">ให้บริการ 17:00-20:00 น. (จองได้ทีละ 1 คิวจนกว่าจะดูเสร็จ)</p>
         
         <form id="bookingForm">
           <div class="row">
             <div>
               <label>ประเภทคิว</label>
               <select id="queueType" onchange="updateQueueTypeUI()">
-                <option value="normal">คิวปกติ (ฟรี / รับ 2 แต้ม)</option>
-                <option value="vip">ลัดคิว VIP (ใช้ 30 แต้ม / รับ 2 แต้ม)</option>
+                <option value="normal">คิวปกติ (ฟรี / รับ 3 แต้ม)</option>
+                <option value="vip">ลัดคิว VIP (ใช้ 30 แต้ม / รับ 6 แต้ม)</option>
               </select>
             </div>
             <div>
@@ -330,23 +473,17 @@
             </div>
           </div>
 
-          <div class="row">
-            <div>
-              <label>อายุจริง (ปีเต็ม)</label>
-              <input id="realAge" type="number" required min="1" placeholder="เช่น 25" />
-            </div>
-            <div>
-              <label>Instagram ของคุณ</label>
-              <input id="igUsername" type="text" required placeholder="@username" />
-            </div>
+          <div>
+            <label>Instagram ของคุณ</label>
+            <input id="igUsername" type="text" required placeholder="@username" />
           </div>
           
-          <button type="submit" class="btn" id="btnSubmitBook" style="padding: 16px; font-size: 16px;">✨ ยืนยันการจองคิว ✨</button>
+          <button type="submit" class="btn btn-gold" id="btnSubmitBook" style="padding: 16px; font-size: 16px; margin-top:15px;">✨ ยืนยันการจองคิว ✨</button>
         </form>
       </section>
 
       <section class="card" id="historySection">
-        <h2 class="title">📜 ประวัติการดูดวงและสถานะ</h2>
+        <h2 class="title">📜 ประวัติการจองและการดูดวง</h2>
         <div id="historyList">
           <p class="muted">กำลังโหลดข้อมูลมิติเวลา...</p>
         </div>
@@ -355,67 +492,7 @@
 
   </main>
 
-  <div class="modal-overlay" id="adminLoginModal">
-    <div class="modal-content">
-      <h2 style="color:var(--primary)">🔮 ผู้ดูแลระบบ</h2>
-      <input type="text" id="adminUser" placeholder="Username" style="margin-bottom:10px">
-      <input type="password" id="adminPass" placeholder="Password" style="margin-bottom:10px">
-      <div class="row">
-        <button class="btn" id="loginAdminBtn">เข้าสู่ระบบ</button>
-        <button class="btn btn-danger" id="closeAdminBtn">ยกเลิก</button>
-      </div>
-    </div>
-  </div>
-
-  <main class="wrap wrap-wide admin-wrap" id="adminArea">
-    <section class="card">
-      <h2 class="title" style="color: red;">🔥 ศูนย์ควบคุม (Admin Dashboard)</h2>
-      <button class="btn btn-danger" onclick="document.getElementById('adminArea').classList.remove('active');" style="margin-bottom: 15px;">ออกจากระบบ Admin</button>
-      
-      <div class="admin-tabs">
-        <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">จัดการคิว</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">จัดการสมาชิก (แต้ม)</div>
-      </div>
-
-      <div id="tabQueues" class="admin-content active">
-        <div class="table-responsive">
-          <table id="adminQueueTable">
-            <thead>
-              <tr>
-                <th>ประเภท</th>
-                <th>วันที่/เวลา</th>
-                <th>UID</th>
-                <th>ชื่อ(IG) / อายุ</th>
-                <th>หมวดหมู่</th>
-                <th>จัดการ</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="tabUsers" class="admin-content">
-        <div class="table-responsive">
-          <table id="adminUserTable">
-            <thead>
-              <tr>
-                <th>UID</th>
-                <th>Username</th>
-                <th>ชื่อเล่น</th>
-                <th>Points 💎</th>
-                <th>จัดการ Point</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-    </section>
-  </main>
-
-  <span class="footer-link" id="triggerAdmin">© 2024 Horoscope Magic | System Control</span>
+  <span class="footer-link" id="triggerAdmin">© 2024 Horoscope Magic | Admin Control Panel</span>
 
   <script>
     /* ---------------- Firebase Config ---------------- */
@@ -472,25 +549,23 @@
 
     $("#acceptRulesBtn").addEventListener("click", () => { $("#rulesModal").classList.remove("show"); });
 
-    /* ---------------- 2. System HUD & Timer ---------------- */
+    /* ---------------- 2. HUD & Clocks ---------------- */
     db.collection("queues").onSnapshot((snap) => {
       $("#queueCount").textContent = `ดวงวิญญาณในระบบ: ${snap.size} ท่าน`;
-      if ($("#adminArea").classList.contains("active")) loadAdminQueues();
+      if ($("#adminModal").classList.contains("show")) loadAdminQueues();
     });
 
     setInterval(() => {
       const now = new Date();
       $("#currentTime").textContent = `มิติเวลา: ${now.toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}`;
       
-      // Update Countdown elements
       document.querySelectorAll('.countdown-timer').forEach(el => {
         const target = parseInt(el.getAttribute('data-target'));
         const diff = target - now.getTime();
         
         if (diff <= 0) {
-          el.innerHTML = '<span class="status-past">เสร็จสิ้น</span>';
+          el.innerHTML = '<span class="status-past">✨ เสร็จสิ้น (รับแต้มแล้ว)</span>';
           el.classList.remove('countdown-timer');
-          // Hide edit button when time passes
           const parent = el.closest('.history-item');
           if(parent) {
              const btn = parent.querySelector('.edit-btn');
@@ -501,12 +576,12 @@
           const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
           const m = Math.floor((diff / 1000 / 60) % 60);
           const s = Math.floor((diff / 1000) % 60);
-          el.innerHTML = `<span class="status-future">รอรับคำทำนายอีก: ${d}วัน ${h}ชั่วโมง ${m}นาที ${s}วินาที</span>`;
+          el.innerHTML = `<span class="status-future">⏳ นับถอยหลัง: ${d}วัน ${h}ชม. ${m}นาที ${s}วินาที</span>`;
         }
       });
     }, 1000);
 
-    /* ---------------- 3. Auth System & Points ---------------- */
+    /* ---------------- 3. Auth & Profile System ---------------- */
     function toggleAuthMode() {
       const login = $("#loginFormArea");
       const reg = $("#registerFormArea");
@@ -521,7 +596,11 @@
       const u = $("#regUser").value.trim();
       const p = $("#regPass").value.trim();
       const n = $("#regName").value.trim();
-      if(!u || !p || !n) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      const fn = $("#regFullName").value.trim();
+      const ph = $("#regPhone").value.trim();
+      const dob = $("#regDob").value;
+      
+      if(!u || !p || !n || !fn || !ph || !dob) return alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง");
       if(u.length < 4) return alert("Username ต้องมีอย่างน้อย 4 ตัวอักษร");
 
       try {
@@ -530,12 +609,14 @@
 
         const uid = Math.floor(100000 + Math.random() * 900000).toString();
         await db.collection("users").add({
-          uid: uid, username: u, password: p, name: n, points: 0, createdAt: new Date()
+          uid, username: u, password: p, name: n, fullName: fn, phone: ph, dob,
+          points: 0, canEditProfile: 1, avatar: "", location: userGeoLocation, createdAt: new Date()
         });
         
         alert("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
         toggleAuthMode();
         $("#regUser").value = ""; $("#regPass").value = ""; $("#regName").value = "";
+        $("#regFullName").value = ""; $("#regPhone").value = ""; $("#regDob").value = "";
       } catch(e) { alert("Error: " + e.message); }
     });
 
@@ -557,15 +638,13 @@
       localStorage.setItem("m_auth", docId);
       document.getElementById("mainContainer").classList.add("logged-in");
       
-      $("#profileName").textContent = data.name;
-      $("#profileUid").textContent = data.uid;
-      $("#profilePoint").textContent = data.points || 0;
+      updateProfileUI(data);
 
       if(unsubscribeUser) unsubscribeUser();
       unsubscribeUser = db.collection("users").doc(docId).onSnapshot(doc => {
         if(doc.exists) {
           currentUser = doc.data();
-          $("#profilePoint").textContent = currentUser.points || 0;
+          updateProfileUI(currentUser);
         }
       });
 
@@ -579,6 +658,35 @@
         });
         renderHistory();
       });
+    }
+
+    function calculateAge(dobString) {
+      if(!dobString) return '-';
+      const today = new Date();
+      const birthDate = new Date(dobString);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
+
+    function updateProfileUI(data) {
+      $("#profileName").textContent = data.name || '--';
+      $("#profileUid").textContent = data.uid || '------';
+      $("#profilePoint").textContent = data.points || 0;
+      $("#infoFullName").textContent = data.fullName || '-';
+      $("#infoPhone").textContent = data.phone || '-';
+      $("#infoDob").textContent = data.dob || '-';
+      $("#infoAge").textContent = calculateAge(data.dob);
+      
+      const canEdit = (data.canEditProfile !== undefined) ? data.canEditProfile : 1;
+      $("#infoEditStatus").textContent = canEdit > 0 ? "แก้ไขได้อีก 1 ครั้ง" : "สิทธิ์หมดแล้ว (ติดต่อแอดมิน)";
+
+      if(data.avatar) {
+        $("#profileAvatarImg").src = data.avatar;
+      }
     }
 
     async function checkLocalAuth() {
@@ -601,17 +709,66 @@
       $("#loginUser").value = ""; $("#loginPass").value = "";
     }
 
-    /* ---------------- 4. Treasure Box & Point Info ---------------- */
-    async function claimTreasure() {
+    /* ---------------- 4. Avatar & Profile Edit ---------------- */
+    async function uploadAvatar(input) {
+      if(input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          const base64 = e.target.result;
+          try {
+            await db.collection("users").doc(currentUserDocId).update({ avatar: base64 });
+            alert("เปลี่ยนรูปโปรไฟล์สำเร็จ!");
+          } catch(err) { alert("อัปโหลดรูปไม่สำเร็จ: " + err.message); }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openProfileEditModal() {
+      const canEdit = currentUser.canEditProfile !== undefined ? currentUser.canEditProfile : 1;
+      if(canEdit <= 0) {
+        return alert("❌ คุณใช้สิทธิ์แก้ไขข้อมูลส่วนตัวครบ 1 ครั้งแล้ว หากต้องการแก้ไขอีกกรุณาติดต่อแอดมินเท่านั้น");
+      }
+      $("#upFullName").value = currentUser.fullName || "";
+      $("#upPhone").value = currentUser.phone || "";
+      $("#upDob").value = currentUser.dob || "";
+      $("#profileEditNote").textContent = "คุณสามารถแก้ไขข้อมูลส่วนตัวได้ฟรี 1 ครั้ง";
+      $("#editProfileModal").classList.add("show");
+    }
+
+    async function saveUserProfileEdit() {
+      const fn = $("#upFullName").value.trim();
+      const ph = $("#upPhone").value.trim();
+      const dob = $("#upDob").value;
+      if(!fn || !ph || !dob) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+
+      try {
+        await db.collection("users").doc(currentUserDocId).update({
+          fullName: fn,
+          phone: ph,
+          dob: dob,
+          canEditProfile: 0 // Lock after 1 use
+        });
+        alert("บันทึกการแก้ไขข้อมูลสำเร็จ!");
+        $("#editProfileModal").classList.remove("show");
+      } catch(e) { alert("Error: " + e.message); }
+    }
+
+    /* ---------------- 5. Treasure Box & Points ---------------- */
+    async function claimTreasureBox() {
       const now = new Date();
       if(currentUser.lastClaimed) {
         const last = currentUser.lastClaimed.toDate();
-        if((now - last) < 24 * 60 * 60 * 1000) {
-          return alert("คุณได้รับกล่องสมบัติของวันนี้ไปแล้ว โปรดกลับมาใหม่ในวันพรุ่งนี้");
+        const diff = now - last;
+        if(diff < 24 * 60 * 60 * 1000) {
+          const remain = Math.ceil((24 * 60 * 60 * 1000 - diff) / (1000 * 60 * 60));
+          return alert(`⏳ คุณกดรับกล่องสมบัติไปแล้ว! กรุณารออีกประมาณ ${remain} ชั่วโมง`);
         }
       }
 
       const rand = Math.random();
+      // 80% chance for 1-3 points, 20% chance for 4-5 points
       let pts = (rand < 0.8) ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2) + 4;
 
       await db.collection("users").doc(currentUserDocId).update({
@@ -619,47 +776,44 @@
         lastClaimed: new Date()
       });
 
-      $("#treasureMsg").textContent = `ได้รับแต้มสะสม ${pts} แต้ม!`;
+      $("#treasureMsg").textContent = `🎉 ยินดีด้วย! คุณได้รับแต้มสะสม ${pts} แต้ม`;
       $("#treasureModal").classList.add("show");
     }
 
     function showTopupInfo() {
-      alert("💎 เติมแต้มลัดคิว VIP 💎\n\n- 10 บาท = 30 แต้ม\n- 30 บาท = 100 แต้ม\n\nวิธีเติม: แคปหน้าจอนี้ หรือแจ้ง UID ของคุณ ("+currentUser.uid+") ไปที่ IG: @horoscope_1308 แอดมินจะเติมแต้มให้ทันที!");
+      alert("💎 เติมแต้มลัดคิว VIP 💎\n\n- 10 บาท = 30 แต้ม\n- 30 บาท = 100 แต้ม\n\nวิธีเติม: แจ้ง UID ของคุณ ("+currentUser.uid+") ไปที่ IG: @horoscope_1308 แอดมินจะเติมแต้มให้ทันที!");
     }
 
     function updateQueueTypeUI() {
       const type = $("#queueType").value;
       const btn = $("#btnSubmitBook");
       if(type === 'vip') {
-        btn.innerHTML = "✨ ยืนยันลัดคิว VIP (หัก 30 แต้ม / รับ 2 แต้ม) ✨";
-        btn.className = "btn btn-vip";
+        btn.innerHTML = "✨ ยืนยันลัดคิว VIP (ใช้ 30 แต้ม / รับ 6 แต้ม) ✨";
       } else {
-        btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี / รับ 2 แต้ม) ✨";
-        btn.className = "btn";
+        btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี / รับ 3 แต้ม) ✨";
       }
     }
 
-    /* ---------------- 5. Booking Logic ---------------- */
+    /* ---------------- 6. Booking & History Logic ---------------- */
     $("#bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if(!currentUser) return alert("กรุณาเข้าสู่ระบบก่อนจองคิว");
 
-      // Check Active Booking
       const hasActive = userQueues.some(q => q.targetDate > new Date());
-      if(hasActive) return alert("❌ คุณมีคิวที่กำลังรออยู่แล้ว ระบบอนุญาตให้จองได้รอบละ 1 ครั้งจนกว่าจะดูเสร็จ");
+      if(hasActive) return alert("❌ คุณมีคิวที่กำลังรออยู่แล้ว ระบบล็อกให้จองได้รอบละ 1 ครั้งจนกว่าจะดูเสร็จ");
       
       const type = $("#queueType").value;
       const isVip = (type === 'vip');
       
       if(isVip && (currentUser.points || 0) < 30) {
-        return alert("แต้มสะสมของคุณไม่พอสำหรับการลัดคิว (ต้องการ 30 แต้ม)\nกรุณากด 'เติมแต้ม' ด้านบน");
+        return alert("แต้มสะสมของคุณไม่พอสำหรับการลัดคิว (ต้องการ 30 แต้ม)");
       }
 
       const payload = {
-        uid: currentUser.uid, name: currentUser.name, realAge: $("#realAge").value.trim(),
+        uid: currentUser.uid, name: currentUser.name, fullName: currentUser.fullName || '',
         category: $("#category").value, date: $("#date").value, timeSlot: $("#timeSlot").value,
         igUsername: $("#igUsername").value.trim(), location: userGeoLocation,
-        isVip: isVip, editCount: 0, timestamp: new Date()
+        isVip: isVip, editCount: 0, rewardClaimed: false, timestamp: new Date()
       };
 
       try {
@@ -675,12 +829,15 @@
         const queueRef = db.collection("queues").doc();
         batch.set(queueRef, payload);
 
-        // Point calculation: +2 reward. If VIP, cost is 30.
-        let pointDelta = 2;
-        if(isVip) pointDelta -= 30;
+        let pointDelta = 0;
+        if(isVip) pointDelta -= 30; // Deduct for VIP
         
-        const userRef = db.collection("users").doc(currentUserDocId);
-        batch.update(userRef, { points: firebase.firestore.FieldValue.increment(pointDelta) });
+        if(pointDelta !== 0) {
+          batch.update(db.collection("users").doc(currentUserDocId), {
+            points: firebase.firestore.FieldValue.increment(pointDelta)
+          });
+        }
+
         await batch.commit();
         
         payload.id = queueRef.id; currentTicket = payload;
@@ -709,29 +866,36 @@
       doc.save(`Ticket_${currentTicket.referenceId}.pdf`);
     });
 
-    /* ---------------- 6. History & Edit Logic ---------------- */
     function renderHistory() {
       const list = $("#historyList");
       if(userQueues.length === 0) {
-        list.innerHTML = `<p class="muted">คุณยังไม่มีประวัติการจองคิว</p>`;
+        list.innerHTML = `<p class="muted">คุณยังไม่มีประวัติการจองคิวในระบบ</p>`;
         return;
       }
       
       list.innerHTML = "";
       const now = new Date();
       
-      // Sort by date descending
       userQueues.sort((a,b) => b.targetDate - a.targetDate).forEach(q => {
         const d = q.data;
         const isPast = q.targetDate <= now;
-        const v = d.isVip ? '<span class="vip-text">⭐ ลัดคิว VIP</span>' : 'ฟรี (ปกติ)';
+        const v = d.isVip ? '<span class="vip-text">⭐ ลัดคิว VIP</span>' : 'คิวปกติ (ฟรี)';
         const editCnt = d.editCount || 0;
         
+        // Reward points when past: Normal = +3, VIP = +6
+        if(isPast && !d.rewardClaimed) {
+          const rewardPts = d.isVip ? 6 : 3;
+          db.collection("queues").doc(q.id).update({ rewardClaimed: true });
+          db.collection("users").doc(currentUserDocId).update({
+            points: firebase.firestore.FieldValue.increment(rewardPts)
+          });
+        }
+
         let statusHtml = '';
         let editBtnHtml = '';
 
         if(isPast) {
-          statusHtml = `<span class="status-past">เสร็จสิ้น</span>`;
+          statusHtml = `<span class="status-past">✨ เสร็จสิ้น (รับแต้มสะสมแล้ว)</span>`;
         } else {
           statusHtml = `<span class="countdown-timer status-badge" data-target="${q.targetDate.getTime()}">คำนวณเวลา...</span>`;
           editBtnHtml = `<button class="btn btn-outline btn-small edit-btn" onclick="openEditModal('${q.id}', ${editCnt})">✏️ แก้ไขเวลาจอง</button>`;
@@ -742,9 +906,10 @@
         div.innerHTML = `
           <div class="row">
             <div>
-              <p><b>วันที่จอง:</b> ${d.date}</p>
-              <p><b>เวลา:</b> ${d.timeSlot} น.</p>
+              <p><b>หมวดหมู่:</b> ${d.category}</p>
+              <p><b>วันที่จอง:</b> ${d.date} [${d.timeSlot} น.]</p>
               <p><b>ประเภท:</b> ${v}</p>
+              <p><b>Ref No:</b> <span style="color:var(--gold);">${d.referenceId || '-'}</span></p>
             </div>
             <div style="text-align:right;">
               <p>${statusHtml}</p>
@@ -762,10 +927,8 @@
       const t = document.getElementById("editCostText");
       if(editCount === 0) {
         t.textContent = "แก้ไขครั้งแรก: ฟรี! สิทธิ์ของคุณ";
-        t.style.color = "#00ff00";
       } else {
-        t.textContent = "หัก 15 แต้มสะสม สำหรับการแก้ไขครั้งถัดไป";
-        t.style.color = "#ffaa33";
+        t.textContent = "หัก 10 Point หรือ 15 แต้มสะสม สำหรับการแก้ไขครั้งถัดไป";
       }
       $("#editQueueModal").classList.add("show");
     };
@@ -775,7 +938,6 @@
       const newT = $("#editTime").value;
       if(!newD || !newT) return alert("กรุณาเลือกวันที่และเวลาใหม่");
 
-      // Validations
       const newTarget = new Date(`${newD}T${newT}:00`);
       if(newTarget <= new Date()) return alert("ไม่สามารถเลือกเวลาในอดีตได้");
 
@@ -804,17 +966,16 @@
       } catch(e) { alert("เกิดข้อผิดพลาด: " + e.message); }
     };
 
-    /* ---------------- 7. Admin System ---------------- */
-    $("#triggerAdmin").addEventListener("click", () => { $("#adminLoginModal").classList.add("show"); });
-    $("#closeAdminBtn").addEventListener("click", () => { $("#adminLoginModal").classList.remove("show"); });
-    
-    $("#loginAdminBtn").addEventListener("click", () => {
-      if ($("#adminUser").value === 'admin' && $("#adminPass").value === 'horoscope') {
-        $("#adminLoginModal").classList.remove("show"); $("#adminArea").classList.add("active");
-        loadAdminQueues(); loadAdminUsers();
-        $("#adminUser").value = ""; $("#adminPass").value = "";
-        window.scrollTo(0, document.body.scrollHeight);
-      } else { alert("รหัสผ่านไม่ถูกต้อง!"); }
+    /* ---------------- 7. Admin Popup System ---------------- */
+    $("#triggerAdmin").addEventListener("click", () => {
+      const pass = prompt("กรุณากรอกรหัสผ่านผู้ดูแลระบบ (Admin Password):");
+      if (pass === 'horoscope') {
+        $("#adminModal").classList.add("show");
+        loadAdminQueues();
+        loadAdminUsers();
+      } else if(pass !== null) {
+        alert("รหัสผ่านไม่ถูกต้อง!");
+      }
     });
 
     window.switchAdminTab = (tabId, el) => {
@@ -833,10 +994,10 @@
           const d = doc.data();
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${d.isVip ? '<span class="uid-badge" style="background:var(--vip);color:#000;">VIP</span>' : 'ปกติ'}</td>
+            <td>${d.isVip ? '<span class="uid-badge" style="background:var(--gold);color:#000;">VIP</span>' : 'ปกติ'}</td>
             <td>${d.date} <br>${d.timeSlot || '-'}</td>
             <td>${d.uid || '-'}</td>
-            <td>${d.name} (อายุ ${d.realAge}) <br><span class="muted">${d.igUsername}</span></td>
+            <td>${d.name} <br><span class="muted">${d.igUsername}</span></td>
             <td>${d.category}</td>
             <td><button class="btn btn-danger btn-small" onclick="deleteQueue('${doc.id}')">ลบ</button></td>
           `;
@@ -846,7 +1007,7 @@
     }
 
     async function loadAdminUsers() {
-      const tbody = $("#adminUserTable tbody"); tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูลสมาชิก...</td></tr>";
+      const tbody = $("#adminUserTable tbody"); tbody.innerHTML = "<tr><td colspan='7'>กำลังดึงข้อมูลสมาชิก...</td></tr>";
       try {
         const snap = await db.collection("users").orderBy("createdAt", "desc").get();
         tbody.innerHTML = "";
@@ -854,29 +1015,64 @@
           const d = doc.data();
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td><b>${d.uid}</b></td><td>${d.username}</td><td>${d.name}</td>
-            <td style="color:var(--vip); font-weight:bold;">${d.points || 0}</td>
-            <td><button class="btn btn-outline btn-small" onclick="adminAddPoints('${doc.id}', '${d.username}')">➕ เพิ่มแต้ม</button></td>
+            <td><b>UID: ${d.uid}</b><br>${d.username}</td>
+            <td>${d.fullName || '-'}<br><small>(${d.name || '-'})</small></td>
+            <td>${d.phone || '-'}</td>
+            <td>${d.dob || '-'}<br><b>อายุ: ${calculateAge(d.dob)} ปี</b></td>
+            <td style="color:var(--gold); font-weight:bold;">${d.points || 0}</td>
+            <td><small>${d.location || 'ไม่ระบุ'}</small></td>
+            <td>
+              <button class="btn btn-gold btn-small" onclick="openAdminEditUser('${doc.id}', '${d.username}', '${d.name || ''}', '${d.fullName || ''}', '${d.phone || ''}', '${d.dob || ''}', ${d.points || 0}, ${d.canEditProfile !== undefined ? d.canEditProfile : 1})">⚙️ แก้ไข</button>
+              <button class="btn btn-danger btn-small" onclick="deleteUser('${doc.id}')">ลบ</button>
+            </td>
           `;
           tbody.appendChild(tr);
         });
       } catch (e) { console.error(e); }
     }
 
-    window.adminAddPoints = async (docId, username) => {
-      const add = prompt(`กรอกจำนวนแต้มที่ต้องการเพิ่มให้ [${username}]\n(หากต้องการลบให้ใส่เลขติดลบ):`, "30");
-      if(!add) return;
-      const pt = parseInt(add);
-      if(isNaN(pt)) return alert("ตัวเลขไม่ถูกต้อง");
+    window.openAdminEditUser = (id, username, name, fullName, phone, dob, points, canEdit) => {
+      $("#admEditDocId").value = id;
+      $("#admEditUsername").value = username;
+      $("#admEditName").value = name;
+      $("#admEditFullName").value = fullName;
+      $("#admEditPhone").value = phone;
+      $("#admEditDob").value = dob;
+      $("#admEditPoints").value = points;
+      $("#admEditCanEdit").value = canEdit;
+      $("#adminEditUserModal").classList.add("show");
+    };
+
+    window.saveAdminEditedUser = async () => {
+      const id = $("#admEditDocId").value;
+      const name = $("#admEditName").value.trim();
+      const fullName = $("#admEditFullName").value.trim();
+      const phone = $("#admEditPhone").value.trim();
+      const dob = $("#admEditDob").value;
+      const points = parseInt($("#admEditPoints").value) || 0;
+      const canEditProfile = parseInt($("#admEditCanEdit").value) || 0;
+
       try {
-        await db.collection("users").doc(docId).update({ points: firebase.firestore.FieldValue.increment(pt) });
-        alert("อัปเดตแต้มสำเร็จ!"); loadAdminUsers();
+        await db.collection("users").doc(id).update({
+          name, fullName, phone, dob, points, canEditProfile
+        });
+        alert("แอดมินอัปเดตข้อมูลสมาชิกสำเร็จ!");
+        $("#adminEditUserModal").classList.remove("show");
+        loadAdminUsers();
       } catch(e) { alert("Error: " + e.message); }
+    };
+
+    window.deleteUser = async (id) => {
+      if(confirm("แน่ใจหรือไม่ที่จะลบบัญชีสมาชิกนี้?")) {
+        await db.collection("users").doc(id).delete();
+        loadAdminUsers();
+      }
     };
 
     window.deleteQueue = async (id) => {
       if(confirm("แน่ใจหรือไม่ที่จะลบคิวนี้?")) {
-        await db.collection("queues").doc(id).delete(); loadAdminQueues();
+        await db.collection("queues").doc(id).delete();
+        loadAdminQueues();
       }
     };
   </script>
