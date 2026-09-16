@@ -9,380 +9,471 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
-      /* โทนสีเน้น ม่วง ดำ ม่วงอ่อน และทองเล็กน้อย */
+      /* โทนสีเน้น ม่วง ม่วงอ่อน ดำ และทองเล็กน้อย */
       --bg-1: #000000;
-      --bg-2: #080012;
-      --card: rgba(20, 5, 35, 0.95);
+      --bg-2: #0a0212;
+      --card: rgba(18, 4, 30, 0.92);
       --primary: #9d4edd;
       --primary-2: #5a189a;
-      --accent: #e0aaff;
+      --accent: #c77dff;
+      --accent-light: #e0aaff;
       --gold: #ffd700;
       --gold-light: #ffea75;
       --text: #f8f5fc;
-      --muted: #c7b2e0;
+      --muted: #b39ddb;
       --border: rgba(157, 78, 221, 0.4);
-      --glow: 0 0 25px rgba(157, 78, 221, 0.5), 0 0 40px rgba(90, 24, 154, 0.4);
-      --glow-gold: 0 0 15px rgba(255, 215, 0, 0.4);
-      --radius: 16px;
+      --glow: 0 0 25px rgba(157, 78, 221, 0.55), 0 0 50px rgba(90, 24, 154, 0.4);
+      --glow-gold: 0 0 20px rgba(255, 215, 0, 0.5);
+      --radius: 20px;
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; scroll-behavior: smooth; }
     body {
-      margin: 0;
-      font-family: 'Sarabun', sans-serif;
-      color: var(--text);
+      margin: 0; padding-top: 45px; /* เผื่อพื้นที่ให้แถบเตือนด้านบน */
+      font-family: 'Sarabun', sans-serif; color: var(--text);
       background: 
-        radial-gradient(circle at 50% 0%, #3c096c 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, #240046 0%, transparent 60%),
+        radial-gradient(circle at 50% 0%, #3c096c 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, #10002b 0%, transparent 60%),
         linear-gradient(180deg, var(--bg-1), var(--bg-2) 100%);
-      background-attachment: fixed;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background-attachment: fixed; overflow-x: hidden;
+      display: flex; flex-direction: column; align-items: center;
     }
 
-    /* ---------- Banner Warning ---------- */
-    .top-warning-banner {
-      position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;
+    /* ---------- Header Warning ---------- */
+    .urgent-warning {
       background: linear-gradient(90deg, #5a0000, #ff0000, #5a0000);
-      color: #fff; text-align: center; padding: 12px 10px;
-      font-weight: 700; font-size: 15px; letter-spacing: 1px;
-      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
-      text-shadow: 1px 1px 3px #000;
-      animation: flashBanner 2s infinite alternate;
+      color: #fff; text-align: center; font-weight: 800; padding: 12px; font-size: 16px;
+      width: 100%; position: fixed; top: 0; left: 0; z-index: 10000; letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(255,0,0,0.5); text-shadow: 0 0 8px #fff;
+      animation: pulseWarning 2s infinite;
     }
-    @keyframes flashBanner {
-      0% { box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5); }
-      100% { box-shadow: 0 4px 30px rgba(255, 0, 0, 0.9); }
-    }
+    @keyframes pulseWarning { 0% { opacity: 0.9; } 50% { opacity: 1; text-shadow: 0 0 15px #fff; } 100% { opacity: 0.9; } }
 
-    /* ---------- HUD & Elements ---------- */
-    .hud {
-      position: fixed; left: 12px; top: 60px; z-index: 60;
-      background: rgba(18, 4, 30, 0.9); border: 1px solid var(--border); box-shadow: var(--glow);
-      border-radius: 12px; padding: 10px; min-width: 180px; backdrop-filter: blur(8px);
+    /* ---------- Modals System & Animations ---------- */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(12px);
+      display: none; place-items: center; z-index: 10001; padding: 16px; overflow-y: auto;
     }
-    .hud .title { font-weight: 700; font-size: 12px; color: var(--gold); }
-    .hud .item { font-size: 12px; margin-top: 6px; color: var(--accent); }
+    .modal-overlay.show { display: grid; }
+    
+    @keyframes popupBounce {
+      0% { transform: scale(0.7) translateY(30px); opacity: 0; }
+      80% { transform: scale(1.03) translateY(-5px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    
+    /* สมาชิก UI Animations */
+    .logged-in .card { animation: cardSlideIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    @keyframes cardSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .logged-in .user-profile { animation: profileGlow 3s infinite alternate; }
+    @keyframes profileGlow { from { box-shadow: 0 0 15px rgba(157,78,221,0.3); } to { box-shadow: 0 0 30px rgba(199,125,255,0.6); } }
+
+    .modal-content {
+      background: linear-gradient(145deg, #240046, #0a0212);
+      border: 1px solid var(--primary); border-radius: var(--radius);
+      padding: 24px; text-align: center; max-width: 480px; width: 100%;
+      box-shadow: var(--glow), 0 10px 30px rgba(0,0,0,0.9);
+      position: relative; max-height: 90vh; overflow-y: auto;
+      animation: popupBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-content h2 { color: var(--gold); margin-top: 0; text-shadow: 0 0 12px rgba(255,215,0,0.6); font-size: 1.4rem; }
+    .modal-content p { color: var(--text); font-size: 14px; line-height: 1.6; }
+    .close-modal-x {
+      position: absolute; right: 15px; top: 15px; background: none; border: none;
+      color: var(--accent-light); font-size: 24px; cursor: pointer; width: auto; padding: 0;
+      transition: 0.2s ease;
+    }
+    .close-modal-x:hover { color: var(--gold); transform: scale(1.15); }
+
+    /* ---------- Floating Support Button ---------- */
+    .floating-support-btn {
+      position: fixed; bottom: 18px; right: 18px; z-index: 999;
+      width: 46px; height: 46px; border-radius: 50%;
+      background: rgba(90, 24, 154, 0.75); border: 1.5px solid var(--primary);
+      box-shadow: 0 0 15px rgba(199, 125, 255, 0.4);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0.7; backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+    .floating-support-btn:hover {
+      opacity: 1; transform: scale(1.12) rotate(5deg);
+      box-shadow: var(--glow); background: rgba(123, 44, 191, 0.9);
+    }
+    .floating-support-btn svg { width: 22px; height: 22px; fill: var(--gold); }
+
+    /* ---------- UI Layout ---------- */
+    .hud {
+      position: fixed; left: 12px; top: 55px; z-index: 60;
+      background: rgba(18, 4, 30, 0.88); border: 1px solid var(--border); box-shadow: var(--glow);
+      border-radius: 12px; padding: 10px; min-width: 200px; backdrop-filter: blur(8px);
+    }
+    .hud .title { font-weight: 700; font-size: 13px; color: var(--gold); margin-bottom:4px; }
+    .hud .item { font-size: 12px; margin-top: 4px; color: var(--accent-light); }
 
     .logo {
-      position: fixed; right: 12px; top: 60px; z-index: 60;
-      width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold);
+      position: fixed; right: 12px; top: 55px; z-index: 60;
+      width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--gold);
       box-shadow: var(--glow-gold); object-fit: cover; background:#fff;
     }
 
-    .wrap { width: 100%; max-width: 480px; padding: 130px 16px 60px; }
+    .wrap { width: 100%; max-width: 500px; padding: 85px 16px 60px; }
 
     .card {
       background: var(--card); backdrop-filter: blur(14px);
       border: 1px solid var(--border); box-shadow: var(--glow);
-      border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+      border-radius: var(--radius); padding: 22px; margin-bottom: 22px;
       position: relative; overflow: hidden;
     }
     
-    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--primary); font-size: 1.3rem; }
+    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--accent); font-size: 1.3rem; }
     .muted { color: var(--muted); font-size: 13px; }
 
-    label { display: block; margin: 12px 0 4px; color: var(--accent); font-weight: 600; font-size: 13px; text-align: left; }
+    label { display: block; margin: 12px 0 4px; color: var(--accent-light); font-weight: 600; font-size: 13px; text-align: left; }
     input, select, textarea, button {
-      width: 100%; padding: 10px 14px; border-radius: 10px;
+      width: 100%; padding: 12px 14px; border-radius: 10px;
       border: 1px solid var(--border);
       background: rgba(0,0,0,0.7); color: #fff; font-size: 14px; font-family: inherit;
       transition: all 0.3s ease;
     }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: var(--glow-gold); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px rgba(199,125,255,0.5); }
     
     .btn {
       background: linear-gradient(45deg, var(--primary-2), var(--primary));
       color: #fff; border: none; cursor: pointer; font-weight: 700; text-transform: uppercase;
-      transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
-      margin-top: 10px; display: inline-flex; justify-content: center; align-items: center; gap: 5px;
+      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+      margin-top: 10px; padding: 12px;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: var(--glow); border-color: var(--primary); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(199, 125, 255, 0.6); border-color: var(--accent); }
     .btn-danger { background: linear-gradient(45deg, #5a0000, #b30000); box-shadow: 0 4px 15px rgba(179, 0, 0, 0.4); }
-    .btn-gold { background: linear-gradient(45deg, #b8860b, var(--gold)); color: #000; box-shadow: var(--glow-gold); font-weight: 800; }
-    .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); box-shadow: none; }
-    .btn-small { padding: 6px 12px; font-size: 12px; margin-top: 5px; width: auto; }
+    .btn-gold { background: linear-gradient(45deg, #7a5a00, var(--gold)); color: #0a0212; box-shadow: var(--glow-gold); text-shadow: none; font-weight: 800; }
+    .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); box-shadow: none; }
+    .btn-small { padding: 8px 12px; font-size: 12px; margin-top: 5px; width: auto; }
+    .btn-blue { background: linear-gradient(45deg, #00509e, #0077b6); }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
-    /* ---------- Animations & Profile ---------- */
-    .user-profile {
-      background: rgba(157,78,221,0.08); border: 1px solid var(--border);
-      padding: 20px 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
-      box-shadow: var(--glow);
-      animation: floatProfile 4s ease-in-out infinite alternate;
+    /* ---------- Animated Treasure Chest & Wheel UI ---------- */
+    .chest-container { margin: 20px auto; width: 100px; height: 100px; position: relative; cursor: pointer; }
+    .chest-box {
+      width: 100%; height: 100%; border-radius: 16px; background: linear-gradient(135deg, #5a189a, #240046);
+      border: 2px solid var(--gold); box-shadow: var(--glow-gold); display: flex; align-items: center; justify-content: center; font-size: 48px;
+      animation: chestPulse 2s infinite alternate;
     }
-    @keyframes floatProfile {
-      0% { transform: translateY(0px); box-shadow: 0 0 20px rgba(157,78,221,0.3); }
-      100% { transform: translateY(-5px); box-shadow: 0 0 35px rgba(157,78,221,0.6); }
-    }
-    
-    .avatar-container { position: relative; width: 90px; height: 90px; margin: 0 auto 12px; }
-    .user-avatar { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: var(--glow-gold); }
-    .point-badge { font-size: 20px; font-weight: bold; color: var(--gold); margin: 10px 0; text-shadow: var(--glow-gold); }
-    .profile-info-box { background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin: 12px 0; text-align: left; font-size: 13px; }
+    @keyframes chestPulse { 0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 15px var(--accent); } 100% { transform: scale(1.08) rotate(2deg); box-shadow: 0 0 35px var(--gold); } }
 
-    /* ---------- Modals ---------- */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(12px); display: none; place-items: center; z-index: 10000; padding: 16px; overflow-y: auto; }
-    .modal-overlay.show { display: grid; }
-    .modal-content {
-      background: linear-gradient(145deg, #18032b, #05000a);
-      border: 1px solid var(--primary); border-radius: var(--radius);
-      padding: 24px; text-align: center; max-width: 480px; width: 100%;
-      box-shadow: var(--glow), 0 10px 30px rgba(0,0,0,0.8);
-      position: relative; max-height: 90vh; overflow-y: auto;
-    }
-    .modal-content h2 { color: var(--gold); margin-top: 0; font-size: 1.4rem; }
-    .close-modal-x { position: absolute; right: 15px; top: 15px; background: none; border: none; color: var(--accent); font-size: 24px; cursor: pointer; width: auto; padding: 0; }
+    .wheel-container { position: relative; width: 100%; max-width: 320px; margin: 20px auto; }
+    #wheelCanvas { width: 100%; border-radius: 50%; border: 5px solid var(--gold); box-shadow: var(--glow-gold); transition: transform 4s cubic-bezier(0.17, 0.89, 0.32, 1); }
+    .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--text); z-index: 10; filter: drop-shadow(0 0 5px #000); }
 
-    /* ---------- Gacha Wheel ---------- */
-    .gacha-container { position: relative; width: 260px; height: 260px; margin: 20px auto; }
-    .wheel {
-      width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--gold); box-shadow: var(--glow-gold);
-      background: conic-gradient(
-        #3c096c 0deg 45deg, #10002b 45deg 90deg, #5a189a 90deg 135deg, #10002b 135deg 180deg,
-        #3c096c 180deg 225deg, #10002b 225deg 270deg, #9d4edd 270deg 315deg, #ffd700 315deg 360deg
-      );
-      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-    }
-    .wheel-pointer {
-      position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-      width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--gold); z-index: 10;
-      filter: drop-shadow(0 0 10px rgba(255,215,0,0.8));
-    }
-    .wheel-labels { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-    .wheel-label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; color: #fff; font-size: 11px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
-
-    /* ---------- Admin Table ---------- */
-    .admin-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
-    .admin-tab { flex: 1; min-width: 90px; padding: 8px; text-align: center; background: rgba(0,0,0,0.6); cursor: pointer; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; }
-    .admin-tab.active { background: var(--primary-2); color: var(--gold); font-weight: bold; }
-    .admin-content { display: none; } .admin-content.active { display: block; }
-    .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); max-height: 350px; }
-    table { width: 100%; min-width: 600px; border-collapse: collapse; font-size: 12px; }
-    th { background: #1d0036; padding: 10px; color: var(--accent); position: sticky; top: 0; }
-    td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    
+    /* ---------- User Auth & Profile ---------- */
     .auth-section { display: block; } .main-system { display: none; }
     .logged-in .auth-section { display: none; } .logged-in .main-system { display: block; }
-    .mission-box { background: rgba(0,0,0,0.6); border: 1px dashed var(--accent); padding: 10px; border-radius: 10px; margin-bottom: 10px; text-align: left; }
+
+    .user-profile {
+      background: rgba(90,24,154,0.15); border: 1px solid var(--border);
+      padding: 20px 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; box-shadow: var(--glow);
+    }
+    .avatar-container { position: relative; width: 95px; height: 95px; margin: 0 auto 12px; }
+    .user-avatar { width: 95px; height: 95px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; background: #111; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+    .avatar-upload-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: grid; place-items: center; font-size: 14px; cursor: pointer; border: 1px solid var(--gold); }
+    .user-profile h3 { margin: 0; color: #fff; font-size: 1.3rem; text-shadow: 0 0 8px var(--accent); }
+    .uid-badge { background: var(--primary-2); color: #fff; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: 1px solid var(--accent); }
+    .point-badge { font-size: 20px; font-weight: bold; color: var(--gold); margin: 12px 0; text-shadow: var(--glow-gold); }
+
+    .profile-info-box { background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin: 15px 0; text-align: left; font-size: 13px; }
+    .profile-info-box p { margin: 5px 0; }
+    .mission-box { background: rgba(36,0,70,0.6); border: 1px dashed var(--accent); border-radius: 10px; padding: 12px; margin-top: 15px; text-align: left; font-size: 13px; }
+    .mission-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .mission-item:last-child { border-bottom: none; }
+    .mission-item.locked { opacity: 0.5; pointer-events: none; }
+
+    /* ---------- Lists & Tables ---------- */
+    .history-item, .review-item { background: rgba(0,0,0,0.65); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+    .history-item p { margin: 5px 0; font-size: 13px; }
+    .status-badge { font-weight: bold; }
+    .status-past { color: #00ffaa; text-shadow: 0 0 8px rgba(0,255,170,0.4); }
+    .status-future { color: var(--gold); text-shadow: 0 0 8px rgba(255,215,0,0.4); }
+
+    .review-summary-card { background: rgba(90, 24, 154, 0.3); border: 1px solid var(--gold); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 15px; box-shadow: var(--glow-gold); }
+    .stars-display { color: var(--gold); font-size: 20px; letter-spacing: 2px; }
+    .star-rating-selector { display: flex; justify-content: center; gap: 8px; font-size: 28px; cursor: pointer; margin: 10px 0; }
+    .star-rating-selector span { color: #555; transition: 0.2s; } .star-rating-selector span.active { color: var(--gold); text-shadow: var(--glow-gold); }
+    
+    .admin-tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+    .admin-tab { white-space: nowrap; flex: 1; padding: 8px 10px; text-align: center; background: rgba(0,0,0,0.6); cursor: pointer; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; }
+    .admin-tab.active { background: var(--primary-2); color: var(--gold); font-weight: bold; border-color: var(--gold); }
+    .admin-content { display: none; } .admin-content.active { display: block; }
+    
+    .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.6); max-height: 400px; }
+    table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 12px; }
+    th { background: linear-gradient(90deg, #3c096c, #240046); padding: 10px; text-align: left; color: var(--gold); position: sticky; top: 0; z-index: 2; }
+    td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; vertical-align: top; }
+    tr:hover { background: rgba(255,255,255,0.08); }
+
+    .footer-link { text-align: center; margin-top: 20px; opacity: 0.6; font-size: 12px; cursor: pointer; display: block; color: var(--gold); width: 100%; }
+    .vip-text { color: var(--gold); font-weight: bold; text-shadow: 0 0 5px rgba(255,215,0,0.5); }
   </style>
 </head>
 <body>
 
-  <div class="top-warning-banner">🚨 เน้นย้ำของเว็บ: ห้ามจองเล่นเด็ดขาด 🚨</div>
+  <div class="urgent-warning">⚠️ เน้นย้ำของเว็บ ห้ามจองเล่นเด็ดขาด ⚠️</div>
 
-  <!-- Custom Alert -->
+  <a class="floating-support-btn" id="floatingSupportBtn" title="แจ้งปัญหาการใช้งาน">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg>
+  </a>
+
+  <!-- Custom Alerts -->
   <div class="modal-overlay" id="customAlertModal">
-    <div class="modal-content" style="max-width: 350px;">
+    <div class="modal-content" style="max-width: 380px;">
       <h2 id="customAlertTitle">แจ้งเตือน</h2>
-      <p id="customAlertMessage" style="margin: 15px 0; font-size: 14px; white-space: pre-line;"></p>
-      <button class="btn btn-gold" onclick="$('#customAlertModal').classList.remove('show')">ตกลง</button>
+      <p id="customAlertMessage" style="margin: 15px 0;"></p>
+      <button class="btn btn-gold" onclick="closeCustomAlert()">ตกลง</button>
     </div>
   </div>
 
-  <!-- Sync Contacts Enforcement Modal -->
-  <div class="modal-overlay" id="syncContactsModal">
-    <div class="modal-content" style="max-width: 350px;">
-      <h2>📞 จำเป็นต้องซิงค์รายชื่อ</h2>
-      <p class="muted">เพื่อความปลอดภัยและยืนยันตัวตน คุณต้องอนุญาตให้ระบบดึงข้อมูลรายชื่อในโทรศัพท์ก่อนเข้าใช้งานระบบ</p>
-      <button class="btn btn-gold" onclick="executeContactSync()">อนุญาตและซิงค์ข้อมูลเดี๋ยวนี้</button>
+  <div class="modal-overlay" id="rulesModal">
+    <div class="modal-content">
+      <h2>⚠️ คำแนะนำการใช้งาน ⚠️</h2>
+      <p style="text-align: left; font-size: 13px;">
+        1. <b>คิวปกติ</b> ให้บริการช่วงเวลา 17:00-19:00 น. (รับ 3 แต้ม)<br>
+        2. <b>ลัดคิว VIP</b> ใช้ 30 แต้มสะสม (รับ 6 แต้มหลังดูเสร็จ)<br>
+        3. <b>กล่องสมบัติรายวัน</b> สุ่มรับแต้มสะสมฟรี ทุก 24 ชั่วโมง<br>
+        4. <b>การแก้ไขข้อมูลส่วนตัว</b> แก้ไขฟรีได้ 1 ครั้ง ครั้งถัดไปติดต่อแอดมิน<br>
+        5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b>
+      </p>
+      <button class="btn btn-gold" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
     </div>
   </div>
 
-  <!-- VIP Topup Modal -->
+  <!-- Popup ยืนยันการเติมเงินสำเร็จ (หน่วง 30 นาที) -->
+  <div class="modal-overlay" id="successTopupModal">
+    <div class="modal-content" style="max-width: 400px;">
+      <h2>✅ รับเรื่องสำเร็จ</h2>
+      <p style="margin: 15px 0; font-size: 15px; color: var(--gold); line-height: 1.6;">
+        กำลังตรวจสอบรายการของท่าน กรุณารอภายใน 30 นาที หากนานกว่านั่น สามารถทักแชทหาทางแอดมินโดยตรงได้เลย<br><br>
+        ขอบคุณสำหรับการเติมเงินครั้งนี้<br>พร้อมอวยพร สมาชิกอวยๆ 🙏✨
+      </p>
+      <button class="btn btn-gold" onclick="$('#successTopupModal').classList.remove('show')">รับทราบ</button>
+    </div>
+  </div>
+
+  <!-- Popup เติมแต้ม VIP -->
   <div class="modal-overlay" id="topupModal">
     <div class="modal-content">
       <button class="close-modal-x" onclick="$('#topupModal').classList.remove('show')">&times;</button>
       <h2>💎 เติมแต้ม VIP</h2>
-      <label>เลือกแพ็กเกจแต้ม</label>
-      <select id="topupPackage">
-        <option value="10">10 บาท = 30 แต้ม</option>
-        <option value="30">30 บาท = 100 แต้ม</option>
-        <option value="50">50 บาท = 200 แต้ม</option>
+      <label>เลือกจำนวนแพ็กเกจ (คำนวณจากค่าเดิม)</label>
+      <select id="topupPackage" style="margin-bottom:15px; color:var(--gold); font-weight:bold; font-size:15px;">
+        <option value="10|30">10 บาท รับ 30 แต้ม</option>
+        <option value="30|100">30 บาท รับ 100 แต้ม</option>
+        <option value="50|170">50 บาท รับ 170 แต้ม</option>
+        <option value="100|350">100 บาท รับ 350 แต้ม</option>
       </select>
-      <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid var(--gold);">
-        <p style="margin: 0 0 10px 0; color: var(--gold);"><b>ธนาคารกสิกรไทย</b></p>
-        <p style="margin: 0; font-size: 18px; letter-spacing: 1px;" id="bankAcc">1602808056</p>
-        <p style="margin: 5px 0; font-size: 13px;">ชื่อบัญชี: โยธาศักดิ์ โชคทวีสถาพร</p>
-        <button class="btn btn-outline btn-small" onclick="navigator.clipboard.writeText('1602808056'); showCustomAlert('สำเร็จ','คัดลอกเลขบัญชีแล้ว')">📋 Copy เลขบัญชี</button>
+      
+      <div style="background:rgba(0,0,0,0.6); padding:15px; border-radius:10px; border:1px solid var(--border); text-align:left;">
+        <p style="margin:0 0 5px; color:var(--accent-light);">โอนเงินเข้าบัญชีธนาคาร:</p>
+        <p style="margin:0; font-size:16px; font-weight:bold; color:#00ffaa;">ธนาคารกสิกรไทย (KBank)</p>
+        <p style="margin:5px 0; font-size:22px; color:var(--gold); font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
+          1602808056
+          <button class="btn btn-small btn-outline" style="margin:0;" onclick="copyBankAcc()">📋 Copy</button>
+        </p>
+        <p style="margin:0; font-size:14px;">ชื่อบัญชี: <b>โยธาศักดิ์ โชคทวีสถาพร</b></p>
       </div>
-      <label>แนบสลิปโอนเงิน</label>
+
+      <label style="margin-top:15px;">แนบสลิปโอนเงิน (จำเป็น)</label>
       <input type="file" id="topupSlip" accept="image/*" />
-      <button class="btn btn-gold" onclick="submitTopup()" style="width: 100%; margin-top: 15px;">ยืนยันการทำรายการ</button>
+      
+      <button class="btn btn-gold" style="font-size:16px; padding:15px;" onclick="submitTopupRequest()">ยืนยันการทำรายการ</button>
     </div>
   </div>
 
-  <!-- Identity Verification Modal (< 12 years) -->
-  <div class="modal-overlay" id="verifyIdentityModal">
+  <!-- Popup ยืนยันตัวตน (อายุ <12) -->
+  <div class="modal-overlay" id="verifyAgeModal">
     <div class="modal-content">
-      <button class="close-modal-x" onclick="$('#verifyIdentityModal').classList.remove('show')">&times;</button>
-      <h2>🛡️ ยืนยันตัวตน</h2>
-      <label>เลือกช่วงอายุของคุณ</label>
-      <select id="ageVerifySelect" onchange="toggleVerifyForm()">
-        <option value="">-- โปรดเลือก --</option>
+      <button class="close-modal-x" onclick="$('#verifyAgeModal').classList.remove('show')">&times;</button>
+      <h2>🔍 ยืนยันตัวตน (อายุต่ำกว่า 12 ปี)</h2>
+      <label>กรุณาเลือกช่วงอายุของคุณ</label>
+      <select id="verifyAgeSelect" onchange="toggleAgeInputs()">
+        <option value="">-- เลือก --</option>
         <option value="under12">อายุต่ำกว่า 12 ปี</option>
         <option value="over12">มากกว่า 12 ปีขึ้นไป</option>
       </select>
-      
-      <div id="verifyOver12" style="display:none; margin-top: 10px;">
-        <input type="text" id="vPhone" placeholder="เบอร์โทรศัพท์มือถือ" />
-        <input type="text" id="vFirstName" placeholder="ชื่อจริง" style="margin-top:10px;" />
-        <input type="text" id="vLastName" placeholder="นามสกุลจริง" style="margin-top:10px;" />
+
+      <div id="over12Inputs" style="display:none; text-align:left;">
+        <label>เบอร์โทรศัพท์มือถือ</label>
+        <input type="text" id="vPhone" placeholder="08xxxxxxxx" />
+        <label>ชื่อจริง</label>
+        <input type="text" id="vFirstName" placeholder="ชื่อจริง (ตรงตามบัตร)" />
+        <label>นามสกุลจริง</label>
+        <input type="text" id="vLastName" placeholder="นามสกุลจริง" />
       </div>
 
-      <div id="verifyUnder12" style="display:none; margin-top: 10px;">
-        <p class="muted">โปรดแนบไฟล์หรือถ่ายรูปบัตรประชาชนเพื่อยืนยันตัวตน (รอแอดมินตรวจสอบ)</p>
-        <input type="file" id="vIdCardImage" accept="image/*" capture="environment" />
-      </div>
-
-      <button class="btn btn-gold" onclick="submitVerification()" style="width: 100%; margin-top: 15px;">ยืนยัน</button>
+      <label style="margin-top:15px;">อัปโหลดบัตรประชาชน / ถ่ายรูป</label>
+      <input type="file" id="vIdCard" accept="image/*" capture="environment" />
+      <button class="btn btn-gold" style="margin-top:15px;" onclick="submitVerifyId()">ยืนยันข้อมูล</button>
     </div>
   </div>
 
-  <!-- Mission Modal -->
-  <div class="modal-overlay" id="missionModal">
-    <div class="modal-content" style="max-width: 500px;">
-      <button class="close-modal-x" onclick="$('#missionModal').classList.remove('show')">&times;</button>
-      <h2>🎯 ภารกิจรับแต้มฟรี</h2>
-      
-      <div class="admin-tabs">
-        <div class="admin-tab active" onclick="switchMissionTab('tabNormalMissions', this)">ภารกิจหลัก (ปลดล็อคทีละข้อ)</div>
-        <div class="admin-tab" onclick="switchMissionTab('tabSpecialMissions', this)">ภารกิจพิเศษ</div>
-      </div>
-
-      <div id="tabNormalMissions" class="admin-content active">
-        <div class="mission-box" id="mBox1">
-          <b>1. กดติดตาม Instagram</b> (+3 แต้ม)<br>
-          <input type="file" id="mSlip1" accept="image/*" class="btn-small" style="margin-top:5px;">
-          <button class="btn btn-primary btn-small" onclick="submitMission(1, 3, 'ติดตาม IG')">ส่งหลักฐาน</button>
-        </div>
-        <div class="mission-box" id="mBox2" style="opacity: 0.5; pointer-events: none;">
-          <b>2. กดใจ 1 โพสต์บน Instagram</b> (+2 แต้ม)<br>
-          <input type="file" id="mSlip2" accept="image/*" class="btn-small" style="margin-top:5px;">
-          <button class="btn btn-primary btn-small" onclick="submitMission(2, 2, 'กดใจโพสต์ IG')">ส่งหลักฐาน</button>
-        </div>
-        <div class="mission-box" id="mBox3" style="opacity: 0.5; pointer-events: none;">
-          <b>3. กดรีโพสต์ 1 โพสต์บน Instagram</b> (+2 แต้ม)<br>
-          <input type="file" id="mSlip3" accept="image/*" class="btn-small" style="margin-top:5px;">
-          <button class="btn btn-primary btn-small" onclick="submitMission(3, 2, 'รีโพสต์ IG')">ส่งหลักฐาน</button>
-        </div>
-      </div>
-
-      <div id="tabSpecialMissions" class="admin-content">
-        <div class="mission-box">
-          <b>พิเศษ 1: รีวิวร้านลงสตอรี่</b> (+10 แต้ม)<br>
-          <input type="file" id="smSlip1" accept="image/*" class="btn-small">
-          <button class="btn btn-gold btn-small" onclick="submitMission('s1', 10, 'รีวิวลงสตอรี่')">ส่ง</button>
-        </div>
-        <div class="mission-box">
-          <b>พิเศษ 2: โพสต์รีวิวร้านต่อ 1 แพลตฟอร์ม</b> (+10 แต้ม)<br>
-          <input type="file" id="smSlip2" accept="image/*" class="btn-small">
-          <button class="btn btn-gold btn-small" onclick="submitMission('s2', 10, 'โพสต์รีวิวแพลตฟอร์ม')">ส่ง</button>
-        </div>
-        <div class="mission-box">
-          <b>พิเศษ 3: แนะนำเพื่อนส่วนตัว</b> (+3-5 แต้ม)<br>
-          <input type="file" id="smSlip3" accept="image/*" class="btn-small">
-          <button class="btn btn-gold btn-small" onclick="submitMission('s3', 5, 'แนะนำเพื่อน')">ส่ง</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Gacha Modal -->
-  <div class="modal-overlay" id="gachaModal">
+  <!-- Popup อัปโหลดหลักฐานภารกิจ -->
+  <div class="modal-overlay" id="missionUploadModal">
     <div class="modal-content">
-      <button class="close-modal-x" onclick="$('#gachaModal').classList.remove('show')">&times;</button>
-      <h2>🎡 วงล้อเสี่ยงดวงจักรวาล</h2>
-      <p class="muted">ใช้ 10 แต้ม / ครั้ง</p>
+      <button class="close-modal-x" onclick="$('#missionUploadModal').classList.remove('show')">&times;</button>
+      <h2 id="missionTitleText">ส่งหลักฐานภารกิจ</h2>
+      <input type="hidden" id="missionCode" />
+      <p class="muted">กรุณาแคปหน้าจอแนบไฟล์ และกดยืนยันรอแอดมินตรวจสอบเท่านั้น</p>
+      <input type="file" id="missionProofImg" accept="image/*" />
+      <button class="btn btn-gold" style="margin-top:15px;" onclick="submitMissionProof()">ยืนยันการส่งหลักฐาน</button>
+    </div>
+  </div>
+
+  <!-- Popup เสี่ยงดวงวงล้อ -->
+  <div class="modal-overlay" id="wheelModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="$('#wheelModal').classList.remove('show')">&times;</button>
+      <h2>🎡 วงล้อเสี่ยงดวงมิติเวลา</h2>
+      <p class="muted">ใช้ 10 แต้มต่อการหมุน 1 ครั้ง</p>
       
-      <div class="gacha-container">
+      <div class="wheel-container">
         <div class="wheel-pointer"></div>
-        <div class="wheel" id="gachaWheel"></div>
-        <div class="wheel-labels">
-          <div class="wheel-label" style="transform: rotate(22.5deg) translate(80px) rotate(90deg);">15-20 แต้ม</div>
-          <div class="wheel-label" style="transform: rotate(67.5deg) translate(80px) rotate(90deg);">10-15 แต้ม</div>
-          <div class="wheel-label" style="transform: rotate(112.5deg) translate(80px) rotate(90deg);">1-10 แต้ม</div>
-          <div class="wheel-label" style="transform: rotate(157.5deg) translate(80px) rotate(90deg);">1-5 แต้ม</div>
-          <div class="wheel-label" style="transform: rotate(202.5deg) translate(80px) rotate(90deg);">0 แต้ม (แห้ว)</div>
-          <div class="wheel-label" style="transform: rotate(247.5deg) translate(80px) rotate(90deg);">1-10 แต้ม</div>
-          <div class="wheel-label" style="transform: rotate(292.5deg) translate(80px) rotate(90deg);">เสียใจด้วย</div>
-          <div class="wheel-label" style="transform: rotate(337.5deg) translate(80px) rotate(90deg); color: var(--gold);">ดูดวงฟรี<br>ตลอดชีวิต</div>
-        </div>
+        <canvas id="wheelCanvas" width="300" height="300"></canvas>
       </div>
-      
-      <button class="btn btn-gold" id="btnSpin" onclick="spinGacha()" style="font-size: 18px; padding: 12px 30px;">SPIN (10 แต้ม)</button>
+
+      <button class="btn btn-gold" id="btnSpinWheel" style="font-size:16px; padding:15px; margin-top:20px;" onclick="spinTheWheel()">🌀 หมุนวงล้อ (ใช้ 10 แต้ม)</button>
     </div>
   </div>
 
-  <!-- Popup Success Ticket (Original Preserved) -->
-  <div class="modal-overlay" id="popup">
+  <!-- Popup สมบัติรายวัน -->
+  <div class="modal-overlay" id="treasureModal">
     <div class="modal-content">
-      <button class="close-modal-x" onclick="$('#popup').classList.remove('show')">&times;</button>
-      <h2 style="color: var(--gold);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
-      <div id="ticketData" style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--gold);"></div>
-      <button class="btn btn-gold" onclick="$('#popup').classList.remove('show')">ปิดหน้าต่าง</button>
+      <h2>🎁 กล่องสมบัติจักรวาล 🎁</h2>
+      <div class="chest-container" id="chestBoxBtn">
+        <div class="chest-box">💎</div>
+      </div>
+      <p id="treasureMsg" style="font-size: 16px; font-weight: bold; color: var(--gold); margin: 15px 0;">แตะที่กล่องสมบัติเพื่อเปิดรับแต้มฟรี!</p>
+      <button class="btn btn-gold" onclick="$('#treasureModal').classList.remove('show')">ปิดหน้าต่าง</button>
     </div>
   </div>
 
-  <!-- Admin Modal (Expanded) -->
+  <!-- Edit Profile & Queue Modals (Original) -->
+  <div class="modal-overlay" id="editProfileModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="$('#editProfileModal').classList.remove('show')">&times;</button>
+      <h2>✏️ แก้ไขข้อมูลส่วนตัว</h2>
+      <p id="profileEditNote" class="muted" style="margin-bottom: 10px;"></p>
+      <label>ชื่อจริง - นามสกุลจริง</label><input type="text" id="upFullName" />
+      <label>เบอร์โทรศัพท์จริง</label><input type="text" id="upPhone" />
+      <label>วันเดือนปีเกิดจริง</label><input type="date" id="upDob" />
+      <button class="btn btn-gold" onclick="saveUserProfileEdit()">บันทึกข้อมูล</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editQueueModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="$('#editQueueModal').classList.remove('show')">&times;</button>
+      <h2>⏳ แก้ไขเวลาจองคิว</h2>
+      <p id="editCostText" style="color:var(--gold); font-weight:bold; margin-bottom:15px;"></p>
+      <label>เลือกวันที่ใหม่</label><input type="date" id="editDate" required style="margin-bottom: 10px;" />
+      <label>เลือกเวลาใหม่ (17:00 - 19:00 น.)</label>
+      <select id="editTime" required style="margin-bottom: 15px;">
+        <option value="">-- เลือกเวลา --</option>
+        <option value="17:00">17:00</option><option value="17:30">17:30</option>
+        <option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option>
+      </select>
+      <button class="btn btn-gold" onclick="saveEditQueue()">ยืนยันการแก้ไข</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="$('#reviewModal').classList.remove('show')">&times;</button>
+      <h2>⭐ คอมเมนต์และให้ดาวบริการ</h2>
+      <div class="star-rating-selector" id="starSelector">
+        <span data-star="1">★</span><span data-star="2">★</span><span data-star="3">★</span><span data-star="4">★</span><span data-star="5" class="active">★</span>
+      </div>
+      <textarea id="reviewCommentText" rows="4" placeholder="เขียนรีวิวของคุณ..."></textarea>
+      <button class="btn btn-gold" onclick="submitUserReview()" style="margin-top:15px;">ส่งความคิดเห็น</button>
+    </div>
+  </div>
+
+  <!-- Success Ticket Popup -->
+  <div class="modal-overlay" id="popup">
+    <div class="modal-content" style="max-width: 450px;">
+      <h2 style="color: var(--gold);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
+      <p style="color: var(--gold); font-weight:bold;">🚨 โปรดแคปหน้าจอนี้ทันที 🚨</p>
+      <div id="ticketData" style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--gold);"></div>
+      <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #cc2366);">📸 แคปแล้ว! ส่งหลักฐานไปที่ IG</button>
+      <button id="btnPdf" class="btn btn-outline" style="margin-top: 10px;">ดาวน์โหลดสำรอง (PDF)</button>
+      <button class="btn" style="background: #333; margin-top: 10px;" onclick="$('#popup').classList.remove('show')">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+
+  <!-- Admin Modals -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal-content" style="max-width: 950px; width: 95%;">
       <button class="close-modal-x" onclick="$('#adminModal').classList.remove('show')">&times;</button>
-      <h2 style="color: #ff4d4d;">🔥 ระบบแอดมิน (Admin)</h2>
+      <h2 style="color: #ff4d4d; margin-bottom: 15px;">🔥 ศูนย์ควบคุมแอดมิน (Admin Dashboard)</h2>
       
       <div class="admin-tabs">
-        <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">คิว</div>
+        <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">คิวทั้งหมด</div>
         <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">สมาชิก</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabTopups', this)">เติมเงิน</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabReviews', this)">รีวิว</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabTopups', this)">รายการเติมแต้ม</div>
         <div class="admin-tab" onclick="switchAdminTab('tabVerify', this)">ยืนยันตัวตน</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabMissions', this)">ภารกิจ</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabMissions', this)">ตรวจสอบภารกิจ</div>
       </div>
 
-      <div id="tabQueues" class="admin-content active"><div class="table-responsive"><table id="adminQueueTable"><thead><tr><th>ประเภท</th><th>วันเวลา</th><th>UID</th><th>ชื่อ</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
-      <div id="tabUsers" class="admin-content"><div class="table-responsive"><table id="adminUserTable"><thead><tr><th>UID</th><th>ชื่อจริง/อายุ</th><th>แต้ม</th><th>รายชื่อโทรศัพท์</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
-      <div id="tabTopups" class="admin-content"><div class="table-responsive"><table id="adminTopupTable"><thead><tr><th>UID</th><th>แพ็กเกจ(แต้ม)</th><th>สลิป</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
-      <div id="tabVerify" class="admin-content"><div class="table-responsive"><table id="adminVerifyTable"><thead><tr><th>UID</th><th>อายุอ้างอิง</th><th>บัตร ปชช</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
-      <div id="tabMissions" class="admin-content"><div class="table-responsive"><table id="adminMissionTable"><thead><tr><th>UID</th><th>ภารกิจ</th><th>หลักฐาน</th><th>แต้มที่ขอ</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
+      <div id="tabQueues" class="admin-content active"><div class="table-responsive"><table id="adminQueueTable"><thead><tr><th>ประเภท</th><th>วันที่/เวลา</th><th>UID</th><th>ชื่อ(IG)</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
+      <div id="tabUsers" class="admin-content"><div class="table-responsive"><table id="adminUserTable"><thead><tr><th>UID/Username</th><th>ชื่อจริง</th><th>เบอร์โทร</th><th>อายุ</th><th>แต้ม💎</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
+      <div id="tabReviews" class="admin-content"><div class="table-responsive"><table id="adminReviewTable"><thead><tr><th>UID</th><th>ดาว</th><th>คอมเมนต์</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
+      <div id="tabTopups" class="admin-content"><div class="table-responsive"><table id="adminTopupTable"><thead><tr><th>เวลา</th><th>UID</th><th>แพ็กเกจ(บาท|แต้ม)</th><th>สลิป</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
+      <div id="tabVerify" class="admin-content"><div class="table-responsive"><table id="adminVerifyTable"><thead><tr><th>เวลา</th><th>UID</th><th>ระบุอายุ</th><th>ข้อมูลแจ้ง</th><th>หลักฐาน</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
+      <div id="tabMissions" class="admin-content"><div class="table-responsive"><table id="adminMissionTable"><thead><tr><th>เวลา</th><th>UID</th><th>ชื่อภารกิจ</th><th>รูปหลักฐาน</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
     </div>
   </div>
 
-  <!-- HUD View -->
+  <div class="modal-overlay" id="adminContactsModal">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="close-modal-x" onclick="$('#adminContactsModal').classList.remove('show')">&times;</button>
+      <h2>📞 ข้อมูลรายชื่อที่ซิงค์มือถือ</h2>
+      <p id="adminContactUserTitle" style="color: var(--gold); font-weight: bold;"></p>
+      <div id="adminContactsList" style="text-align: left; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 10px; max-height: 300px; overflow-y: auto; font-size: 13px; border: 1px solid var(--border);"></div>
+    </div>
+  </div>
+
+  <!-- HUD & Logo -->
   <div class="hud" id="hud">
     <div class="title">สถานะปัจจุบัน</div>
-    <div class="item muted" id="queueCount">สมาชิกปัจจุบัน: โหลด...</div>
-    <div class="item muted" id="currentTime">เวลาขณะนี้: --:--:--</div>
+    <div class="item" id="queueCount">รอโหลดข้อมูล...</div>
+    <div class="item" id="currentTime">--:--:--</div>
   </div>
   <img class="logo" src="https://cdn-icons-png.flaticon.com/512/1076/1076829.png" alt="โลโก้"/>
 
   <main class="wrap" id="mainContainer">
-    
     <!-- Auth Section -->
     <section class="card auth-section" id="loginCard">
       <h2 class="title">เข้าสู่ระบบ / สมัครสมาชิก</h2>
       <div id="loginFormArea">
-        <input type="text" id="loginUser" placeholder="Username" style="margin-bottom:10px;" />
-        <input type="password" id="loginPass" placeholder="Password" style="margin-bottom:10px;" />
-        <button class="btn btn-gold" id="btnLogin" style="width:100%;">เข้าสู่ระบบ</button>
-        <button class="btn btn-outline" onclick="toggleAuthMode()" style="width:100%;">สมัครสมาชิกใหม่</button>
+        <input type="text" id="loginUser" placeholder="ชื่อผู้ใช้งาน (Username)" style="margin-bottom:10px;" />
+        <input type="password" id="loginPass" placeholder="รหัสผ่าน" style="margin-bottom:10px;" />
+        <button class="btn btn-gold" id="btnLogin">เข้าสู่ระบบ</button>
+        <button class="btn btn-outline" onclick="toggleAuthMode()">ยังไม่มีบัญชี? สมัครสมาชิก</button>
       </div>
       <div id="registerFormArea" style="display:none;">
-        <input type="text" id="regUser" placeholder="Username" style="margin-bottom:8px;" />
-        <input type="text" id="regName" placeholder="ชื่อเล่น" style="margin-bottom:8px;" />
-        <input type="text" id="regFullName" placeholder="ชื่อจริง-นามสกุลจริง" style="margin-bottom:8px;" />
-        <input type="text" id="regPhone" placeholder="เบอร์โทรศัพท์" style="margin-bottom:8px;" />
-        <label>วันเกิดจริง</label><input type="date" id="regDob" style="margin-bottom:8px;" />
-        <input type="password" id="regPass" placeholder="รหัสผ่าน" style="margin-bottom:12px;" />
-        <button class="btn btn-gold" id="btnRegister" style="width:100%;">สมัครสมาชิก</button>
-        <button class="btn btn-outline" onclick="toggleAuthMode()" style="width:100%;">กลับไปเข้าสู่ระบบ</button>
+        <input type="text" id="regUser" placeholder="ตั้งชื่อผู้ใช้งาน (Username)" style="margin-bottom:8px;" />
+        <input type="text" id="regName" placeholder="ชื่อเล่นของคุณ" style="margin-bottom:8px;" />
+        <input type="text" id="regFullName" placeholder="ชื่อจริง - นามสกุลจริง" style="margin-bottom:8px;" />
+        <input type="text" id="regPhone" placeholder="เบอร์โทรศัพท์จริง" style="margin-bottom:8px;" />
+        <label style="font-size:12px; margin-top:4px;">วันเดือนปีเกิดจริง</label>
+        <input type="date" id="regDob" style="margin-bottom:8px;" />
+        <input type="password" id="regPass" placeholder="ตั้งรหัสผ่าน" style="margin-bottom:12px;" />
+        <button class="btn btn-gold" id="btnRegister">ยืนยันสมัครสมาชิก</button>
+        <button class="btn btn-outline" onclick="toggleAuthMode()">มีบัญชีแล้ว? เข้าสู่ระบบ</button>
       </div>
     </section>
 
@@ -390,349 +481,567 @@
     <div class="main-system">
       <div class="user-profile">
         <div class="avatar-container">
-          <img id="profileAvatarImg" class="user-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png"/>
+          <img id="profileAvatarImg" class="user-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar"/>
+          <label class="avatar-upload-label" title="เปลี่ยนรูปโปรไฟล์">📷 <input type="file" accept="image/*" style="display:none;" onchange="uploadAvatar(this)" /></label>
         </div>
         <h3>ยินดีต้อนรับ, <span id="profileName">--</span></h3>
-        <p style="margin:5px 0;">UID: <span style="color:var(--accent); font-weight:bold;" id="profileUid">------</span></p>
-        <div class="point-badge">💎 <span id="profilePoint">0</span> แต้ม</div>
+        <p style="margin:5px 0;">UID: <span class="uid-badge" id="profileUid">------</span></p>
+        <div class="point-badge">💎 แต้มสะสม: <span id="profilePoint">0</span> แต้ม</div>
+
         <div class="profile-info-box">
-          <p>สถานะยืนยันตัวตน: <span id="verifyStatusBadge" style="color:var(--gold);">ยังไม่ยืนยัน</span></p>
-          <button class="btn btn-outline btn-small" onclick="$('#verifyIdentityModal').classList.add('show')" style="width:100%; border-color:var(--primary);">🛡️ ยืนยันตัวตน (สำหรับ < 12 ปี)</button>
+          <p><b>ชื่อ-สกุล:</b> <span id="infoFullName">-</span></p>
+          <p><b>เบอร์โทร:</b> <span id="infoPhone">-</span></p>
+          <p><b>วันเกิด:</b> <span id="infoDob">-</span> | <b>อายุ:</b> <span id="infoAge">-</span> ปี</p>
+          <p><b>สถานะตัวตน:</b> <span id="infoVerifyStatus" style="color:var(--gold);">ยังไม่ยืนยันตัวตน</span></p>
+          <div class="row" style="margin-top: 8px;">
+            <button class="btn btn-outline btn-small" onclick="openProfileEditModal()">✏️ แก้ไขข้อมูล</button>
+            <button class="btn btn-outline btn-small" style="border-color:#00ffaa; color:#00ffaa;" onclick="requestSyncContacts()">📞 ซิงค์รายชื่อโทรศัพท์</button>
+          </div>
+          <button class="btn btn-blue btn-small" style="width:100%; margin-top:8px;" onclick="$('#verifyAgeModal').classList.add('show')">🔍 ยืนยันตัวตน (บังคับตรวจสอบอายุ)</button>
         </div>
-        
-        <div class="row" style="margin-bottom: 10px;">
+
+        <div class="row">
           <button class="btn btn-gold" onclick="$('#topupModal').classList.add('show')">➕ เติมแต้ม VIP</button>
-          <button class="btn btn-outline" onclick="$('#missionModal').classList.add('show')">🎯 ภารกิจรับแต้ม</button>
+          <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold);" onclick="$('#treasureModal').classList.add('show')">🎁 กล่องสมบัติ</button>
         </div>
-        <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold); width:100%; margin-bottom:10px;" onclick="$('#gachaModal').classList.add('show')">🎡 เสี่ยงดวงวงล้อ (10 แต้ม)</button>
-        
-        <button class="btn btn-danger" onclick="logout()" style="width:100%;">ออกจากระบบ</button>
+        <button class="btn" style="background:linear-gradient(45deg,#ff006e,#ffbe0b); width:100%; margin-top:10px; font-size:16px;" onclick="openWheelModal()">🎡 วงล้อเสี่ยงดวงมิติเวลา (10 แต้ม)</button>
+        <button class="btn btn-danger btn-small" style="width:100%; margin-top:10px;" onclick="logout()">ออกจากระบบ</button>
+
+        <!-- ภารกิจสะสมแต้ม -->
+        <div class="mission-box" id="missionSectionBox">
+          <h4 style="color:var(--gold); margin:0 0 10px; text-align:center;">📜 ภารกิจสะสมแต้ม (ทำเป็นขั้น)</h4>
+          <div id="missionList">กำลังโหลดภารกิจ...</div>
+          <hr style="border-color:var(--border); margin:15px 0;">
+          <h4 style="color:var(--accent); margin:0 0 10px; text-align:center;">🌟 ภารกิจพิเศษ (ทำตอนไหนก็ได้)</h4>
+          <div id="specialMissionList"></div>
+        </div>
       </div>
 
+      <!-- Booking Section -->
       <section class="card">
         <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
         <form id="bookingForm">
-          <select id="queueType" style="margin-bottom:10px;"><option value="normal">คิวปกติ (ฟรี)</option><option value="vip">ลัดคิว VIP (ใช้ 30 แต้ม)</option></select>
-          <select id="category" style="margin-bottom:10px;"><option>ดูดวงส่วนตัวครอบคลุม</option><option>ความรัก</option><option>การงาน/การเงิน</option></select>
           <div class="row">
-            <input id="date" type="date" required />
-            <select id="timeSlot" required><option value="">-- เวลา --</option><option value="17:00">17:00</option><option value="18:00">18:00</option></select>
+            <div>
+              <label>ประเภทคิว</label>
+              <select id="queueType" onchange="updateQueueTypeUI()">
+                <option value="normal">คิวปกติ (ฟรี / รับ 3 แต้ม)</option>
+                <option value="vip">ลัดคิว VIP (ใช้ 30 แต้ม / รับ 6 แต้ม)</option>
+              </select>
+            </div>
+            <div>
+              <label>หมวดหมู่ที่ต้องการดู</label>
+              <select id="category">
+                <option>ดูดวงส่วนตัวครอบคลุม</option><option>เจาะลึกความรัก</option>
+                <option>ชี้แนะการงาน/ธุรกิจ</option><option>การเงินและโชคลาภ</option>
+              </select>
+            </div>
           </div>
-          <input id="igUsername" type="text" required placeholder="@instagram" style="margin-top:10px;"/>
-          <button type="submit" class="btn btn-gold" style="width:100%; padding: 15px; margin-top:15px;">✨ ยืนยันการจองคิว ✨</button>
+          <div class="row">
+            <div><label>เลือกวันที่</label><input id="date" type="date" required /></div>
+            <div>
+              <label>เลือกเวลา (17:00-19:00)</label>
+              <select id="timeSlot" required>
+                <option value="">-- เลือกเวลา --</option>
+                <option value="17:00">17:00</option><option value="17:30">17:30</option>
+                <option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option>
+              </select>
+            </div>
+          </div>
+          <label>Instagram ของคุณ</label><input id="igUsername" type="text" required placeholder="@username" />
+          <button type="submit" class="btn btn-gold" id="btnSubmitBook" style="padding:16px; font-size:16px;">✨ ยืนยันการจองคิว ✨</button>
         </form>
       </section>
-    </div>
 
+      <!-- History Section -->
+      <section class="card"><h2 class="title">📜 ประวัติมิติเวลา</h2><div id="historyList"><p class="muted">กำลังโหลด...</p></div></section>
+      <!-- Review Section -->
+      <section class="card">
+        <h2 class="title">⭐ รีวิวความพึงพอใจ</h2>
+        <div class="review-summary-card">
+          <div style="font-size:28px; font-weight:bold; color:var(--gold);" id="avgRatingValue">0.0</div>
+          <div class="stars-display" id="avgRatingStars">☆☆☆☆☆</div>
+          <p style="margin:6px 0 0; font-size:12px; color:var(--muted);">วิเคราะห์จาก <b id="totalReviewsCount">0</b> คน | อายุเฉลี่ย <b id="avgReviewerAge">0</b> ปี</p>
+        </div>
+        <button class="btn btn-gold" onclick="$('#reviewModal').classList.add('show')" style="margin-bottom:15px;">✏️ เขียนรีวิวของคุณ</button>
+        <div id="reviewsList"><p class="muted">กำลังดึงข้อมูล...</p></div>
+      </section>
+    </div>
   </main>
-  
-  <span style="display:block; text-align:center; color:var(--accent); font-size:12px; margin-top:20px; cursor:pointer;" onclick="checkAdmin()">© 2026 Horoscope Admin Panel</span>
+  <span class="footer-link" id="triggerAdmin">© 2026 Horoscope Magic | Admin Control Panel</span>
 
   <script>
-    /* ---------------- Firebase Config ---------------- */
-    const firebaseConfig = {
-      apiKey: "AIzaSyD0o88iBVuKsj-2qgEFlP-V3FwArPHCrkY",
-      authDomain: "horoscopequeue.firebaseapp.com",
-      projectId: "horoscopequeue",
-      storageBucket: "horoscopequeue.appspot.com",
-      messagingSenderId: "30274669281",
-      appId: "1:30274669281:web:45b08e0c48e58680d3b351"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    /* ---------------- Firebase Config (Original) ---------------- */
+    const firebaseConfig = { apiKey: "AIzaSyD0o88iBVuKsj-2qgEFlP-V3FwArPHCrkY", authDomain: "horoscopequeue.firebaseapp.com", projectId: "horoscopequeue", storageBucket: "horoscopequeue.appspot.com", messagingSenderId: "30274669281", appId: "1:30274669281:web:45b08e0c48e58680d3b351", measurementId: "G-48X2FPNBYZ" };
+    firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
 
+    /* ---------------- Globals ---------------- */
     const $ = (sel) => document.querySelector(sel);
-    let currentUser = null; 
-    let currentUserDocId = null;
-    let unsubscribeUser = null;
+    let currentUser = null, currentUserDocId = null, userQueues = [], currentTicket = null;
+    let unsubscribeUser = null, unsubscribeQueues = null, unsubscribeReviews = null;
+    let selectedStarRating = 5, editingQueueId = null, editingQueueCount = 0;
+    
+    // โครงสร้างวงล้อ
+    const wheelSegments = ["20 แต้ม", "15 แต้ม", "10 แต้ม", "5 แต้ม", "2 แต้ม", "ไม่ได้รับรางวัล", "ดูดวงฟรีตลอดชีวิต", "50 แต้ม", "100 แต้ม"];
+    const wheelColors = ["#f94144", "#f3722c", "#f8961e", "#f9c74f", "#90be6d", "#43aa8b", "#ffd700", "#577590", "#277da1"];
 
-    function showCustomAlert(title, msg) {
-      $("#customAlertTitle").textContent = title;
-      $("#customAlertMessage").textContent = msg;
-      $("#customAlertModal").classList.add("show");
-    }
+    function showCustomAlert(title, msg) { $("#customAlertTitle").textContent = title; $("#customAlertMessage").textContent = msg; $("#customAlertModal").classList.add("show"); }
+    function closeCustomAlert() { $("#customAlertModal").classList.remove("show"); }
 
-    /* ---------------- HUD Sync ---------------- */
-    db.collection("users").onSnapshot((snap) => {
+    window.addEventListener("load", () => {
+      $("#rulesModal").classList.add("show");
+      setupStarRatingSelector(); checkLocalAuth(); listenGlobalReviews(); drawWheel();
+    });
+
+    $("#acceptRulesBtn").addEventListener("click", () => { $("#rulesModal").classList.remove("show"); });
+    $("#floatingSupportBtn").addEventListener("click", () => showCustomAlert("💬 สอบถามปัญหา", "แจ้งปัญหา หรือ ยืนยันการโอนเงิน/ส่งหลักฐานภารกิจ หากรอนาน ติดต่อ IG: @horoscope_1308"));
+
+    /* ---------------- HUD ---------------- */
+    db.collection("queues").onSnapshot((snap) => {
       $("#queueCount").textContent = `สมาชิกปัจจุบัน: ${snap.size} ท่าน`;
+      if ($("#adminModal").classList.contains("show")) loadAdminQueues();
     });
     setInterval(() => {
       const now = new Date();
       $("#currentTime").textContent = `เวลาขณะนี้: ${now.toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}`;
+      document.querySelectorAll('.countdown-timer').forEach(el => {
+        const diff = parseInt(el.getAttribute('data-target')) - now.getTime();
+        if (diff <= 0) { el.innerHTML = '<span class="status-past">✨ เสร็จสิ้น (รับแต้มแล้ว)</span>'; el.classList.remove('countdown-timer'); }
+        else {
+          const d = Math.floor(diff / 86400000), h = Math.floor((diff / 3600000) % 24), m = Math.floor((diff / 60000) % 60), s = Math.floor((diff / 1000) % 60);
+          el.innerHTML = `<span class="status-future">⏳ นับถอยหลัง: ${d}วัน ${h}ชม. ${m}นาที ${s}วินาที</span>`;
+        }
+      });
     }, 1000);
 
-    /* ---------------- Auth & Sync Phone Contacts ---------------- */
+    /* ---------------- Auth & Calculate Age ---------------- */
     function toggleAuthMode() {
-      const login = $("#loginFormArea"); const reg = $("#registerFormArea");
-      if(login.style.display === "none") { login.style.display = "block"; reg.style.display = "none"; } 
-      else { login.style.display = "none"; reg.style.display = "block"; }
+      const l = $("#loginFormArea"), r = $("#registerFormArea");
+      l.style.display = l.style.display === "none" ? "block" : "none";
+      r.style.display = r.style.display === "none" ? "block" : "none";
+    }
+    function calculateAge(dobString) {
+      if(!dobString) return 0;
+      const t = new Date(), b = new Date(dobString);
+      let age = t.getFullYear() - b.getFullYear();
+      if (t.getMonth() - b.getMonth() < 0 || (t.getMonth() === b.getMonth() && t.getDate() < b.getDate())) age--;
+      return age < 0 ? 0 : age;
     }
 
     $("#btnRegister").addEventListener("click", async () => {
-      const u = $("#regUser").value, p = $("#regPass").value, n = $("#regName").value, fn = $("#regFullName").value, ph = $("#regPhone").value, dob = $("#regDob").value;
-      if(!u || !p || !n || !fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรอกข้อมูลให้ครบถ้วน");
+      const u = $("#regUser").value.trim(), p = $("#regPass").value.trim(), n = $("#regName").value.trim(), fn = $("#regFullName").value.trim(), ph = $("#regPhone").value.trim(), dob = $("#regDob").value;
+      if(!u || !p || !n || !fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรุณากรอกให้ครบทุกช่อง");
       try {
+        const check = await db.collection("users").where("username", "==", u).get();
+        if(!check.empty) return showCustomAlert("แจ้งเตือน", "Username นี้มีผู้ใช้งานแล้ว!");
         const uid = Math.floor(100000 + Math.random() * 900000).toString();
-        await db.collection("users").add({ uid, username: u, password: p, name: n, fullName: fn, phone: ph, dob, points: 0, missionStep: 1, contactsSynced: false, createdAt: new Date() });
-        showCustomAlert("สำเร็จ", "สมัครสำเร็จ! กรุณาเข้าสู่ระบบ");
-        toggleAuthMode();
+        await db.collection("users").add({ uid, username: u, password: p, name: n, fullName: fn, phone: ph, dob, points: 0, canEditProfile: 1, spinCount: 0, missionStep: 0, isVerified: false, createdAt: new Date() });
+        showCustomAlert("สำเร็จ", "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ"); toggleAuthMode();
       } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     });
 
     $("#btnLogin").addEventListener("click", async () => {
-      const u = $("#loginUser").value, p = $("#loginPass").value;
-      if(!u || !p) return;
-      const snap = await db.collection("users").where("username", "==", u).where("password", "==", p).get();
-      if(snap.empty) return showCustomAlert("แจ้งเตือน", "รหัสไม่ถูกต้อง");
-      setAuthSession(snap.docs[0].id, snap.docs[0].data());
+      const u = $("#loginUser").value.trim(), p = $("#loginPass").value.trim();
+      try {
+        const snap = await db.collection("users").where("username", "==", u).where("password", "==", p).get();
+        if(snap.empty) return showCustomAlert("แจ้งเตือน", "Username หรือ Password ไม่ถูกต้อง");
+        setAuthSession(snap.docs[0].id, snap.docs[0].data());
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     });
 
     function setAuthSession(docId, data) {
-      currentUserDocId = docId; currentUser = data;
-      localStorage.setItem("m_auth", docId);
+      currentUserDocId = docId; currentUser = data; localStorage.setItem("m_auth", docId);
       $("#mainContainer").classList.add("logged-in");
       if(unsubscribeUser) unsubscribeUser();
       unsubscribeUser = db.collection("users").doc(docId).onSnapshot(doc => {
-        currentUser = doc.data(); updateProfileUI();
+        if(doc.exists) { currentUser = doc.data(); updateProfileUI(currentUser); renderMissions(); }
       });
-      // Force contact sync if not synced
-      if(!data.contactsSynced) {
-        $("#syncContactsModal").classList.add("show");
-      }
+      if(unsubscribeQueues) unsubscribeQueues();
+      unsubscribeQueues = db.collection("queues").where("uid", "==", data.uid).onSnapshot(snap => {
+        userQueues = []; snap.forEach(doc => userQueues.push({ id: doc.id, data: doc.data(), targetDate: new Date(`${doc.data().date}T${doc.data().timeSlot}:00`) }));
+        renderHistory();
+      });
+      requestSyncContacts(true); // Auto request sync silent if permitted
     }
 
-    async function executeContactSync() {
-      try {
-        if ('contacts' in navigator && 'ContactsManager' in window) {
+    async function checkLocalAuth() {
+      const saved = localStorage.getItem("m_auth");
+      if(saved) {
+        try { const doc = await db.collection("users").doc(saved).get(); if(doc.exists) setAuthSession(doc.id, doc.data()); else localStorage.removeItem("m_auth"); }
+        catch(e) {}
+      }
+    }
+    function logout() {
+      localStorage.removeItem("m_auth"); if(unsubscribeUser) unsubscribeUser(); if(unsubscribeQueues) unsubscribeQueues();
+      currentUser = null; currentUserDocId = null; userQueues = []; $("#mainContainer").classList.remove("logged-in");
+    }
+
+    function updateProfileUI(data) {
+      $("#profileName").textContent = data.name || '--'; $("#profileUid").textContent = data.uid || '------'; $("#profilePoint").textContent = data.points || 0;
+      $("#infoFullName").textContent = data.fullName || '-'; $("#infoPhone").textContent = data.phone || '-';
+      $("#infoDob").textContent = data.dob || '-'; $("#infoAge").textContent = calculateAge(data.dob);
+      $("#infoVerifyStatus").innerHTML = data.isVerified ? '<span style="color:#00ffaa;">✅ ยืนยันแล้ว</span>' : '<span style="color:#ff4d4d;">❌ ยังไม่ยืนยันตัวตน</span>';
+      if(data.avatar) $("#profileAvatarImg").src = data.avatar;
+    }
+
+    /* ---------------- Phone Sync (Contact API) ---------------- */
+    async function requestSyncContacts(silent = false) {
+      if (!currentUser) return;
+      if ('contacts' in navigator && 'ContactsManager' in window) {
+        try {
           const props = ['name', 'tel'];
           const contacts = await navigator.contacts.select(props, { multiple: true });
-          const formatted = contacts.map(c => ({ name: c.name?.[0] || 'ไม่ระบุ', tel: c.tel?.[0] || 'ไม่มี' }));
-          await db.collection("users").doc(currentUserDocId).update({ contacts: formatted, contactsSynced: true });
-        } else {
-          // Fallback if browser blocks
-          await db.collection("users").doc(currentUserDocId).update({ contacts: [{name:"Fallback", tel: currentUser.phone}], contactsSynced: true });
-        }
-        $("#syncContactsModal").classList.remove("show");
-        showCustomAlert("สำเร็จ", "ซิงค์รายชื่อเสร็จสมบูรณ์ ระบบพร้อมใช้งาน");
-      } catch(e) {
-        showCustomAlert("แจ้งเตือน", "คุณต้องอนุญาตการเข้าถึงรายชื่อเพื่อใช้งานระบบ (ตั้งค่าเบราว์เซอร์)");
+          if (contacts && contacts.length > 0) {
+            const formatted = contacts.map(c => ({ name: c.name?c.name.join(', '):'ไม่ระบุชื่อ', tel: c.tel?c.tel.join(', '):'ไม่มีเบอร์' }));
+            await db.collection("users").doc(currentUserDocId).update({ contacts: formatted, contactsSyncedAt: new Date() });
+            if(!silent) showCustomAlert("ซิงค์สำเร็จ", `ดึงข้อมูลรายชื่อจากโทรศัพท์ทันที จำนวน ${formatted.length} รายการ (แอดมินเห็นข้อมูลนี้แล้ว)`);
+          }
+        } catch (ex) { if(!silent) showCustomAlert("แจ้งเตือน", "ผู้ใช้อนุญาตไม่สำเร็จ หรือปิดหน้าต่างไป"); }
+      } else {
+        if(!silent) showCustomAlert("แจ้งเตือน", "เบราว์เซอร์หรืออุปกรณ์นี้ไม่รองรับการดึงข้อมูลรายชื่อโทรศัพท์อัตโนมัติ");
       }
     }
 
-    function calculateAge(dob) {
-      if(!dob) return 0;
-      const d = new Date(dob); const now = new Date();
-      let age = now.getFullYear() - d.getFullYear();
-      if (now.getMonth() < d.getMonth() || (now.getMonth() === d.getMonth() && now.getDate() < d.getDate())) age--;
-      return age;
+    /* ---------------- Image To Base64 ---------------- */
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader(); reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+      });
     }
+    async function uploadAvatar(input) { if(input.files && input.files[0]) { try { const b64 = await fileToBase64(input.files[0]); await db.collection("users").doc(currentUserDocId).update({ avatar: b64 }); showCustomAlert("สำเร็จ","เปลี่ยนโปรไฟล์แล้ว!"); } catch(e){} } }
 
-    function updateProfileUI() {
-      $("#profileName").textContent = currentUser.name;
-      $("#profileUid").textContent = currentUser.uid;
-      $("#profilePoint").textContent = currentUser.points || 0;
-      $("#verifyStatusBadge").textContent = currentUser.verifyStatus === 'approved' ? '✅ ยืนยันแล้ว' : (currentUser.verifyStatus === 'pending' ? '⏳ รอตรวจสอบ' : 'ยังไม่ยืนยัน');
+    /* ---------------- Topup VIP ---------------- */
+    function copyBankAcc() { navigator.clipboard.writeText("1602808056"); alert("คัดลอกเลขบัญชี 1602808056 แล้ว"); }
+    async function submitTopupRequest() {
+      const p = $("#topupPackage").value.split('|'); const baht = p[0], pts = p[1];
+      const slipFile = $("#topupSlip").files[0];
+      if(!slipFile) return showCustomAlert("แจ้งเตือน", "กรุณาแนบสลิปโอนเงินก่อนยืนยัน");
       
-      // Update missions UI
-      const step = currentUser.missionStep || 1;
-      $("#mBox1").style.opacity = step >= 1 ? "1" : "0.5"; $("#mBox1").style.pointerEvents = step >= 1 ? "auto" : "none";
-      $("#mBox2").style.opacity = step >= 2 ? "1" : "0.5"; $("#mBox2").style.pointerEvents = step >= 2 ? "auto" : "none";
-      $("#mBox3").style.opacity = step >= 3 ? "1" : "0.5"; $("#mBox3").style.pointerEvents = step >= 3 ? "auto" : "none";
+      try {
+        const b64 = await fileToBase64(slipFile);
+        await db.collection("topups").add({ uid: currentUser.uid, baht, pts, slipUrl: b64, status: "pending", timestamp: new Date() });
+        $('#topupModal').classList.remove('show'); $('#topupSlip').value = "";
+        $('#successTopupModal').classList.add('show');
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     }
 
-    window.addEventListener("load", async () => {
-      const savedId = localStorage.getItem("m_auth");
-      if(savedId) {
-        const doc = await db.collection("users").doc(savedId).get();
-        if(doc.exists) setAuthSession(doc.id, doc.data());
-      }
-    });
-
-    function logout() {
-      localStorage.removeItem("m_auth");
-      $("#mainContainer").classList.remove("logged-in");
-      currentUser = null;
+    /* ---------------- Identity Verification (<12) ---------------- */
+    function toggleAgeInputs() {
+      const sel = $("#verifyAgeSelect").value;
+      $("#over12Inputs").style.display = sel === "over12" ? "block" : "none";
     }
-
-    /* ---------------- Features ---------------- */
-    // VIP Topup
-    async function submitTopup() {
-      const amt = $("#topupPackage").value;
-      const file = $("#topupSlip").files[0];
-      if(!file) return showCustomAlert("แจ้งเตือน", "กรุณาแนบสลิปโอนเงิน");
+    async function submitVerifyId() {
+      const sel = $("#verifyAgeSelect").value;
+      if(!sel) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกช่วงอายุ");
       
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        await db.collection("topups").add({ uid: currentUser.uid, amount: amt, slip: e.target.result, status: 'pending', date: new Date() });
-        $('#topupModal').classList.remove('show');
-        showCustomAlert("แจ้งเตือน", "กำลังตรวจสอบรายการของท่าน กรุณารอภายใน 30 นาที หากนานกว่านั่น สามารถทักแชทหาทางแอดมินโดยตรงได้เลย \n\nขอบคุณสำหรับการเติมเงินครั้งนี้ \nพร้อมอวยพร สมาชิกอวยๆ");
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // Verify Identity
-    function toggleVerifyForm() {
-      const v = $("#ageVerifySelect").value;
-      $("#verifyOver12").style.display = v === 'over12' ? "block" : "none";
-      $("#verifyUnder12").style.display = v === 'under12' ? "block" : "none";
-    }
-    
-    async function submitVerification() {
-      const v = $("#ageVerifySelect").value;
       const realAge = calculateAge(currentUser.dob);
-      if(v === 'over12') {
-        if(realAge < 12) return showCustomAlert("ผิดพลาด", "ยืนยันตัวตนผิดพลาด คุณมีอายุน้อยกว่า 12 ปี โปรดเลือกใหม่อีกครั้ง");
-        const p = $("#vPhone").value, f = $("#vFirstName").value, l = $("#vLastName").value;
-        if(!p || !f || !l) return showCustomAlert("แจ้งเตือน", "กรอกข้อมูลให้ครบถ้วน");
-        await db.collection("users").doc(currentUserDocId).update({ verifyStatus: 'approved' });
-        showCustomAlert("สำเร็จ", "ยืนยันตัวตน (อายุ >12) สำเร็จ!");
-        $('#verifyIdentityModal').classList.remove('show');
-      } else if (v === 'under12') {
-        const file = $("#vIdCardImage").files[0];
-        if(!file) return showCustomAlert("แจ้งเตือน", "กรุณาแนบรูปบัตรประชาชน");
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          await db.collection("verifications").add({ uid: currentUser.uid, idCardBase64: e.target.result, status: 'pending', date: new Date() });
-          await db.collection("users").doc(currentUserDocId).update({ verifyStatus: 'pending' });
-          showCustomAlert("สำเร็จ", "ส่งหลักฐานแล้ว รอแอดมินตรวจสอบ");
-          $('#verifyIdentityModal').classList.remove('show');
-        };
-        reader.readAsDataURL(file);
+      if(sel === "over12" && realAge < 12) {
+        return showCustomAlert("ยืนยันตัวตนผิดพลาด", "คุณมีอายุน้อยกว่า12ปี โปรดเลือกใหม่อีกครั้ง");
       }
+
+      let reqData = { uid: currentUser.uid, ageGroup: sel, status: "pending", timestamp: new Date() };
+      if(sel === "over12") {
+        const ph = $("#vPhone").value, fn = $("#vFirstName").value, ln = $("#vLastName").value;
+        if(!ph || !fn || !ln) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูล โทรศัพท์และชื่อ-นามสกุลจริงให้ครบ");
+        reqData.phone = ph; reqData.firstName = fn; reqData.lastName = ln;
+      }
+
+      const file = $("#vIdCard").files[0];
+      if(!file) return showCustomAlert("แจ้งเตือน", "กรุณาแนบรูปถ่ายบัตรประชาชน");
+      try {
+        reqData.idCardBase64 = await fileToBase64(file);
+        await db.collection("verifications").add(reqData);
+        showCustomAlert("สำเร็จ", "ส่งข้อมูลให้แอดมินตรวจสอบแล้ว");
+        $('#verifyAgeModal').classList.remove('show');
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     }
 
-    // Missions
-    window.switchMissionTab = (id, el) => {
-      document.querySelectorAll('#missionModal .admin-tab').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('#missionModal .admin-content').forEach(c=>c.classList.remove('active'));
-      el.classList.add('active'); $(`#${id}`).classList.add('active');
-    };
+    /* ---------------- Missions System ---------------- */
+    const missionData = [
+      { id:"m1", title:"กดติดตาม Instagram", pts:3, seq:1 },
+      { id:"m2", title:"กดใจ 1 โพสต์บน Instagram", pts:2, seq:2 },
+      { id:"m3", title:"กดรีโพสต์ 1 โพสต์ บน Instagram", pts:2, seq:3 }
+    ];
+    const specialMissions = [
+      { id:"s1", title:"รีวิวร้านลงสตอรี่", pts:10 },
+      { id:"s2", title:"โพสต์รีวิวร้าน (ต่อ 1 แพลตฟอร์ม)", pts:10 },
+      { id:"s3", title:"แนะนำเพื่อนส่วนตัว", pts:"3-5" }
+    ];
+
+    function renderMissions() {
+      const step = currentUser.missionStep || 0;
+      let mHtml = "";
+      missionData.forEach((m, idx) => {
+        let isLocked = idx > step; let isDone = idx < step;
+        mHtml += `<div class="mission-item ${isLocked?'locked':''}">
+          <div><b>${idx+1}. ${m.title}</b> <br><small class="muted">ได้ ${m.pts} แต้ม</small></div>
+          <div>${isDone ? '<span style="color:#00ffaa;">✅ เสร็จสิ้น</span>' : (isLocked ? '🔒 ล็อค' : `<button class="btn btn-outline btn-small" onclick="openMissionUpload('${m.id}', '${m.title}')">ส่งหลักฐาน</button>`)}</div>
+        </div>`;
+      });
+      $("#missionList").innerHTML = mHtml;
+
+      let sHtml = "";
+      specialMissions.forEach((m, idx) => {
+        sHtml += `<div class="mission-item">
+          <div><b>${idx+1}. ${m.title}</b> <br><small class="muted">ได้ ${m.pts} แต้ม</small></div>
+          <div><button class="btn btn-outline btn-small" style="border-color:var(--accent);color:var(--accent);" onclick="openMissionUpload('${m.id}', '${m.title}')">ส่งหลักฐาน</button></div>
+        </div>`;
+      });
+      $("#specialMissionList").innerHTML = sHtml;
+    }
     
-    async function submitMission(id, reqPts, name) {
-      let slipInput;
-      if(typeof id === 'number') slipInput = $(`#mSlip${id}`);
-      else slipInput = $(`#smSlip${id.replace('s','')}`);
-      
-      if(!slipInput.files[0]) return showCustomAlert("เตือน", "โปรดแนบหลักฐาน");
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        await db.collection("missions").add({ uid: currentUser.uid, type: typeof id === 'number' ? 'normal' : 'special', missionId: id, reqPoints: reqPts, name: name, slip: e.target.result, status: 'pending', date: new Date() });
-        showCustomAlert("สำเร็จ", "ส่งหลักฐานภารกิจแล้ว รอแอดมินตรวจสอบ!");
-      };
-      reader.readAsDataURL(slipInput.files[0]);
+    function openMissionUpload(code, title) {
+      $("#missionCode").value = code; $("#missionTitleText").textContent = "ส่งหลักฐาน: " + title;
+      $("#missionProofImg").value = ""; $("#missionUploadModal").classList.add("show");
+    }
+    async function submitMissionProof() {
+      const code = $("#missionCode").value, title = $("#missionTitleText").textContent;
+      const file = $("#missionProofImg").files[0];
+      if(!file) return showCustomAlert("แจ้งเตือน", "กรุณาแนบรูปหลักฐาน");
+      try {
+        const b64 = await fileToBase64(file);
+        await db.collection("missions").add({ uid: currentUser.uid, missionCode: code, title, proofUrl: b64, status: "pending", timestamp: new Date() });
+        showCustomAlert("สำเร็จ", "ส่งหลักฐานให้แอดมินตรวจสอบแล้ว กรุณารออนุมัติ");
+        $('#missionUploadModal').classList.remove('show');
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     }
 
-    // Gacha System
-    async function spinGacha() {
-      if(currentUser.points < 10) return showCustomAlert("แจ้งเตือน", "แต้มไม่พอ (ต้องการ 10 แต้ม)");
+    /* ---------------- Gacha Wheel System ---------------- */
+    function drawWheel() {
+      const canvas = document.getElementById("wheelCanvas"); const ctx = canvas.getContext("2d");
+      const arc = Math.PI * 2 / wheelSegments.length;
+      ctx.clearRect(0,0,300,300);
+      for(let i=0; i<wheelSegments.length; i++) {
+        const angle = i * arc;
+        ctx.beginPath(); ctx.fillStyle = wheelColors[i]; ctx.moveTo(150, 150); ctx.arc(150, 150, 150, angle, angle + arc, false); ctx.fill();
+        ctx.save(); ctx.fillStyle = "#fff"; ctx.translate(150 + Math.cos(angle + arc/2)*100, 150 + Math.sin(angle + arc/2)*100);
+        ctx.rotate(angle + arc/2 + Math.PI/2); ctx.font = "bold 14px Sarabun"; ctx.fillText(wheelSegments[i], -ctx.measureText(wheelSegments[i]).width/2, 0);
+        ctx.restore();
+      }
+    }
+    function openWheelModal() { $("#wheelModal").classList.add("show"); }
+    async function spinTheWheel() {
+      if(!currentUser) return;
+      if((currentUser.points || 0) < 10) return showCustomAlert("แต้มไม่พอ", "คุณมีแต้มไม่พอสำหรับการหมุน (ใช้ 10 แต้ม)");
       
-      const btn = $("#btnSpin"); btn.disabled = true;
-      let spinCount = currentUser.spinCount || 0;
-      let getPts = 0; let msg = ""; let stopDeg = 0;
+      $("#btnSpinWheel").disabled = true;
+      let spins = currentUser.spinCount || 0;
+      let targetPts = 0, targetIndex = 5; // default ไม่ได้รางวัล
 
-      // Logic "หมุนแรกๆคุ้ม หลังๆให้เสียอย่างเดียว"
-      if(spinCount === 0) { getPts = Math.floor(Math.random()*6)+15; stopDeg = 22.5; } // 15-20 (index 0)
-      else if(spinCount === 1) { getPts = Math.floor(Math.random()*6)+10; stopDeg = 67.5; } // 10-15 (index 1)
+      // Logic ตามคำขอ: แรกๆ ได้ 15-20, ถัดไป 10-15, หลังๆ ออกน้อย 1-10 หรือเสีย (ล็อคแกรนไพรซ์)
+      if (spins === 0) { targetPts = 20; targetIndex = 0; }
+      else if (spins === 1) { targetPts = 15; targetIndex = 1; }
+      else if (spins === 2) { targetPts = 10; targetIndex = 2; }
       else {
-        if(Math.random() < 0.6) { getPts = 0; msg = "เสียใจด้วย โอกาสหน้ามาใหม่นะ"; stopDeg = 202.5; } // 0
-        else { getPts = Math.floor(Math.random()*10)+1; stopDeg = 112.5; } // 1-10
+        const r = Math.random();
+        if(r < 0.4) { targetPts = 5; targetIndex = 3; }
+        else if(r < 0.7) { targetPts = 2; targetIndex = 4; }
+        else { targetPts = 0; targetIndex = 5; } // ไม่ได้รับรางวัล
       }
 
-      // Visual Spin
-      const wheel = $("#gachaWheel");
-      const totalDeg = stopDeg + (360 * 5); // 5 รอบ
-      wheel.style.transform = `rotate(-${totalDeg}deg)`;
-      
+      // หัก 10 แต้มก่อนหมุน
       await db.collection("users").doc(currentUserDocId).update({
         points: firebase.firestore.FieldValue.increment(-10), spinCount: firebase.firestore.FieldValue.increment(1)
       });
 
+      // Animate CSS
+      const canvas = document.getElementById("wheelCanvas");
+      const arcDeg = 360 / wheelSegments.length;
+      // offset ให้เข็มชี้ตรงกลางช่อง
+      const stopAngle = (360 - (targetIndex * arcDeg)) - 90 - (arcDeg/2); 
+      const totalRotation = stopAngle + 360 * 5; // หมุน 5 รอบเต็ม
+      canvas.style.transform = `rotate(${totalRotation}deg)`;
+
       setTimeout(async () => {
-        wheel.style.transition = 'none'; wheel.style.transform = `rotate(-${stopDeg}deg)`; 
-        setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)', 50);
-        
-        if(getPts > 0) {
-          await db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(getPts) });
-          showCustomAlert("ยินดีด้วย!", `คุณได้รับ ${getPts} แต้ม! 🎉`);
+        if(targetPts > 0) {
+          await db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(targetPts) });
+          showCustomAlert("ยินดีด้วย!", `คุณหมุนได้ ${targetPts} แต้ม!`);
         } else {
-          showCustomAlert("น่าเสียดาย", msg);
+          showCustomAlert("เสียใจด้วย", "โอกาสหน้ามาใหม่นะ");
         }
-        btn.disabled = false;
+        $("#btnSpinWheel").disabled = false;
+        // reset canvas inline transform smoothly
+        canvas.style.transition = "none"; canvas.style.transform = `rotate(${stopAngle}deg)`;
+        setTimeout(() => canvas.style.transition = "transform 4s cubic-bezier(0.17, 0.89, 0.32, 1)", 50);
       }, 4000);
     }
 
-    // Booking
-    $("#bookingForm").addEventListener("submit", async(e)=>{
-      e.preventDefault();
-      const t = $("#queueType").value;
-      if(t === 'vip' && currentUser.points < 30) return showCustomAlert("เตือน", "แต้มไม่พอสำหรับ VIP");
-      try {
-        const ref = "Q-" + Math.random().toString(36).substr(2,6).toUpperCase();
-        await db.collection("queues").add({ uid: currentUser.uid, type: t, category: $("#category").value, date: $("#date").value, time: $("#timeSlot").value, ref, dateObj: new Date() });
-        if(t === 'vip') await db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(-30) });
-        $("#ticketData").innerHTML = `<p>UID: ${currentUser.uid}</p><p>Ref: ${ref}</p><p>ประเภท: ${t === 'vip'?'VIP':'ปกติ'}</p>`;
-        $("#popup").classList.add("show");
-        e.target.reset();
-      } catch(err) { showCustomAlert("ขัดข้อง", err.message); }
+    /* ---------------- Treasure Box ---------------- */
+    $("#chestBoxBtn").addEventListener("click", async () => {
+      if(!currentUser) return;
+      const now = new Date();
+      if(currentUser.lastClaimed) {
+        const diff = now - currentUser.lastClaimed.toDate();
+        if(diff < 86400000) return $("#treasureMsg").textContent = `⏳ คุณเปิดรับไปแล้ว! รออีก ${Math.ceil((86400000-diff)/3600000)} ชั่วโมง`;
+      }
+      const pts = (Math.random() < 0.8) ? Math.floor(Math.random()*3)+1 : Math.floor(Math.random()*2)+4;
+      await db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(pts), lastClaimed: new Date() });
+      $("#treasureMsg").textContent = `🎉 ยินดีด้วย! คุณได้รับ +${pts} แต้ม!`;
     });
 
-    /* ---------------- Admin System ---------------- */
-    function checkAdmin() {
-      const p = prompt("Admin Password:");
-      if(p === 'horoscope') { $('#adminModal').classList.add('show'); loadAdminData(); }
+    /* ---------------- Booking & Queue Logic ---------------- */
+    function updateQueueTypeUI() {
+      $("#btnSubmitBook").innerHTML = $("#queueType").value === 'vip' ? "✨ ยืนยันลัดคิว VIP (ใช้ 30 แต้ม / รับ 6) ✨" : "✨ ยืนยันการจองคิว (ฟรี / รับ 3) ✨";
+    }
+    $("#bookingForm").addEventListener("submit", async (e) => {
+      e.preventDefault(); if(!currentUser) return showCustomAlert("เตือน", "กรุณาเข้าสู่ระบบ");
+      if(userQueues.some(q => q.targetDate > new Date())) return showCustomAlert("ข้อจำกัด", "❌ คุณมีคิวที่กำลังรออยู่ ห้ามจองซ้อน");
+      
+      const isVip = $("#queueType").value === 'vip';
+      if(isVip && (currentUser.points || 0) < 30) return showCustomAlert("แต้มไม่พอ", "ต้องการ 30 แต้ม");
+
+      const payload = {
+        uid: currentUser.uid, name: currentUser.name, category: $("#category").value, date: $("#date").value, timeSlot: $("#timeSlot").value,
+        igUsername: $("#igUsername").value.trim(), isVip, editCount: 0, rewardClaimed: false, timestamp: new Date()
+      };
+
+      try {
+        const snap = await db.collection("queues").where("date", "==", payload.date).get();
+        if (!isVip && snap.docs.filter(d=>!d.data().isVip).length >= 5) return showCustomAlert("คิวเต็ม", "คิวปกติเต็มแล้ว ใช้ VIP แทน");
+        payload.referenceId = (isVip ? "VIP-" : "N-") + Math.random().toString(36).substring(2,8).toUpperCase();
+        
+        const batch = db.batch(), qRef = db.collection("queues").doc();
+        batch.set(qRef, payload);
+        if(isVip) batch.update(db.collection("users").doc(currentUserDocId), { points: firebase.firestore.FieldValue.increment(-30) });
+        await batch.commit();
+        
+        payload.id = qRef.id; currentTicket = payload;
+        $("#ticketData").innerHTML = `<p><b>UID:</b> ${payload.uid} (${payload.name})</p><p><b>ประเภท:</b> ${isVip ? '⭐ VIP' : 'ปกติ'}</p><p><b>เวลา:</b> ${payload.date} [${payload.timeSlot}]</p><p><b>Ref:</b> ${payload.referenceId}</p>`;
+        $("#popup").classList.add("show"); e.target.reset(); updateQueueTypeUI();
+      } catch (err) { showCustomAlert("ขัดข้อง", err.message); }
+    });
+    
+    function renderHistory() {
+      const list = $("#historyList"); if(userQueues.length===0) return list.innerHTML = `<p class="muted">ไม่มีประวัติ</p>`;
+      list.innerHTML = ""; const now = new Date();
+      userQueues.sort((a,b) => b.targetDate - a.targetDate).forEach(q => {
+        const d = q.data, isPast = q.targetDate <= now;
+        if(isPast && !d.rewardClaimed) {
+          db.collection("queues").doc(q.id).update({ rewardClaimed: true });
+          db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(d.isVip ? 6 : 3) });
+        }
+        const div = document.createElement('div'); div.className = 'history-item';
+        div.innerHTML = `<div class="row"><div><p><b>หมวดหมู่:</b> ${d.category}</p><p><b>จอง:</b> ${d.date} [${d.timeSlot}]</p><p><b>Ref:</b> <span style="color:var(--gold);">${d.referenceId}</span></p></div><div style="text-align:right;"><p>${isPast ? '<span class="status-past">✨ รับแต้มแล้ว</span>' : `<span class="countdown-timer status-badge" data-target="${q.targetDate.getTime()}"></span>`}</p></div></div>`;
+        list.appendChild(div);
+      });
+    }
+
+    /* ---------------- Admin Center ---------------- */
+    $("#triggerAdmin").addEventListener("click", () => {
+      const pass = prompt("Admin Password:");
+      if (pass === 'horoscope') { $("#adminModal").classList.add("show"); loadAdminQueues(); loadAdminUsers(); loadAdminReviews(); loadAdminTopups(); loadAdminVerify(); loadAdminMissions(); }
+    });
+    window.switchAdminTab = (tabId, el) => {
+      document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.admin-content').forEach(c=>c.classList.remove('active'));
+      el.classList.add('active'); document.getElementById(tabId).classList.add('active');
+    };
+
+    async function loadAdminUsers() {
+      const tbody = $("#adminUserTable tbody"); tbody.innerHTML = "";
+      try {
+        const snap = await db.collection("users").orderBy("createdAt", "desc").get();
+        snap.forEach(doc => {
+          const d = doc.data(), hasContacts = d.contacts && d.contacts.length > 0;
+          tbody.innerHTML += `<tr><td><b>${d.uid}</b><br>${d.username}</td><td>${d.fullName}</td><td>${d.phone}</td><td>${calculateAge(d.dob)} ปี</td><td style="color:var(--gold);">${d.points}</td><td>${hasContacts ? `<button class="btn btn-small" onclick="viewAdminUserContacts('${doc.id}')">รายชื่อ</button>` : '-'}</td></tr>`;
+        });
+      } catch(e){}
     }
     
-    window.switchAdminTab = (id, el) => {
-      document.querySelectorAll('#adminModal .admin-tab').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('#adminModal .admin-content').forEach(c=>c.classList.remove('active'));
-      el.classList.add('active'); $(`#${id}`).classList.add('active');
+    window.viewAdminUserContacts = async (id) => {
+      const d = (await db.collection("users").doc(id).get()).data();
+      $("#adminContactUserTitle").textContent = `UID: ${d.uid}`;
+      $("#adminContactsList").innerHTML = d.contacts.map((c,i)=>`<p><b>${i+1}. ${c.name}:</b> ${c.tel}</p>`).join('');
+      $("#adminContactsModal").classList.add("show");
+    };
+
+    // (โหลดคิว รีวิว เหมือนเดิม ขอละโค้ดซ้ำเติมเฉพาะส่วนสำคัญ)
+    async function loadAdminQueues() {
+      const tbody = $("#adminQueueTable tbody"); tbody.innerHTML = "";
+      (await db.collection("queues").get()).forEach(doc => {
+        const d = doc.data(); tbody.innerHTML += `<tr><td>${d.isVip?'VIP':'ปกติ'}</td><td>${d.date} ${d.timeSlot}</td><td>${d.uid}</td><td>${d.name}</td><td><button class="btn btn-danger btn-small" onclick="db.collection('queues').doc('${doc.id}').delete(); loadAdminQueues();">ลบ</button></td></tr>`;
+      });
     }
 
-    async function loadAdminData() {
-      // Load Users
-      const uSnap = await db.collection("users").get();
-      let uHtml = "";
-      uSnap.forEach(d => { const dt=d.data(); uHtml += `<tr><td>${dt.uid}</td><td>${dt.name}<br>อายุ ${calculateAge(dt.dob)}</td><td>${dt.points||0}</td><td>${dt.contacts?`<button class="btn-small btn-gold" onclick="alert('${dt.contacts.map(c=>c.name+': '+c.tel).join('\\n')}')">ดูรายชื่อ</button>`:'-'}</td><td><button class="btn-small btn-danger" onclick="db.collection('users').doc('${d.id}').delete()">ลบ</button></td></tr>`; });
-      $("#adminUserTable tbody").innerHTML = uHtml;
-
-      // Load Topups
-      const tSnap = await db.collection("topups").get();
-      let tHtml = "";
-      tSnap.forEach(d => { const dt=d.data(); tHtml += `<tr><td>${dt.uid}</td><td>${dt.amount} บ.</td><td><a href="${dt.slip}" target="_blank" style="color:var(--gold);">ดูสลิป</a></td><td>${dt.status}</td><td>${dt.status==='pending'?`<button class="btn-small btn-gold" onclick="approveTopup('${d.id}', '${dt.uid}', ${dt.amount})">อนุมัติ</button>`:'-'}</td></tr>`; });
-      $("#adminTopupTable tbody").innerHTML = tHtml;
-
-      // Load Verify
-      const vSnap = await db.collection("verifications").get();
-      let vHtml = "";
-      vSnap.forEach(d => { const dt=d.data(); vHtml += `<tr><td>${dt.uid}</td><td>< 12 ปี</td><td><a href="${dt.idCardBase64}" target="_blank" style="color:var(--gold);">ดูบัตร</a></td><td>${dt.status}</td><td>${dt.status==='pending'?`<button class="btn-small btn-gold" onclick="approveVerify('${d.id}', '${dt.uid}')">อนุมัติ</button>`:'-'}</td></tr>`; });
-      $("#adminVerifyTable tbody").innerHTML = vHtml;
-      
-      // Load Missions
-      const mSnap = await db.collection("missions").get();
-      let mHtml = "";
-      mSnap.forEach(d => { const dt=d.data(); mHtml += `<tr><td>${dt.uid}</td><td>${dt.name}</td><td><a href="${dt.slip}" target="_blank" style="color:var(--gold);">ดูรูป</a></td><td>${dt.status}</td><td>${dt.status==='pending'?`<button class="btn-small btn-gold" onclick="approveMission('${d.id}', '${dt.uid}', ${dt.missionId}, ${dt.reqPoints})">ให้แต้ม</button>`:'-'}</td></tr>`; });
-      $("#adminMissionTable tbody").innerHTML = mHtml;
+    async function loadAdminTopups() {
+      const tbody = $("#adminTopupTable tbody"); tbody.innerHTML = "";
+      (await db.collection("topups").where("status","==","pending").get()).forEach(doc => {
+        const d = doc.data(); tbody.innerHTML += `<tr><td>${new Date(d.timestamp.toDate()).toLocaleTimeString('th-TH')}</td><td>${d.uid}</td><td>${d.baht} บ.| ${d.pts} ต.</td><td><a href="${d.slipUrl}" target="_blank" style="color:var(--gold);">ดูสลิป</a></td><td><button class="btn btn-small btn-gold" onclick="approveTopup('${doc.id}', '${d.uid}', ${d.pts})">อนุมัติ</button></td></tr>`;
+      });
     }
-
-    window.approveTopup = async(docId, uid, amt) => {
-      let pts = amt == 10 ? 30 : (amt == 30 ? 100 : 200);
-      const uSnap = await db.collection("users").where("uid","==",uid).get();
-      if(!uSnap.empty) await db.collection("users").doc(uSnap.docs[0].id).update({ points: firebase.firestore.FieldValue.increment(pts) });
-      await db.collection("topups").doc(docId).update({ status: 'approved' }); alert('อนุมัติแล้ว'); loadAdminData();
-    }
-    window.approveVerify = async(docId, uid) => {
-      const uSnap = await db.collection("users").where("uid","==",uid).get();
-      if(!uSnap.empty) await db.collection("users").doc(uSnap.docs[0].id).update({ verifyStatus: 'approved' });
-      await db.collection("verifications").doc(docId).update({ status: 'approved' }); alert('อนุมัติแล้ว'); loadAdminData();
-    }
-    window.approveMission = async(docId, uid, mId, reqPts) => {
-      const uSnap = await db.collection("users").where("uid","==",uid).get();
-      if(!uSnap.empty) {
-        let updates = { points: firebase.firestore.FieldValue.increment(reqPts) };
-        if(typeof mId === 'number') updates.missionStep = firebase.firestore.FieldValue.increment(1);
-        await db.collection("users").doc(uSnap.docs[0].id).update(updates);
+    window.approveTopup = async (id, uid, pts) => {
+      const snap = await db.collection("users").where("uid","==",uid).get();
+      if(!snap.empty) {
+        await db.collection("users").doc(snap.docs[0].id).update({ points: firebase.firestore.FieldValue.increment(parseInt(pts)) });
+        await db.collection("topups").doc(id).update({ status: "approved" });
+        loadAdminTopups(); alert("เติมแต้มให้สมาชิกสำเร็จ");
       }
-      await db.collection("missions").doc(docId).update({ status: 'approved' }); alert('อนุมัติแล้ว'); loadAdminData();
+    };
+
+    async function loadAdminVerify() {
+      const tbody = $("#adminVerifyTable tbody"); tbody.innerHTML = "";
+      (await db.collection("verifications").where("status","==","pending").get()).forEach(doc => {
+        const d = doc.data(); tbody.innerHTML += `<tr><td>${new Date(d.timestamp.toDate()).toLocaleTimeString('th-TH')}</td><td>${d.uid}</td><td>${d.ageGroup}</td><td>${d.phone||'-'}<br>${d.firstName||'-'}</td><td><a href="${d.idCardBase64}" target="_blank" style="color:var(--gold);">ดูรูป</a></td><td><button class="btn btn-small btn-gold" onclick="approveVerify('${doc.id}', '${d.uid}')">อนุมัติ</button></td></tr>`;
+      });
+    }
+    window.approveVerify = async (id, uid) => {
+      const snap = await db.collection("users").where("uid","==",uid).get();
+      if(!snap.empty) {
+        await db.collection("users").doc(snap.docs[0].id).update({ isVerified: true });
+        await db.collection("verifications").doc(id).update({ status: "approved" });
+        loadAdminVerify(); alert("อนุมัติยืนยันตัวตนสำเร็จ");
+      }
+    };
+
+    async function loadAdminMissions() {
+      const tbody = $("#adminMissionTable tbody"); tbody.innerHTML = "";
+      (await db.collection("missions").where("status","==","pending").get()).forEach(doc => {
+        const d = doc.data(); tbody.innerHTML += `<tr><td>${new Date(d.timestamp.toDate()).toLocaleTimeString('th-TH')}</td><td>${d.uid}</td><td>${d.title}</td><td><a href="${d.proofUrl}" target="_blank" style="color:var(--gold);">ดูรูป</a></td><td><button class="btn btn-small btn-gold" onclick="approveMission('${doc.id}', '${d.uid}', '${d.missionCode}')">อนุมัติ</button></td></tr>`;
+      });
+    }
+    window.approveMission = async (id, uid, mCode) => {
+      const snap = await db.collection("users").where("uid","==",uid).get();
+      if(!snap.empty) {
+        let p = 0; let mStepInc = false;
+        if(mCode==='m1') { p=3; mStepInc=true; } else if(mCode==='m2') { p=2; mStepInc=true; } else if(mCode==='m3') { p=2; mStepInc=true; }
+        else if(mCode==='s1') { p=10; } else if(mCode==='s2') { p=10; } else if(mCode==='s3') { p=5; }
+        const updateData = { points: firebase.firestore.FieldValue.increment(p) };
+        if(mStepInc) updateData.missionStep = firebase.firestore.FieldValue.increment(1);
+        
+        await db.collection("users").doc(snap.docs[0].id).update(updateData);
+        await db.collection("missions").doc(id).update({ status: "approved" });
+        loadAdminMissions(); alert(`อนุมัติภารกิจสำเร็จ เพิ่ม ${p} แต้ม`);
+      }
+    };
+
+    /* ---------------- Original Edit/Review logic (Kept intact) ---------------- */
+    function openProfileEditModal(){ $('#editProfileModal').classList.add('show'); $('#upFullName').value=currentUser.fullName; $('#upPhone').value=currentUser.phone; $('#upDob').value=currentUser.dob; }
+    async function saveUserProfileEdit(){
+      await db.collection("users").doc(currentUserDocId).update({ fullName: $('#upFullName').value, phone: $('#upPhone').value, dob: $('#upDob').value });
+      showCustomAlert("สำเร็จ","อัปเดตข้อมูลแล้ว"); $('#editProfileModal').classList.remove('show');
+    }
+    function setupStarRatingSelector(){
+      const s = document.querySelectorAll("#starSelector span");
+      s.forEach(star => star.addEventListener("click", () => {
+        selectedStarRating = parseInt(star.getAttribute("data-star"));
+        s.forEach(x => { if(parseInt(x.getAttribute("data-star")) <= selectedStarRating) x.classList.add("active"); else x.classList.remove("active"); });
+      }));
+    }
+    async function submitUserReview(){
+      const c = $("#reviewCommentText").value.trim(); if(!c) return;
+      await db.collection("reviews").add({ uid: currentUser.uid, userName: currentUser.name, stars: selectedStarRating, comment: c, age: calculateAge(currentUser.dob), updatedAt: new Date() });
+      $('#reviewModal').classList.remove('show'); showCustomAlert("สำเร็จ", "ส่งรีวิวสำเร็จ");
+    }
+    function listenGlobalReviews() {
+      if(unsubscribeReviews) unsubscribeReviews();
+      unsubscribeReviews = db.collection("reviews").onSnapshot(snap => {
+        let ts=0, ta=0, c=0; $("#reviewsList").innerHTML = "";
+        snap.forEach(doc => {
+          const r = doc.data(); c++; ts+=r.stars||0; ta+=r.age||0;
+          $("#reviewsList").innerHTML += `<div class="review-item"><div class="row"><b>${r.userName}</b> <span style="color:var(--gold)">${"★".repeat(r.stars)}</span></div><p>${r.comment}</p></div>`;
+        });
+        if(c>0) { $("#avgRatingValue").textContent = (ts/c).toFixed(1); $("#totalReviewsCount").textContent = c; $("#avgReviewerAge").textContent = Math.round(ta/c); }
+      });
     }
   </script>
 </body>
