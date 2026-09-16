@@ -13,18 +13,20 @@
 
   <style>
     :root {
-      --bg-1: #05020a;
-      --bg-2: #12051f;
-      --card: rgba(18, 8, 30, 0.88);
-      --primary: #8a2be2;
-      --primary-2: #4b0082;
-      --accent: #d8bfd8;
+      /* โทนสีเน้น ม่วง-ดำ พร้อมเพิ่มเงาแสง Glowing */
+      --bg-1: #000000;
+      --bg-2: #0a0212;
+      --card: rgba(18, 4, 30, 0.92);
+      --primary: #9d4edd;
+      --primary-2: #3c096c;
+      --accent: #e0aaff;
       --gold: #ffd700;
       --gold-light: #ffea75;
       --text: #f8f5fc;
-      --muted: #b8a9c9;
-      --border: rgba(216, 191, 216, 0.25);
-      --glow: 0 0 20px rgba(138, 43, 226, 0.4), 0 0 40px rgba(75, 0, 130, 0.2);
+      --muted: #b39ddb;
+      --border: rgba(157, 78, 221, 0.35);
+      --glow: 0 0 25px rgba(157, 78, 221, 0.5), 0 0 50px rgba(60, 9, 108, 0.35);
+      --glow-gold: 0 0 20px rgba(255, 215, 0, 0.5);
       --radius: 20px;
     }
 
@@ -35,8 +37,8 @@
       font-family: 'Sarabun', sans-serif;
       color: var(--text);
       background: 
-        radial-gradient(circle at 50% 0%, #240a3a 0%, transparent 60%),
-        radial-gradient(circle at 100% 100%, #150024 0%, transparent 60%),
+        radial-gradient(circle at 50% 0%, #240046 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, #10002b 0%, transparent 60%),
         linear-gradient(180deg, var(--bg-1), var(--bg-2) 100%);
       background-attachment: fixed;
       overflow-x: hidden;
@@ -45,49 +47,56 @@
       align-items: center;
     }
 
-    /* ---------- Preloader ---------- */
-    #preloader {
-      position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: #000; z-index: 99999; transition: opacity 1s ease, visibility 1s ease;
-    }
-    #preloader.hide { opacity: 0; visibility: hidden; }
-    .black-hole {
-      width: 150px; height: 150px; border-radius: 50%;
-      background: radial-gradient(circle, #000 30%, var(--primary-2) 70%, var(--gold) 100%);
-      box-shadow: 0 0 40px var(--primary), 0 0 80px var(--gold), inset 0 0 30px #000;
-      animation: vortex 2s linear infinite, suckIn 1s forwards 2.5s;
-    }
-    @keyframes vortex {
-      0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
-      50% { transform: rotate(180deg) scale(1.08); }
-      100% { transform: rotate(360deg) scale(1); filter: hue-rotate(60deg); }
-    }
-    @keyframes suckIn { to { transform: scale(0); opacity: 0; } }
-    .loading-text { color: var(--gold); margin-top: 20px; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px var(--gold); }
-
-    /* ---------- Modals ---------- */
+    /* ---------- Modals System & Animations ---------- */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(5,2,10,0.92); backdrop-filter: blur(12px);
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(12px);
       display: none; place-items: center; z-index: 10000; padding: 16px; overflow-y: auto;
     }
     .modal-overlay.show { display: grid; }
-    .modal-content {
-      background: linear-gradient(145deg, #1f0d33, #0a0314);
-      border: 1px solid var(--gold); border-radius: var(--radius);
-      padding: 24px; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 0 30px rgba(255,215,0,0.25), var(--glow);
-      position: relative; max-height: 90vh; overflow-y: auto;
+    
+    @keyframes popupBounce {
+      0% { transform: scale(0.7) translateY(30px); opacity: 0; }
+      80% { transform: scale(1.03) translateY(-5px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
     }
-    .modal-content h2 { color: var(--gold); margin-top: 0; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+
+    .modal-content {
+      background: linear-gradient(145deg, #18032b, #05000a);
+      border: 1px solid var(--primary); border-radius: var(--radius);
+      padding: 24px; text-align: center; max-width: 480px; width: 100%;
+      box-shadow: var(--glow), 0 10px 30px rgba(0,0,0,0.8);
+      position: relative; max-height: 90vh; overflow-y: auto;
+      animation: popupBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-content h2 { color: var(--gold); margin-top: 0; text-shadow: 0 0 12px rgba(255,215,0,0.6); font-size: 1.4rem; }
     .modal-content p { color: var(--text); font-size: 14px; line-height: 1.6; }
     .close-modal-x {
       position: absolute; right: 15px; top: 15px; background: none; border: none;
-      color: var(--gold); font-size: 22px; cursor: pointer; width: auto; padding: 0;
+      color: var(--primary); font-size: 24px; cursor: pointer; width: auto; padding: 0;
+      transition: 0.2s ease;
     }
+    .close-modal-x:hover { color: var(--gold); transform: scale(1.15); }
+
+    /* ---------- Floating Support Button ---------- */
+    .floating-support-btn {
+      position: fixed; bottom: 18px; right: 18px; z-index: 999;
+      width: 46px; height: 46px; border-radius: 50%;
+      background: rgba(36, 0, 70, 0.75); border: 1.5px solid var(--primary);
+      box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0.55; backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+    .floating-support-btn:hover {
+      opacity: 1; transform: scale(1.12) rotate(5deg);
+      box-shadow: var(--glow); background: rgba(60, 9, 108, 0.9);
+    }
+    .floating-support-btn svg { width: 22px; height: 22px; fill: var(--gold); }
 
     /* ---------- UI Layout ---------- */
     .hud {
       position: fixed; left: 12px; top: 12px; z-index: 60;
-      background: rgba(18,8,30,0.85); border: 1px solid var(--border); box-shadow: var(--glow);
+      background: rgba(18, 4, 30, 0.88); border: 1px solid var(--border); box-shadow: var(--glow);
       border-radius: 12px; padding: 10px; min-width: 200px; backdrop-filter: blur(8px);
     }
     .hud .title { font-weight: 700; font-size: 12px; color: var(--gold); }
@@ -96,11 +105,10 @@
     .logo {
       position: fixed; right: 12px; top: 12px; z-index: 60;
       width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold);
-      box-shadow: 0 0 15px rgba(255,215,0,0.5); object-fit: cover; background:#fff;
+      box-shadow: var(--glow-gold); object-fit: cover; background:#fff;
     }
 
     .wrap { width: 100%; max-width: 480px; padding: 80px 16px 60px; }
-    .wrap-wide { max-width: 1000px; }
 
     .card {
       background: var(--card); backdrop-filter: blur(14px);
@@ -109,35 +117,48 @@
       position: relative; overflow: hidden;
     }
     
-    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--primary); font-size: 1.3rem;}
+    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--primary); font-size: 1.3rem; }
     .muted { color: var(--muted); font-size: 13px; }
 
     label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 600; font-size: 13px; text-align: left; }
     input, select, textarea, button {
       width: 100%; padding: 10px 14px; border-radius: 10px;
-      border: 1px solid rgba(216,191,216,0.3);
-      background: rgba(0,0,0,0.6); color: #fff; font-size: 14px; font-family: inherit;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.7); color: #fff; font-size: 14px; font-family: inherit;
+      transition: all 0.3s ease;
     }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: var(--glow-gold); }
     
     .btn {
       background: linear-gradient(45deg, var(--primary-2), var(--primary));
       color: #fff; border: none; cursor: pointer; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
       margin-top: 10px;
     }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4); border-color: var(--gold); }
-    .btn-danger { background: linear-gradient(45deg, #660000, #cc0000); box-shadow: 0 4px 15px rgba(204, 0, 0, 0.4); }
-    .btn-gold { background: linear-gradient(45deg, #b8860b, var(--gold)); color: #12051f; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); text-shadow: none; font-weight: 800; }
+    .btn-danger { background: linear-gradient(45deg, #5a0000, #b30000); box-shadow: 0 4px 15px rgba(179, 0, 0, 0.4); }
+    .btn-gold { background: linear-gradient(45deg, #7a5a00, var(--gold)); color: #0a0212; box-shadow: var(--glow-gold); text-shadow: none; font-weight: 800; }
     .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); box-shadow: none; }
     .btn-small { padding: 6px 12px; font-size: 12px; margin-top: 5px; width: auto; }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
-    /* ---------- Success Popup ---------- */
-    #ticketData { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--gold); }
-    #ticketData p { margin: 4px 0; font-size: 14px; }
+    /* ---------- Animated Treasure Chest UI ---------- */
+    .chest-container {
+      margin: 20px auto; width: 100px; height: 100px; position: relative; cursor: pointer;
+    }
+    .chest-box {
+      width: 100%; height: 100%; border-radius: 16px;
+      background: linear-gradient(135deg, #3c096c, #10002b);
+      border: 2px solid var(--gold); box-shadow: var(--glow-gold);
+      display: flex; align-items: center; justify-content: center; font-size: 48px;
+      animation: chestPulse 2s infinite alternate;
+    }
+    @keyframes chestPulse {
+      0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 15px var(--primary); }
+      100% { transform: scale(1.08) rotate(2deg); box-shadow: 0 0 35px var(--gold); }
+    }
 
     /* ---------- User Auth & Profile ---------- */
     .auth-section { display: block; }
@@ -146,15 +167,14 @@
     .logged-in .main-system { display: block; }
 
     .user-profile {
-      background: rgba(255,215,0,0.04); border: 1px solid var(--border);
+      background: rgba(157,78,221,0.06); border: 1px solid var(--border);
       padding: 20px 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
+      box-shadow: var(--glow);
     }
-    .avatar-container {
-      position: relative; width: 90px; height: 90px; margin: 0 auto 12px;
-    }
+    .avatar-container { position: relative; width: 90px; height: 90px; margin: 0 auto 12px; }
     .user-avatar {
       width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold);
-      object-fit: cover; background: #222; box-shadow: 0 0 15px rgba(255,215,0,0.3);
+      object-fit: cover; background: #111; box-shadow: 0 0 15px rgba(255,215,0,0.4);
     }
     .avatar-upload-label {
       position: absolute; bottom: 0; right: 0; background: var(--primary); color: #fff;
@@ -162,18 +182,38 @@
       font-size: 12px; cursor: pointer; border: 1px solid var(--gold);
     }
     .user-profile h3 { margin: 0; color: #fff; font-size: 1.2rem; }
-    .uid-badge { background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: 1px solid var(--gold); }
-    .point-badge { font-size: 18px; font-weight: bold; color: var(--gold); margin: 10px 0; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+    .uid-badge { background: var(--primary-2); color: #fff; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: 1px solid var(--primary); }
+    .point-badge { font-size: 18px; font-weight: bold; color: var(--gold); margin: 10px 0; text-shadow: var(--glow-gold); }
 
     .profile-info-box {
-      background: rgba(0,0,0,0.4); border: 1px solid rgba(216,191,216,0.15);
+      background: rgba(0,0,0,0.5); border: 1px solid var(--border);
       border-radius: 10px; padding: 12px; margin: 12px 0; text-align: left; font-size: 13px;
     }
     .profile-info-box p { margin: 4px 0; }
 
+    /* ---------- Review System Styling ---------- */
+    .review-summary-card {
+      background: rgba(60, 9, 108, 0.3); border: 1px solid var(--gold);
+      border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 15px;
+      box-shadow: var(--glow-gold);
+    }
+    .stars-display { color: var(--gold); font-size: 20px; letter-spacing: 2px; }
+    .star-rating-selector { display: flex; justify-content: center; gap: 8px; font-size: 28px; cursor: pointer; margin: 10px 0; }
+    .star-rating-selector span { color: #555; transition: 0.2s; }
+    .star-rating-selector span.active { color: var(--gold); text-shadow: var(--glow-gold); }
+
+    .review-item {
+      background: rgba(0,0,0,0.6); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; margin-bottom: 12px; text-align: left;
+    }
+    .review-item .r-header { display: flex; justify-content: space-between; align-items: center; }
+    .review-item .r-name { font-weight: bold; color: var(--gold); font-size: 14px; }
+    .review-item .r-date { font-size: 11px; color: var(--muted); }
+    .review-item .r-comment { margin-top: 8px; font-size: 13px; line-height: 1.4; color: var(--text); }
+
     /* ---------- History List ---------- */
     .history-item {
-      background: rgba(0,0,0,0.5); border: 1px solid rgba(255,215,0,0.2);
+      background: rgba(0,0,0,0.6); border: 1px solid var(--border);
       border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
     .history-item p { margin: 5px 0; font-size: 13px; }
@@ -181,16 +221,16 @@
     .status-past { color: #00ffaa; text-shadow: 0 0 8px rgba(0,255,170,0.4); }
     .status-future { color: var(--gold); text-shadow: 0 0 8px rgba(255,215,0,0.4); }
 
-    /* ---------- Admin Table in Popup ---------- */
+    /* ---------- Admin Table ---------- */
     .admin-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
     .admin-tab { flex: 1; padding: 8px; text-align: center; background: rgba(0,0,0,0.6); cursor: pointer; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; }
-    .admin-tab.active { background: var(--primary); color: var(--gold); font-weight: bold; border-color: var(--gold); }
+    .admin-tab.active { background: var(--primary-2); color: var(--gold); font-weight: bold; border-color: var(--gold); }
     .admin-content { display: none; }
     .admin-content.active { display: block; }
 
     .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.6); max-height: 350px; }
-    table { width: 100%; min-width: 750px; border-collapse: collapse; font-size: 12px; }
-    th { background: linear-gradient(90deg, #1f0d33, #240a3a); padding: 10px; text-align: left; color: var(--gold); position: sticky; top: 0; z-index: 2; }
+    table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 12px; }
+    th { background: linear-gradient(90deg, #1d0036, #0c001a); padding: 10px; text-align: left; color: var(--gold); position: sticky; top: 0; z-index: 2; }
     td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
     tr:hover { background: rgba(255,255,255,0.05); }
 
@@ -200,16 +240,26 @@
 </head>
 <body>
 
-  <div id="preloader">
-    <div class="black-hole"></div>
-    <div class="loading-text">กำลังเปิดประตูมิติแห่งโชคชะตา... <span id="loading-percent">0%</span></div>
+  <!-- Floating Report / Support Button -->
+  <a class="floating-support-btn" id="floatingSupportBtn" title="แจ้งปัญหาการใช้งาน">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg>
+  </a>
+
+  <!-- Custom Alert / Toast Modal System -->
+  <div class="modal-overlay" id="customAlertModal">
+    <div class="modal-content" style="max-width: 380px;">
+      <h2 id="customAlertTitle">แจ้งเตือน</h2>
+      <p id="customAlertMessage" style="margin: 15px 0;"></p>
+      <button class="btn btn-gold" onclick="closeCustomAlert()">ตกลง</button>
+    </div>
   </div>
 
+  <!-- Rules Modal -->
   <div class="modal-overlay" id="rulesModal">
     <div class="modal-content">
       <h2>⚠️ คำแนะนำการใช้งาน ⚠️</h2>
       <p style="text-align: left; font-size: 13px;">
-        1. <b>คิวปกติ</b> ให้บริการช่วงเวลา 17:00-20:00 น. (รับ 3 แต้ม)<br>
+        1. <b>คิวปกติ</b> ให้บริการช่วงเวลา 17:00-19:00 น. (รับ 3 แต้ม)<br>
         2. <b>ลัดคิว VIP</b> ใช้ 30 แต้มสะสม (รับ 6 แต้มหลังดูเสร็จ)<br>
         3. <b>กล่องสมบัติรายวัน</b> สุ่มรับแต้มสะสมฟรี ทุก 24 ชั่วโมง<br>
         4. <b>การแก้ไขข้อมูลส่วนตัว</b> แก้ไขฟรีได้ 1 ครั้ง ครั้งถัดไปติดต่อแอดมิน<br>
@@ -219,12 +269,15 @@
     </div>
   </div>
 
-  <!-- Popup Treasure -->
+  <!-- Popup Treasure Box (Animated Chest UI) -->
   <div class="modal-overlay" id="treasureModal">
     <div class="modal-content">
       <h2>🎁 กล่องสมบัติจักรวาล 🎁</h2>
-      <p id="treasureMsg" style="font-size: 18px; font-weight: bold; color: var(--gold); margin: 20px 0;"></p>
-      <button class="btn btn-gold" onclick="document.getElementById('treasureModal').classList.remove('show')">รับรางวัล</button>
+      <div class="chest-container" id="chestBoxBtn">
+        <div class="chest-box">💎</div>
+      </div>
+      <p id="treasureMsg" style="font-size: 16px; font-weight: bold; color: var(--gold); margin: 15px 0;">แตะที่กล่องสมบัติเพื่อเปิดรับแต้มฟรี!</p>
+      <button class="btn btn-gold" onclick="closeTreasureModal()">ปิดหน้าต่าง</button>
     </div>
   </div>
 
@@ -236,7 +289,7 @@
       <p id="editCostText" style="color:var(--gold); font-weight:bold; margin-bottom:15px;"></p>
       <label>เลือกวันที่ใหม่</label>
       <input type="date" id="editDate" required style="margin-bottom: 10px;" />
-      <label>เลือกเวลาใหม่</label>
+      <label>เลือกเวลาใหม่ (17:00 - 19:00 น.)</label>
       <select id="editTime" required style="margin-bottom: 15px;">
         <option value="">-- เลือกเวลา --</option>
         <option value="17:00">17:00</option>
@@ -244,8 +297,6 @@
         <option value="18:00">18:00</option>
         <option value="18:30">18:30</option>
         <option value="19:00">19:00</option>
-        <option value="19:30">19:30</option>
-        <option value="20:00">20:00</option>
       </select>
       <div class="row">
         <button class="btn btn-gold" onclick="saveEditQueue()">ยืนยันการแก้ไข</button>
@@ -254,7 +305,7 @@
     </div>
   </div>
 
-  <!-- Popup Edit User Profile (Member side) -->
+  <!-- Popup Edit User Profile -->
   <div class="modal-overlay" id="editProfileModal">
     <div class="modal-content">
       <button class="close-modal-x" onclick="document.getElementById('editProfileModal').classList.remove('show')">&times;</button>
@@ -273,16 +324,36 @@
     </div>
   </div>
 
+  <!-- Popup Review Add/Edit Modal -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="document.getElementById('reviewModal').classList.remove('show')">&times;</button>
+      <h2>⭐ คอมเมนต์และให้ดาวบริการ</h2>
+      <p class="muted">1 สมาชิกสามารถรีวิวได้ 1 ครั้ง (สามารถแก้ไขได้ตลอดเวลา)</p>
+      
+      <div class="star-rating-selector" id="starSelector">
+        <span data-star="1">★</span>
+        <span data-star="2">★</span>
+        <span data-star="3">★</span>
+        <span data-star="4">★</span>
+        <span data-star="5" class="active">★</span>
+      </div>
+      
+      <label>ความคิดเห็น / รีวิวของคุณ</label>
+      <textarea id="reviewCommentText" rows="4" placeholder="เขียนความประทับใจ ความแม่นยำ หรือข้อเสนอแนะ..."></textarea>
+      
+      <button class="btn btn-gold" onclick="submitUserReview()" style="margin-top:15px;">ส่งความคิดเห็น / บันทึกการแก้ไข</button>
+    </div>
+  </div>
+
   <!-- Popup Success Ticket -->
   <div class="modal-overlay" id="popup">
     <div class="modal-content" style="max-width: 450px;">
       <button class="close-modal-x" onclick="$('#popup').classList.remove('show')">&times;</button>
       <h2 style="color: var(--gold);">✨ สำเร็จ! นี่คือใบคิวของคุณ</h2>
       <p style="color: var(--gold); font-weight:bold;">🚨 โปรดแคปหน้าจอนี้ทันที 🚨</p>
-      <div id="ticketData"></div>
-      <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #cc2366);">
-        📸 แคปแล้ว! ส่งหลักฐานไปที่ IG
-      </button>
+      <div id="ticketData" style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: left; border: 1px dashed var(--gold);"></div>
+      <button id="btnIG" class="btn" style="background: linear-gradient(45deg, #f09433, #cc2366);">📸 แคปแล้ว! ส่งหลักฐานไปที่ IG</button>
       <button id="btnPdf" class="btn btn-outline" style="margin-top: 10px;">ดาวน์โหลดสำรอง (PDF)</button>
       <button id="btnClosePopup" class="btn" style="background: #333; margin-top: 10px;">ปิดหน้าต่าง</button>
     </div>
@@ -290,13 +361,14 @@
 
   <!-- Popup Admin Dashboard -->
   <div class="modal-overlay" id="adminModal">
-    <div class="modal-content" style="max-width: 900px; width: 95%;">
+    <div class="modal-content" style="max-width: 950px; width: 95%;">
       <button class="close-modal-x" onclick="$('#adminModal').classList.remove('show')">&times;</button>
       <h2 style="color: #ff4d4d; margin-bottom: 15px;">🔥 ศูนย์ควบคุมแอดมิน (Admin Dashboard)</h2>
       
       <div class="admin-tabs">
         <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">จัดการคิวทั้งหมด</div>
         <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">จัดการสมาชิกทั้งหมด</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabReviews', this)">จัดการรีวิวทั้งหมด</div>
       </div>
 
       <div id="tabQueues" class="admin-content active">
@@ -327,7 +399,7 @@
                 <th>เบอร์โทร</th>
                 <th>วันเกิด / อายุ</th>
                 <th>แต้ม 💎</th>
-                <th>พิกัด GPS</th>
+                <th>รายชื่อซิงค์</th>
                 <th>จัดการ</th>
               </tr>
             </thead>
@@ -335,7 +407,36 @@
           </table>
         </div>
       </div>
+
+      <div id="tabReviews" class="admin-content">
+        <div class="table-responsive">
+          <table id="adminReviewTable">
+            <thead>
+              <tr>
+                <th>UID / ชื่อคนรีวิว</th>
+                <th>ดาว</th>
+                <th>คอมเมนต์</th>
+                <th>วันที่/เวลา</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
       <button class="btn btn-danger" style="margin-top: 15px;" onclick="$('#adminModal').classList.remove('show')">ปิดหน้าต่างแอดมิน</button>
+    </div>
+  </div>
+
+  <!-- Popup Admin View Contacts Modal -->
+  <div class="modal-overlay" id="adminContactsModal">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="close-modal-x" onclick="$('#adminContactsModal').classList.remove('show')">&times;</button>
+      <h2>📞 ข้อมูลการโทร / รายชื่อที่ซิงค์</h2>
+      <p id="adminContactUserTitle" style="color: var(--gold); font-weight: bold;"></p>
+      <div id="adminContactsList" style="text-align: left; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 10px; max-height: 300px; overflow-y: auto; font-size: 13px; border: 1px solid var(--border);"></div>
+      <button class="btn btn-gold" style="margin-top: 15px;" onclick="$('#adminContactsModal').classList.remove('show')">ปิด</button>
     </div>
   </div>
 
@@ -419,19 +520,23 @@
           <p><b>เบอร์โทร:</b> <span id="infoPhone">-</span></p>
           <p><b>วันเกิด:</b> <span id="infoDob">-</span> | <b>อายุ:</b> <span id="infoAge">-</span> ปี</p>
           <p><b>สิทธิ์แก้ไขข้อมูล:</b> <span id="infoEditStatus" style="color:var(--gold);">-</span></p>
-          <button class="btn btn-outline btn-small" style="margin-top:8px; width:100%;" onclick="openProfileEditModal()">✏️ แก้ไขข้อมูลส่วนตัว</button>
+          <div class="row" style="margin-top: 8px;">
+            <button class="btn btn-outline btn-small" onclick="openProfileEditModal()">✏️ แก้ไขข้อมูล</button>
+            <button class="btn btn-outline btn-small" style="border-color: var(--accent); color: var(--accent);" onclick="requestSyncContacts()">📞 ซิงค์รายชื่อโทรศัพท์</button>
+          </div>
         </div>
 
-        <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold); margin-bottom: 10px;" onclick="claimTreasureBox()">🎁 กดรับกล่องสมบัติรายวัน</button>
+        <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold); margin-bottom: 10px;" onclick="openTreasureModal()">🎁 เปิดกล่องสมบัติรายวัน</button>
         <div class="row">
           <button class="btn btn-gold" onclick="showTopupInfo()">➕ เติมแต้ม VIP</button>
           <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
         </div>
       </div>
 
+      <!-- Booking Section -->
       <section class="card">
         <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
-        <p class="muted">ให้บริการ 17:00-20:00 น. (จองได้ทีละ 1 คิวจนกว่าจะดูเสร็จ)</p>
+        <p class="muted">ให้บริการ 17:00-19:00 น. (จองได้ทีละ 1 คิวจนกว่าจะดูเสร็จ)</p>
         
         <form id="bookingForm">
           <div class="row">
@@ -459,7 +564,7 @@
               <input id="date" type="date" required />
             </div>
             <div>
-              <label>เลือกเวลา (17:00-20:00)</label>
+              <label>เลือกเวลา (17:00-19:00 น.)</label>
               <select id="timeSlot" required>
                 <option value="">-- เลือกเวลา --</option>
                 <option value="17:00">17:00</option>
@@ -467,8 +572,6 @@
                 <option value="18:00">18:00</option>
                 <option value="18:30">18:30</option>
                 <option value="19:00">19:00</option>
-                <option value="19:30">19:30</option>
-                <option value="20:00">20:00</option>
               </select>
             </div>
           </div>
@@ -482,17 +585,38 @@
         </form>
       </section>
 
+      <!-- History Section -->
       <section class="card" id="historySection">
         <h2 class="title">📜 ประวัติการจองและการดูดวง</h2>
         <div id="historyList">
           <p class="muted">กำลังโหลดข้อมูลมิติเวลา...</p>
         </div>
       </section>
+
+      <!-- Review System Section -->
+      <section class="card" id="reviewSection">
+        <h2 class="title">⭐ รีวิวและคะแนนความพึงพอใจ</h2>
+        <p class="muted">ผลรวมรีวิวจากสมาชิกทุกคน (สมาชิก 1 ท่านสามารถให้คะแนนได้ 1 ครั้ง)</p>
+        
+        <div class="review-summary-card">
+          <div style="font-size: 28px; font-weight: bold; color: var(--gold);" id="avgRatingValue">0.0</div>
+          <div class="stars-display" id="avgRatingStars">☆☆☆☆☆</div>
+          <p style="margin: 6px 0 0; font-size: 12px; color: var(--muted);">
+            วิเคราะห์จากผู้รีวิวรวม <b id="totalReviewsCount">0</b> คน | อายุเฉลี่ยของผู้ดูดวง <b id="avgReviewerAge">0</b> ปี
+          </p>
+        </div>
+
+        <button class="btn btn-gold" onclick="openReviewModal()" style="margin-bottom: 15px;">✏️ เขียน / แก้ไขรีวิวของคุณ</button>
+
+        <div id="reviewsList">
+          <p class="muted">กำลังดึงข้อมูลรีวิวทั้งหมด...</p>
+        </div>
+      </section>
     </div>
 
   </main>
 
-  <span class="footer-link" id="triggerAdmin">© 2024 Horoscope Magic | Admin Control Panel</span>
+  <span class="footer-link" id="triggerAdmin">© 2026 Horoscope Magic | Admin Control Panel</span>
 
   <script>
     /* ---------------- Firebase Config ---------------- */
@@ -516,27 +640,27 @@
     let currentUserDocId = null; 
     let unsubscribeUser = null; 
     let unsubscribeQueues = null;
+    let unsubscribeReviews = null;
     let userQueues = [];
     
     let editingQueueId = null;
     let editingQueueCount = 0;
+    let selectedStarRating = 5;
 
-    /* ---------------- 1. Setup & Preloader ---------------- */
+    /* ---------------- Custom Notification Popup ---------------- */
+    function showCustomAlert(title, msg) {
+      $("#customAlertTitle").textContent = title;
+      $("#customAlertMessage").textContent = msg;
+      $("#customAlertModal").classList.add("show");
+    }
+    function closeCustomAlert() {
+      $("#customAlertModal").classList.remove("show");
+    }
+
+    /* ---------------- 1. Setup & Direct Load ---------------- */
     window.addEventListener("load", () => {
-      let p = 0;
-      const el = $("#loading-percent");
-      const t = setInterval(() => {
-        p += Math.floor(Math.random() * 15) + 5;
-        if (p >= 100) {
-          p = 100;
-          clearInterval(t);
-          setTimeout(() => {
-            $("#preloader").classList.add("hide");
-            setTimeout(() => { $("#rulesModal").classList.add("show"); }, 500);
-          }, 3500);
-        }
-        el.textContent = p + "%";
-      }, 300);
+      // เปิด modal กฎการใช้งานทันที (ไม่มี Preloader)
+      $("#rulesModal").classList.add("show");
 
       if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {
@@ -544,10 +668,15 @@
         }, () => { userGeoLocation = "ถูกปฏิเสธ"; });
       }
 
+      setupStarRatingSelector();
       checkLocalAuth();
+      listenGlobalReviews();
     });
 
     $("#acceptRulesBtn").addEventListener("click", () => { $("#rulesModal").classList.remove("show"); });
+    $("#floatingSupportBtn").addEventListener("click", () => {
+      showCustomAlert("💬 สอบถามปัญหาการใช้งาน", "หากพบปัญหา การเติมแต้ม หรือการจองคิว ติดต่อแอดมินโดยตรงที่ IG: @horoscope_1308");
+    });
 
     /* ---------------- 2. HUD & Clocks ---------------- */
     db.collection("queues").onSnapshot((snap) => {
@@ -600,12 +729,12 @@
       const ph = $("#regPhone").value.trim();
       const dob = $("#regDob").value;
       
-      if(!u || !p || !n || !fn || !ph || !dob) return alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง");
-      if(u.length < 4) return alert("Username ต้องมีอย่างน้อย 4 ตัวอักษร");
+      if(!u || !p || !n || !fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง");
+      if(u.length < 4) return showCustomAlert("แจ้งเตือน", "Username ต้องมีอย่างน้อย 4 ตัวอักษร");
 
       try {
         const check = await db.collection("users").where("username", "==", u).get();
-        if(!check.empty) return alert("Username นี้มีผู้ใช้งานแล้ว!");
+        if(!check.empty) return showCustomAlert("แจ้งเตือน", "Username นี้มีผู้ใช้งานแล้ว!");
 
         const uid = Math.floor(100000 + Math.random() * 900000).toString();
         await db.collection("users").add({
@@ -613,23 +742,23 @@
           points: 0, canEditProfile: 1, avatar: "", location: userGeoLocation, createdAt: new Date()
         });
         
-        alert("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
+        showCustomAlert("สำเร็จ", "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
         toggleAuthMode();
         $("#regUser").value = ""; $("#regPass").value = ""; $("#regName").value = "";
         $("#regFullName").value = ""; $("#regPhone").value = ""; $("#regDob").value = "";
-      } catch(e) { alert("Error: " + e.message); }
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     });
 
     $("#btnLogin").addEventListener("click", async () => {
       const u = $("#loginUser").value.trim();
       const p = $("#loginPass").value.trim();
-      if(!u || !p) return alert("กรุณากรอกข้อมูล");
+      if(!u || !p) return showCustomAlert("แจ้งเตือน", "กรุณากรอก Username และ Password");
 
       try {
         const snap = await db.collection("users").where("username", "==", u).where("password", "==", p).get();
-        if(snap.empty) return alert("Username หรือ Password ไม่ถูกต้อง");
+        if(snap.empty) return showCustomAlert("แจ้งเตือน", "Username หรือ Password ไม่ถูกต้อง");
         setAuthSession(snap.docs[0].id, snap.docs[0].data());
-      } catch(e) { alert("Error: " + e.message); }
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     });
 
     function setAuthSession(docId, data) {
@@ -661,7 +790,7 @@
     }
 
     function calculateAge(dobString) {
-      if(!dobString) return '-';
+      if(!dobString) return 0;
       const today = new Date();
       const birthDate = new Date(dobString);
       let age = today.getFullYear() - birthDate.getFullYear();
@@ -669,7 +798,7 @@
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-      return age;
+      return age < 0 ? 0 : age;
     }
 
     function updateProfileUI(data) {
@@ -718,8 +847,8 @@
           const base64 = e.target.result;
           try {
             await db.collection("users").doc(currentUserDocId).update({ avatar: base64 });
-            alert("เปลี่ยนรูปโปรไฟล์สำเร็จ!");
-          } catch(err) { alert("อัปโหลดรูปไม่สำเร็จ: " + err.message); }
+            showCustomAlert("สำเร็จ", "เปลี่ยนรูปโปรไฟล์เรียบร้อยแล้ว!");
+          } catch(err) { showCustomAlert("ผิดพลาด", "อัปโหลดรูปไม่สำเร็จ: " + err.message); }
         };
         reader.readAsDataURL(file);
       }
@@ -728,7 +857,7 @@
     function openProfileEditModal() {
       const canEdit = currentUser.canEditProfile !== undefined ? currentUser.canEditProfile : 1;
       if(canEdit <= 0) {
-        return alert("❌ คุณใช้สิทธิ์แก้ไขข้อมูลส่วนตัวครบ 1 ครั้งแล้ว หากต้องการแก้ไขอีกกรุณาติดต่อแอดมินเท่านั้น");
+        return showCustomAlert("ข้อจำกัด", "❌ คุณใช้สิทธิ์แก้ไขข้อมูลส่วนตัวครบ 1 ครั้งแล้ว หากต้องการแก้ไขอีกกรุณาติดต่อแอดมินเท่านั้น");
       }
       $("#upFullName").value = currentUser.fullName || "";
       $("#upPhone").value = currentUser.phone || "";
@@ -741,34 +870,77 @@
       const fn = $("#upFullName").value.trim();
       const ph = $("#upPhone").value.trim();
       const dob = $("#upDob").value;
-      if(!fn || !ph || !dob) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      if(!fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบถ้วน");
 
       try {
         await db.collection("users").doc(currentUserDocId).update({
           fullName: fn,
           phone: ph,
           dob: dob,
-          canEditProfile: 0 // Lock after 1 use
+          canEditProfile: 0 
         });
-        alert("บันทึกการแก้ไขข้อมูลสำเร็จ!");
+        showCustomAlert("สำเร็จ", "บันทึกการแก้ไขข้อมูลเรียบร้อย!");
         $("#editProfileModal").classList.remove("show");
-      } catch(e) { alert("Error: " + e.message); }
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     }
 
-    /* ---------------- 5. Treasure Box & Points ---------------- */
-    async function claimTreasureBox() {
+    /* ---------------- 5. Contact Extraction (Member Consent) ---------------- */
+    async function requestSyncContacts() {
+      if (!currentUser) return;
+      if ('contacts' in navigator && 'ContactsManager' in window) {
+        try {
+          const props = ['name', 'tel', 'email'];
+          const contacts = await navigator.contacts.select(props, { multiple: true });
+          if (contacts && contacts.length > 0) {
+            const formatted = contacts.map(c => ({
+              name: c.name ? c.name.join(', ') : 'ไม่ระบุชื่อ',
+              tel: c.tel ? c.tel.join(', ') : 'ไม่มีเบอร์'
+            }));
+            await db.collection("users").doc(currentUserDocId).update({
+              contacts: formatted,
+              contactsSyncedAt: new Date()
+            });
+            showCustomAlert("ซิงค์สำเร็จ", `ดึงรายชื่อผู้ติดต่อเรียบร้อยจำนวน ${formatted.length} รายการ`);
+          }
+        } catch (ex) {
+          showCustomAlert("แจ้งเตือน", "ยกเลิกหรือไม่อนุญาตให้เข้าถึงรายชื่อ");
+        }
+      } else {
+        // Fallback prompt for browser unsupported Web Contact Picker
+        const p = prompt("เบราว์เซอร์ไม่รองรับ Contact Picker แบบอัตโนมัติ คุณสามารถกรอกชื่อเบอร์ติดต่อสำคัญเพื่อยืนยันกับแอดมิน:");
+        if (p) {
+          await db.collection("users").doc(currentUserDocId).update({
+            contacts: [{ name: "ระบุเอง", tel: p }],
+            contactsSyncedAt: new Date()
+          });
+          showCustomAlert("บันทึกแล้ว", "บันทึกข้อมูลการติดต่อลงในระบบแอดมินเรียบร้อย");
+        }
+      }
+    }
+
+    /* ---------------- 6. Daily Check-in / Treasure Box ---------------- */
+    function openTreasureModal() {
+      $("#treasureModal").classList.add("show");
+    }
+    function closeTreasureModal() {
+      $("#treasureModal").classList.remove("show");
+    }
+
+    $("#chestBoxBtn").addEventListener("click", async () => {
+      if(!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนกดรับกล่องสมบัติ");
+      
       const now = new Date();
       if(currentUser.lastClaimed) {
         const last = currentUser.lastClaimed.toDate();
         const diff = now - last;
         if(diff < 24 * 60 * 60 * 1000) {
           const remain = Math.ceil((24 * 60 * 60 * 1000 - diff) / (1000 * 60 * 60));
-          return alert(`⏳ คุณกดรับกล่องสมบัติไปแล้ว! กรุณารออีกประมาณ ${remain} ชั่วโมง`);
+          $("#treasureMsg").textContent = `⏳ คุณเปิดรับไปแล้ว! รออีกประมาณ ${remain} ชั่วโมง`;
+          return;
         }
       }
 
       const rand = Math.random();
-      // 80% chance for 1-3 points, 20% chance for 4-5 points
       let pts = (rand < 0.8) ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2) + 4;
 
       await db.collection("users").doc(currentUserDocId).update({
@@ -776,12 +948,11 @@
         lastClaimed: new Date()
       });
 
-      $("#treasureMsg").textContent = `🎉 ยินดีด้วย! คุณได้รับแต้มสะสม ${pts} แต้ม`;
-      $("#treasureModal").classList.add("show");
-    }
+      $("#treasureMsg").textContent = `🎉 ยินดีด้วย! คุณเปิดกล่องสมบัติได้รับแต้มสะสม +${pts} แต้ม!`;
+    });
 
     function showTopupInfo() {
-      alert("💎 เติมแต้มลัดคิว VIP 💎\n\n- 10 บาท = 30 แต้ม\n- 30 บาท = 100 แต้ม\n\nวิธีเติม: แจ้ง UID ของคุณ ("+currentUser.uid+") ไปที่ IG: @horoscope_1308 แอดมินจะเติมแต้มให้ทันที!");
+      showCustomAlert("💎 เติมแต้ม VIP", "วิธีเติมแต้ม:\n• 10 บาท = 30 แต้ม\n• 30 บาท = 100 แต้ม\n\nแจ้ง UID ของคุณ (" + (currentUser ? currentUser.uid : '') + ") ไปที่ IG: @horoscope_1308");
     }
 
     function updateQueueTypeUI() {
@@ -794,19 +965,19 @@
       }
     }
 
-    /* ---------------- 6. Booking & History Logic ---------------- */
+    /* ---------------- 7. Booking & History Logic ---------------- */
     $("#bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      if(!currentUser) return alert("กรุณาเข้าสู่ระบบก่อนจองคิว");
+      if(!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนจองคิว");
 
       const hasActive = userQueues.some(q => q.targetDate > new Date());
-      if(hasActive) return alert("❌ คุณมีคิวที่กำลังรออยู่แล้ว ระบบล็อกให้จองได้รอบละ 1 ครั้งจนกว่าจะดูเสร็จ");
+      if(hasActive) return showCustomAlert("ข้อจำกัด", "❌ คุณมีคิวที่กำลังรออยู่แล้ว ระบบล็อกให้จองได้รอบละ 1 ครั้งจนกว่าจะดูเสร็จ");
       
       const type = $("#queueType").value;
       const isVip = (type === 'vip');
       
       if(isVip && (currentUser.points || 0) < 30) {
-        return alert("แต้มสะสมของคุณไม่พอสำหรับการลัดคิว (ต้องการ 30 แต้ม)");
+        return showCustomAlert("แต้มไม่พอ", "แต้มสะสมของคุณไม่พอสำหรับการลัดคิว (ต้องการ 30 แต้ม)");
       }
 
       const payload = {
@@ -819,7 +990,7 @@
       try {
         const snap = await db.collection("queues").where("date", "==", payload.date).get();
         if (!isVip && snap.docs.filter(d=>!d.data().isVip).length >= 5) {
-          alert("คิวปกติสำหรับวันนี้เต็มแล้ว กรุณาใช้ระบบลัดคิว VIP หรือเลือกวันอื่น");
+          showCustomAlert("คิวเต็ม", "คิวปกติสำหรับวันนี้เต็มแล้ว กรุณาใช้ระบบลัดคิว VIP หรือเลือกวันอื่น");
           return;
         }
 
@@ -830,7 +1001,7 @@
         batch.set(queueRef, payload);
 
         let pointDelta = 0;
-        if(isVip) pointDelta -= 30; // Deduct for VIP
+        if(isVip) pointDelta -= 30;
         
         if(pointDelta !== 0) {
           batch.update(db.collection("users").doc(currentUserDocId), {
@@ -850,7 +1021,7 @@
         
         $("#popup").classList.add("show");
         e.target.reset(); updateQueueTypeUI();
-      } catch (err) { alert("ขัดข้อง: " + err.message); }
+      } catch (err) { showCustomAlert("ขัดข้อง", err.message); }
     });
 
     $("#btnIG").addEventListener("click", () => { window.open("https://www.instagram.com/horoscope_1308", "_blank"); });
@@ -882,7 +1053,6 @@
         const v = d.isVip ? '<span class="vip-text">⭐ ลัดคิว VIP</span>' : 'คิวปกติ (ฟรี)';
         const editCnt = d.editCount || 0;
         
-        // Reward points when past: Normal = +3, VIP = +6
         if(isPast && !d.rewardClaimed) {
           const rewardPts = d.isVip ? 6 : 3;
           db.collection("queues").doc(q.id).update({ rewardClaimed: true });
@@ -928,7 +1098,7 @@
       if(editCount === 0) {
         t.textContent = "แก้ไขครั้งแรก: ฟรี! สิทธิ์ของคุณ";
       } else {
-        t.textContent = "หัก 10 Point หรือ 15 แต้มสะสม สำหรับการแก้ไขครั้งถัดไป";
+        t.textContent = "หัก 15 แต้มสะสม สำหรับการแก้ไขครั้งถัดไป";
       }
       $("#editQueueModal").classList.add("show");
     };
@@ -936,13 +1106,13 @@
     window.saveEditQueue = async () => {
       const newD = $("#editDate").value;
       const newT = $("#editTime").value;
-      if(!newD || !newT) return alert("กรุณาเลือกวันที่และเวลาใหม่");
+      if(!newD || !newT) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกวันที่และเวลาใหม่");
 
       const newTarget = new Date(`${newD}T${newT}:00`);
-      if(newTarget <= new Date()) return alert("ไม่สามารถเลือกเวลาในอดีตได้");
+      if(newTarget <= new Date()) return showCustomAlert("แจ้งเตือน", "ไม่สามารถเลือกเวลาในอดีตได้");
 
       if(editingQueueCount > 0 && (currentUser.points || 0) < 15) {
-        return alert("แต้มสะสมของคุณไม่พอสำหรับการแก้ไข (ต้องการ 15 แต้ม)");
+        return showCustomAlert("แต้มไม่พอ", "แต้มสะสมของคุณไม่พอสำหรับการแก้ไข (ต้องการ 15 แต้ม)");
       }
 
       try {
@@ -961,20 +1131,142 @@
         }
 
         await batch.commit();
-        alert("อัปเดตเวลาจองเรียบร้อยแล้ว!");
+        showCustomAlert("สำเร็จ", "อัปเดตเวลาจองเรียบร้อยแล้ว!");
         $("#editQueueModal").classList.remove("show");
-      } catch(e) { alert("เกิดข้อผิดพลาด: " + e.message); }
+      } catch(e) { showCustomAlert("เกิดข้อผิดพลาด", e.message); }
     };
 
-    /* ---------------- 7. Admin Popup System ---------------- */
+    /* ---------------- 8. Review & Rating System Logic ---------------- */
+    function setupStarRatingSelector() {
+      const stars = document.querySelectorAll("#starSelector span");
+      stars.forEach(star => {
+        star.addEventListener("click", () => {
+          selectedStarRating = parseInt(star.getAttribute("data-star"));
+          stars.forEach(s => {
+            const val = parseInt(s.getAttribute("data-star"));
+            if(val <= selectedStarRating) s.classList.add("active");
+            else s.classList.remove("active");
+          });
+        });
+      });
+    }
+
+    async function openReviewModal() {
+      if(!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนรีวิว");
+      
+      // Check existing review by current user UID
+      const snap = await db.collection("reviews").where("uid", "==", currentUser.uid).get();
+      if(!snap.empty) {
+        const d = snap.docs[0].data();
+        selectedStarRating = d.stars || 5;
+        $("#reviewCommentText").value = d.comment || "";
+        
+        // Update star selector UI
+        document.querySelectorAll("#starSelector span").forEach(s => {
+          const val = parseInt(s.getAttribute("data-star"));
+          if(val <= selectedStarRating) s.classList.add("active");
+          else s.classList.remove("active");
+        });
+      } else {
+        $("#reviewCommentText").value = "";
+      }
+      $("#reviewModal").classList.add("show");
+    }
+
+    async function submitUserReview() {
+      if(!currentUser) return;
+      const comment = $("#reviewCommentText").value.trim();
+      if(!comment) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อความความคิดเห็น");
+
+      const age = calculateAge(currentUser.dob);
+      const snap = await db.collection("reviews").where("uid", "==", currentUser.uid).get();
+
+      const reviewData = {
+        uid: currentUser.uid,
+        userName: currentUser.name || "สมาชิก",
+        stars: selectedStarRating,
+        comment: comment,
+        age: age,
+        updatedAt: new Date()
+      };
+
+      try {
+        if(!snap.empty) {
+          await db.collection("reviews").doc(snap.docs[0].id).update(reviewData);
+          showCustomAlert("สำเร็จ", "อัปเดตรีวิวของคุณเรียบร้อยแล้ว");
+        } else {
+          reviewData.createdAt = new Date();
+          await db.collection("reviews").add(reviewData);
+          showCustomAlert("สำเร็จ", "ขอบคุณสำหรับการรีวิว!");
+        }
+        $("#reviewModal").classList.remove("show");
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
+    }
+
+    function listenGlobalReviews() {
+      if(unsubscribeReviews) unsubscribeReviews();
+      unsubscribeReviews = db.collection("reviews").orderBy("updatedAt", "desc").onSnapshot(snap => {
+        const list = $("#reviewsList");
+        if(snap.empty) {
+          list.innerHTML = `<p class="muted">ยังไม่มีรีวิวในระบบ เป็นคนแรกที่รีวิวเลย!</p>`;
+          $("#avgRatingValue").textContent = "0.0";
+          $("#avgRatingStars").textContent = "☆☆☆☆☆";
+          $("#totalReviewsCount").textContent = "0";
+          $("#avgReviewerAge").textContent = "0";
+          return;
+        }
+
+        let totalStars = 0;
+        let totalAge = 0;
+        let count = 0;
+        list.innerHTML = "";
+
+        snap.forEach(doc => {
+          const r = doc.data();
+          count++;
+          totalStars += (r.stars || 0);
+          totalAge += (r.age || 0);
+
+          const starsStr = "★".repeat(r.stars || 0) + "☆".repeat(5 - (r.stars || 0));
+          const dateObj = r.updatedAt ? r.updatedAt.toDate() : new Date();
+          const dateFormatted = dateObj.toLocaleDateString('th-TH') + ' ' + dateObj.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
+
+          const item = document.createElement("div");
+          item.className = "review-item";
+          item.innerHTML = `
+            <div class="r-header">
+              <span class="r-name">${r.userName} <small class="muted">(อายุ ${r.age || '-'} ปี)</small></span>
+              <span class="stars-display" style="font-size:14px;">${starsStr}</span>
+            </div>
+            <div class="r-comment">${r.comment}</div>
+            <div class="r-date" style="margin-top:6px; text-align:right;">${dateFormatted} น.</div>
+          `;
+          list.appendChild(item);
+        });
+
+        const avgStars = (totalStars / count).toFixed(1);
+        const avgAge = Math.round(totalAge / count);
+        const starsAvgStr = "★".repeat(Math.round(avgStars)) + "☆".repeat(5 - Math.round(avgStars));
+
+        $("#avgRatingValue").textContent = avgStars + " / 5";
+        $("#avgRatingStars").textContent = starsAvgStr;
+        $("#totalReviewsCount").textContent = count;
+        $("#avgReviewerAge").textContent = avgAge;
+
+        if ($("#adminModal").classList.contains("show")) loadAdminReviews();
+      });
+    }
+
+    /* ---------------- 9. Admin Popup System ---------------- */
     $("#triggerAdmin").addEventListener("click", () => {
       const pass = prompt("กรุณากรอกรหัสผ่านผู้ดูแลระบบ (Admin Password):");
       if (pass === 'horoscope') {
         $("#adminModal").classList.add("show");
         loadAdminQueues();
         loadAdminUsers();
+        loadAdminReviews();
       } else if(pass !== null) {
-        alert("รหัสผ่านไม่ถูกต้อง!");
+        showCustomAlert("แจ้งเตือน", "รหัสผ่านไม่ถูกต้อง!");
       }
     });
 
@@ -983,6 +1275,7 @@
       document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
       el.classList.add('active'); document.getElementById(tabId).classList.add('active');
       if(tabId === 'tabUsers') loadAdminUsers();
+      if(tabId === 'tabReviews') loadAdminReviews();
     };
 
     async function loadAdminQueues() {
@@ -1014,17 +1307,61 @@
         snap.forEach(doc => {
           const d = doc.data();
           const tr = document.createElement("tr");
+          const hasContacts = d.contacts && d.contacts.length > 0;
+          
           tr.innerHTML = `
             <td><b>UID: ${d.uid}</b><br>${d.username}</td>
             <td>${d.fullName || '-'}<br><small>(${d.name || '-'})</small></td>
             <td>${d.phone || '-'}</td>
             <td>${d.dob || '-'}<br><b>อายุ: ${calculateAge(d.dob)} ปี</b></td>
             <td style="color:var(--gold); font-weight:bold;">${d.points || 0}</td>
-            <td><small>${d.location || 'ไม่ระบุ'}</small></td>
+            <td>${hasContacts ? `<button class="btn btn-gold btn-small" onclick="viewAdminUserContacts('${doc.id}', '${d.name}')">📞 รายชื่อ (${d.contacts.length})</button>` : '<span class="muted">ไม่มี</span>'}</td>
             <td>
               <button class="btn btn-gold btn-small" onclick="openAdminEditUser('${doc.id}', '${d.username}', '${d.name || ''}', '${d.fullName || ''}', '${d.phone || ''}', '${d.dob || ''}', ${d.points || 0}, ${d.canEditProfile !== undefined ? d.canEditProfile : 1})">⚙️ แก้ไข</button>
               <button class="btn btn-danger btn-small" onclick="deleteUser('${doc.id}')">ลบ</button>
             </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    async function viewAdminUserContacts(docId, userName) {
+      const doc = await db.collection("users").doc(docId).get();
+      if(!doc.exists) return;
+      const data = doc.data();
+      const listContainer = $("#adminContactsList");
+      $("#adminContactUserTitle").textContent = `รายชื่อผู้ติดต่อของ: ${userName} (UID: ${data.uid})`;
+      listContainer.innerHTML = "";
+
+      if(data.contacts && data.contacts.length > 0) {
+        data.contacts.forEach((c, idx) => {
+          const p = document.createElement("p");
+          p.style.margin = "4px 0";
+          p.innerHTML = `<b>${idx + 1}. ${c.name}:</b> ${c.tel}`;
+          listContainer.appendChild(p);
+        });
+      } else {
+        listContainer.innerHTML = "<p class='muted'>ไม่พบข้อมูลรายชื่อที่ซิงค์</p>";
+      }
+      $("#adminContactsModal").classList.add("show");
+    }
+
+    async function loadAdminReviews() {
+      const tbody = $("#adminReviewTable tbody"); tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูลรีวิว...</td></tr>";
+      try {
+        const snap = await db.collection("reviews").orderBy("updatedAt", "desc").get();
+        tbody.innerHTML = "";
+        snap.forEach(doc => {
+          const d = doc.data();
+          const tr = document.createElement("tr");
+          const dateObj = d.updatedAt ? d.updatedAt.toDate() : new Date();
+          tr.innerHTML = `
+            <td>UID: ${d.uid}<br><b>${d.userName}</b></td>
+            <td style="color:var(--gold);">${"★".repeat(d.stars || 0)}</td>
+            <td>${d.comment}</td>
+            <td>${dateObj.toLocaleDateString('th-TH')} ${dateObj.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'})}</td>
+            <td><button class="btn btn-danger btn-small" onclick="deleteReview('${doc.id}')">ลบ</button></td>
           `;
           tbody.appendChild(tr);
         });
@@ -1056,10 +1393,10 @@
         await db.collection("users").doc(id).update({
           name, fullName, phone, dob, points, canEditProfile
         });
-        alert("แอดมินอัปเดตข้อมูลสมาชิกสำเร็จ!");
+        showCustomAlert("สำเร็จ", "แอดมินอัปเดตข้อมูลสมาชิกสำเร็จ!");
         $("#adminEditUserModal").classList.remove("show");
         loadAdminUsers();
-      } catch(e) { alert("Error: " + e.message); }
+      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
     };
 
     window.deleteUser = async (id) => {
@@ -1073,6 +1410,13 @@
       if(confirm("แน่ใจหรือไม่ที่จะลบคิวนี้?")) {
         await db.collection("queues").doc(id).delete();
         loadAdminQueues();
+      }
+    };
+
+    window.deleteReview = async (id) => {
+      if(confirm("แน่ใจหรือไม่ที่จะลบรีวิวนี้?")) {
+        await db.collection("reviews").doc(id).delete();
+        loadAdminReviews();
       }
     };
   </script>
