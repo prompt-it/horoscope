@@ -75,18 +75,6 @@
     .brand-name { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; text-shadow: 0 2px 6px rgba(0,0,0,0.7), 0 0 14px rgba(157,78,221,0.5); background: linear-gradient(90deg,#fff,var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .status-strip { display: flex; gap: 14px; padding: 0 14px 8px; font-size: 11px; color: var(--muted); }
 
-    .nav-toggle-row { display: flex; justify-content: center; align-items: center; padding: 2px 0 0; }
-    .nav-toggle-btn {
-      display: flex; align-items: center; gap: 4px; background: rgba(157,78,221,0.15);
-      border: 1px solid var(--border); color: var(--muted); font-size: 10.5px; font-weight: 600;
-      padding: 2px 14px; border-radius: 0 0 10px 10px; cursor: pointer; user-select: none;
-      transition: all 0.25s ease;
-    }
-    .nav-toggle-btn:hover { color: var(--gold); border-color: var(--gold); }
-    .nav-toggle-btn .chev { transition: transform 0.3s ease; display: inline-block; }
-    .app-nav-wrap { overflow: hidden; max-height: 68px; transition: max-height 0.35s ease; }
-    .app-nav-wrap.collapsed { max-height: 0; }
-    .app-nav-wrap.collapsed + .nav-toggle-row .nav-toggle-btn .chev { transform: rotate(180deg); }
     .app-nav { display: flex; gap: 6px; padding: 0 10px 8px; overflow-x: auto; scrollbar-width: none; }
     .app-nav::-webkit-scrollbar { display: none; }
     .nav-btn {
@@ -182,16 +170,14 @@
     @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
     /* ---------- Daily Check-in Boxes ---------- */
-    .checkin-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 14px 0; max-height: 320px; overflow-y: auto; padding-right: 2px; }
+    .checkin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
     .checkin-box {
-      aspect-ratio: 1; border-radius: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+      aspect-ratio: 1; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
       position: relative; transition: all 0.3s ease;
     }
-    .checkin-box .cb-day { font-size: 9px; color: var(--muted); font-weight: 600; }
-    .checkin-box .cb-pts { font-size: 10.5px; color: var(--gold); font-weight: 700; }
-    .checkin-cycle-info { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px; }
-    .checkin-cycle-info b { color: var(--gold); }
+    .checkin-box .cb-day { font-size: 10px; color: var(--muted); font-weight: 600; }
+    .checkin-box .cb-pts { font-size: 12px; color: var(--gold); font-weight: 700; }
     .checkin-box.done { background: linear-gradient(145deg, #1e5c3d, #063620); border-color: var(--ok); }
     .checkin-box.done .cb-pts { color: var(--ok); }
     .checkin-box .cb-check { position: absolute; top: -6px; right: -6px; background: var(--ok); color: #002b1a; width: 18px; height: 18px; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
@@ -301,6 +287,107 @@
     /* ---------- Invite page ---------- */
     .invite-code-box { background: rgba(0,0,0,0.6); border: 1px dashed var(--gold); border-radius: 12px; padding: 16px; text-align: center; margin: 12px 0; }
     .invite-code-box .code { font-size: 26px; font-weight: 800; color: var(--gold); letter-spacing: 3px; text-shadow: var(--glow-gold); }
+
+    /* ---------- Collapsible Nav ---------- */
+    .brand-bar { position: relative; }
+    .nav-toggle-btn {
+      margin-left: auto; width: 32px; height: 32px; border-radius: 10px; flex: 0 0 auto;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gold);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px;
+      transition: transform 0.3s ease;
+    }
+    .nav-toggle-btn.open { transform: rotate(180deg); }
+    .app-nav { max-height: 74px; opacity: 1; transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s ease; }
+    .app-nav.nav-collapsed { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; overflow: hidden; }
+
+    /* ---------- Popular Categories ---------- */
+    .popular-cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 6px 0 4px; }
+    .popcat-card { background: rgba(0,0,0,0.55); border: 1px solid var(--border); border-radius: 14px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.25s ease; }
+    .popcat-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--glow-gold); }
+    .popcat-card .ic { font-size: 24px; }
+    .popcat-card .lbl { font-size: 11.5px; font-weight: 600; margin-top: 4px; color: var(--text); }
+
+    /* ---------- Custom Background ---------- */
+    body.custom-bg { background-size: cover; background-position: center; background-attachment: fixed; }
+    body.custom-bg .bg-anim { opacity: 0.2; }
+
+    /* ---------- Profile Quick Actions ---------- */
+    .quick-actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 4px; }
+    .qa-btn { background: rgba(0,0,0,0.55); border: 1px solid var(--border); border-radius: 14px; padding: 12px 4px; text-align: center; cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .qa-btn .ic { font-size: 19px; }
+    .qa-btn .lbl { font-size: 10px; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .qa-btn:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--glow-gold); }
+    .qa-btn.danger:hover { border-color: var(--danger); box-shadow: 0 0 15px rgba(255,77,77,0.4); }
+
+    /* ---------- 30-Day Loop Check-in ---------- */
+    .checkin-grid-30 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 14px 0; max-height: 280px; overflow-y: auto; padding-right: 2px; }
+    .checkin-box-sm { aspect-ratio: 1; border-radius: 9px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; position: relative; }
+    .checkin-box-sm .cb-day { font-size: 8.5px; color: var(--muted); font-weight: 600; }
+    .checkin-box-sm .cb-pts { font-size: 10px; color: var(--gold); font-weight: 700; }
+    .checkin-box-sm.done { background: linear-gradient(145deg, #1e5c3d, #063620); border-color: var(--ok); }
+    .checkin-box-sm.done .cb-pts { color: var(--ok); }
+    .checkin-box-sm.cycle-end { border-color: var(--accent); }
+    .checkin-box-sm.next { border-color: var(--gold); box-shadow: var(--glow-gold); animation: chestPulse 1.8s infinite alternate; }
+    .checkin-box-sm .cb-check { position: absolute; top: -5px; right: -5px; background: var(--ok); color: #002b1a; width: 14px; height: 14px; border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+
+    /* ---------- Shop / Products ---------- */
+    .shop-cat-tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; scrollbar-width: none; }
+    .shop-cat-tabs::-webkit-scrollbar { display: none; }
+    .shop-cat-tab { flex: 0 0 auto; padding: 8px 14px; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.25s ease; }
+    .shop-cat-tab.active { background: linear-gradient(145deg, var(--primary-2), rgba(90,24,154,0.4)); border-color: var(--gold); color: #fff; }
+    .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .product-card { background: rgba(0,0,0,0.65); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: all 0.25s ease; }
+    .product-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .product-card img { width: 100%; aspect-ratio: 1; object-fit: cover; background: #111; display: block; }
+    .product-card .p-body { padding: 10px; text-align: left; flex: 1; display: flex; flex-direction: column; }
+    .product-card .p-name { font-size: 12.5px; font-weight: 700; color: #fff; margin: 0 0 4px; }
+    .product-card .p-desc { font-size: 10.5px; color: var(--muted); margin: 0 0 6px; flex: 1; }
+    .product-card .p-price { font-size: 13.5px; font-weight: 800; color: var(--gold); margin: 0 0 6px; }
+    .product-status { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; display: inline-block; margin-bottom: 6px; width: fit-content; }
+    .product-status.soldout { background: rgba(255,77,77,0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .product-status.available { background: rgba(0,255,170,0.15); color: var(--ok); border: 1px solid var(--ok); }
+    .empty-cat-msg { text-align: center; padding: 34px 10px; color: var(--muted); font-size: 13px; grid-column: 1 / -1; }
+    .cart-fab { position: fixed; bottom: 130px; right: 18px; z-index: 999; width: 46px; height: 46px; border-radius: 50%; background: rgba(122,90,0,0.9); border: 1.5px solid var(--gold); box-shadow: var(--glow-gold); display: none; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; }
+    .cart-fab.show { display: flex; }
+    .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 10px; font-weight: 800; width: 17px; height: 17px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(157,78,221,0.2); font-size: 12.5px; text-align: left; }
+    .cart-item-row .qty-ctrl { display: flex; align-items: center; gap: 6px; }
+    .cart-item-row .qty-ctrl button { width: 24px; padding: 2px; border-radius: 6px; }
+
+    /* ---------- Admin extras ---------- */
+    .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .admin-stat-card { background: linear-gradient(145deg, rgba(157,78,221,0.15), rgba(0,0,0,0.4)); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+    .admin-stat-card .num { font-size: 19px; font-weight: 800; color: var(--gold); }
+    .admin-stat-card .lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .admin-subblock { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 16px; text-align: left; }
+    .admin-subblock h4 { margin: 0 0 10px; color: var(--gold); font-size: 13.5px; }
+    .cat-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .cat-chip { background: rgba(157,78,221,0.15); border: 1px solid var(--border); border-radius: 20px; padding: 5px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 6px; }
+    .cat-chip button { width: auto; padding: 0 4px; background: none; border: none; color: var(--danger); font-weight: 800; cursor: pointer; }
+    .admin-product-row { display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 8px; margin-bottom: 8px; }
+    .admin-product-row img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: 0 0 auto; background: #111; }
+    .admin-product-row .info { flex: 1; text-align: left; font-size: 11.5px; }
+    .admin-product-row .info b { color: #fff; font-size: 12.5px; }
+
+    /* ---------- Mini Holiday Calendar ---------- */
+    .mini-cal { max-width: 320px; margin: 0 auto; }
+    .mini-cal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .mini-cal-head b { color: var(--gold); font-size: 14px; }
+    .mini-cal-head button { width: 30px; padding: 5px; }
+    .mini-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .mini-cal-grid .dow { font-size: 10px; color: var(--muted); text-align: center; font-weight: 700; }
+    .mini-cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: rgba(255,255,255,0.04); font-size: 11px; cursor: pointer; border: 1px solid transparent; }
+    .mini-cal-day.empty { visibility: hidden; cursor: default; }
+    .mini-cal-day.closed { background: rgba(255,77,77,0.25); border-color: var(--danger); color: #ffb3b3; font-weight: 700; }
+    .mini-cal-day:hover:not(.empty) { border-color: var(--gold); }
+    .closed-dates-list { margin-top: 10px; font-size: 12px; text-align: left; max-height: 120px; overflow-y: auto; }
+    .closed-date-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,77,77,0.12); border: 1px solid var(--danger); border-radius: 16px; padding: 4px 8px; margin: 3px 4px 3px 0; font-size: 11px; color: #ffb3b3; }
+    .closed-date-chip button { width: auto; padding: 0 2px; background: none; border: none; color: var(--danger); font-weight: 800; cursor: pointer; }
+
+    /* ---------- Background Music ---------- */
+    .music-fab { position: fixed; bottom: 74px; right: 18px; z-index: 998; width: 46px; height: 46px; border-radius: 50%; background: rgba(60,9,108,0.85); border: 1.5px solid var(--primary); box-shadow: 0 0 15px rgba(157,78,221,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 19px; transition: all 0.3s ease; }
+    .music-fab.playing { animation: chestPulse 1.6s infinite alternate; }
+    .music-track-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; font-size: 12px; text-align: left; }
   </style>
 </head>
 <body>
@@ -315,32 +402,36 @@
     <div class="brand-bar">
       <img class="brand-logo" id="headerLogo" src="https://cdn-icons-png.flaticon.com/512/1076/1076829.png" alt="โลโก้"/>
       <span class="brand-name" id="headerName">Horoscope</span>
+      <div class="nav-toggle-btn main-system open" id="navToggleBtn" onclick="toggleNav()" title="พับ/ขยายเมนู">▲</div>
     </div>
     <div class="status-strip">
       <span id="queueCount">สมาชิกปัจจุบัน: รอโหลดข้อมูล...</span>
       <span id="currentTime">เวลาขณะนี้: --:--:--</span>
     </div>
-    <div class="app-nav-wrap main-system" id="appNavWrap">
-      <nav class="app-nav" id="appNav">
-        <div class="nav-btn active" data-page="profile" onclick="showPage('profile')"><span class="ic">👤</span>โปรไฟล์</div>
-        <div class="nav-btn" data-page="booking" onclick="showPage('booking')"><span class="ic">📅</span>จองคิว</div>
-        <div class="nav-btn" data-page="missions" onclick="showPage('missions')"><span class="ic">🎯</span>ภารกิจ</div>
-        <div class="nav-btn" data-page="history" onclick="showPage('history')"><span class="ic">📜</span>ประวัติ</div>
-        <div class="nav-btn" data-page="reviews" onclick="showPage('reviews')"><span class="ic">⭐</span>รีวิว</div>
-        <div class="nav-btn" data-page="invite" onclick="showPage('invite')"><span class="ic">🤝</span>แนะนำเพื่อน</div>
-      </nav>
-    </div>
-    <div class="nav-toggle-row main-system" id="navToggleRow">
-      <div class="nav-toggle-btn" onclick="toggleNavBar()">
-        <span class="chev">▲</span> <span id="navToggleLabel">ย่อเมนู</span>
-      </div>
-    </div>
+    <nav class="app-nav main-system" id="appNav">
+      <div class="nav-btn active" data-page="profile" onclick="showPage('profile')"><span class="ic">👤</span>โปรไฟล์</div>
+      <div class="nav-btn" data-page="booking" onclick="showPage('booking')"><span class="ic">📅</span>จองคิว</div>
+      <div class="nav-btn" data-page="shop" onclick="showPage('shop')"><span class="ic">🛍️</span>ร้านค้า</div>
+      <div class="nav-btn" data-page="missions" onclick="showPage('missions')"><span class="ic">🎯</span>ภารกิจ</div>
+      <div class="nav-btn" data-page="history" onclick="showPage('history')"><span class="ic">📜</span>ประวัติ</div>
+      <div class="nav-btn" data-page="reviews" onclick="showPage('reviews')"><span class="ic">⭐</span>รีวิว</div>
+      <div class="nav-btn" data-page="invite" onclick="showPage('invite')"><span class="ic">🤝</span>แนะนำเพื่อน</div>
+    </nav>
   </header>
 
   <!-- Floating Report / Support Button -->
   <a class="floating-support-btn" id="floatingSupportBtn" title="แจ้งปัญหาการใช้งาน">
     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg>
   </a>
+
+  <!-- Floating Music Toggle -->
+  <div class="music-fab main-system" id="musicFab" onclick="toggleMusic()" title="เล่น/หยุดเพลง">🎵</div>
+  <audio id="bgMusicPlayer" style="display:none;"></audio>
+
+  <!-- Floating Cart Button -->
+  <div class="cart-fab main-system" id="cartFab" onclick="openCheckoutModal()" title="ตะกร้าสินค้า">
+    🛒<span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+  </div>
 
   <!-- Custom Alert / Toast Modal -->
   <div class="modal-overlay" id="customAlertModal">
@@ -367,10 +458,10 @@
       <p style="text-align: left; font-size: 13px;">
         1. <b>คิวปกติ</b> ให้บริการช่วงเวลา 17:00-19:00 น. (รับ 3 แต้ม)<br>
         2. <b>ลัดคิว VIP</b> ใช้ 30 แต้มสะสม (รับ 6 แต้มหลังดูเสร็จ)<br>
-        3. <b>เช็คอินรายวัน</b> สะสมครบ 7 วันรับโบนัสใหญ่<br>
+        3. <b>เช็คอินรายวัน</b> รับ 2 แต้มทุกวัน นับรอบทุก 3 วัน สรุปผลรวม 30 วัน<br>
         4. <b>การแก้ไขข้อมูลส่วนตัว</b> แก้ไขฟรีได้ 1 ครั้ง ครั้งถัดไปติดต่อแอดมิน<br>
         5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b><br>
-        6. 📌 <b>วิธีใช้เมนูด้านบน:</b> กดแถบ "▲ ย่อเมนู / ▼ ขยายเมนู" ใต้เมนูหลัก เพื่อซ่อนหรือแสดงแถบเมนูโปรไฟล์/จองคิว/ภารกิจ ให้หน้าจอโล่งขึ้นเวลาอ่านเนื้อหา
+        6. เลือกซื้อสินค้าได้ที่หน้า <b>ร้านค้า</b> (คิดค่าจัดส่งอัตโนมัติ +50 บาท/ออเดอร์)
       </p>
       <button class="btn btn-gold" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
     </div>
@@ -381,12 +472,8 @@
     <div class="modal-content">
       <button class="close-modal-x" onclick="closeTreasureModal()">&times;</button>
       <h2>🎁 เช็คอินรายวัน 🎁</h2>
-      <p class="muted">เช็คอินทุกวัน รับวันละ 2 แต้ม ต่อเนื่องครบ 30 วัน (หากขาดเช็คอินติดต่อกัน 3 วัน จะเริ่มนับวันที่ 1 ใหม่)</p>
-      <div class="checkin-cycle-info">
-        <span>ความคืบหน้ารอบนี้: <b id="checkinDayLabel">วันที่ 0 / 30</b></span>
-        <span>รวมแต้มที่ได้ในรอบ: <b id="checkinTotalLabel">0</b> 💎</span>
-      </div>
-      <div class="checkin-grid" id="checkinBoxes"></div>
+      <p class="muted">รับ 2 แต้มทุกวัน • นับรอบทุก 3 วัน • ภาพรวมสรุปผล 30 วัน</p>
+      <div class="checkin-grid-30" id="checkinBoxes"></div>
       <p id="treasureMsg" style="font-size: 15px; font-weight: bold; color: var(--gold); margin: 10px 0;">แตะปุ่มด้านล่างเพื่อเช็คอินวันนี้</p>
       <button class="btn btn-gold" id="checkinClaimBtn">✅ เช็คอินวันนี้</button>
     </div>
@@ -496,6 +583,25 @@
     </div>
   </div>
 
+  <!-- Popup Cart / Checkout -->
+  <div class="modal-overlay" id="cartModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="$('#cartModal').classList.remove('show')">&times;</button>
+      <h2>🛒 ตะกร้าสินค้า</h2>
+      <div id="cartItemsList" style="margin-bottom:10px;"><p class="muted">ยังไม่มีสินค้าในตะกร้า</p></div>
+      <p style="text-align:right; font-size:13px;">ค่าจัดส่ง: <b style="color:var(--gold);">+50 บาท</b></p>
+      <p style="text-align:right; font-size:17px; font-weight:800; color:var(--gold);">ยอดรวมทั้งหมด: <span id="cartGrandTotal">0</span> บาท</p>
+      <div id="cartCheckoutForm" style="margin-top:10px;">
+        <label>ชื่อ-นามสกุลจริง</label><input type="text" id="orderFullName" placeholder="ชื่อ-นามสกุลผู้รับ" />
+        <label>ที่อยู่จัดส่ง</label><textarea id="orderAddress" rows="3" placeholder="บ้านเลขที่ / ตำบล / อำเภอ / จังหวัด / รหัสไปรษณีย์"></textarea>
+        <label>เบอร์โทร / ช่องทางติดต่อ</label><input type="text" id="orderContact" placeholder="08xxxxxxxx หรือ IG/Line" />
+        <label>แนบสลิปชำระเงิน</label>
+        <input type="file" id="orderSlipImg" accept="image/*" />
+        <button class="btn btn-gold" onclick="submitOrder()" style="margin-top:15px; font-size:15px; padding:12px;">✅ ยืนยันสั่งซื้อ</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Popup Review Add/Edit -->
   <div class="modal-overlay" id="reviewModal">
     <div class="modal-content">
@@ -531,9 +637,18 @@
       <button class="close-modal-x" onclick="$('#adminModal').classList.remove('show')">&times;</button>
       <h2 style="color: #ff4d4d; margin-bottom: 15px;">🔥 ศูนย์ควบคุมแอดมิน (Admin Dashboard)</h2>
 
+      <div class="admin-stats" id="adminStatsBar">
+        <div class="admin-stat-card"><div class="num" id="statUsers">0</div><div class="lbl">สมาชิกทั้งหมด</div></div>
+        <div class="admin-stat-card"><div class="num" id="statQueues">0</div><div class="lbl">คิวทั้งหมด</div></div>
+        <div class="admin-stat-card"><div class="num" id="statOrders">0</div><div class="lbl">ออเดอร์ค้างจ่าย</div></div>
+        <div class="admin-stat-card"><div class="num" id="statPending">0</div><div class="lbl">รายการรออนุมัติ</div></div>
+      </div>
+
       <div class="admin-tabs">
         <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">📅 คิวทั้งหมด</div>
         <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">👥 สมาชิก</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabProducts', this)">🛍️ สินค้า/หมวดหมู่</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabOrders', this)">📦 ออเดอร์</div>
         <div class="admin-tab" onclick="switchAdminTab('tabReviews', this)">⭐ รีวิว</div>
         <div class="admin-tab" onclick="switchAdminTab('tabTopups', this)">💎 เติมเงิน</div>
         <div class="admin-tab" onclick="switchAdminTab('tabVerifies', this)">🛡️ ยืนยันตัวตน</div>
@@ -549,14 +664,38 @@
       </div>
 
       <div id="tabUsers" class="admin-content">
+        <div class="admin-subblock">
+          <h4>🔗 ลูกค้าเก่า (ก่อนมีระบบสมาชิก)</h4>
+          <p class="muted" style="margin:0 0 8px;">รายการคิวที่มี UID ไม่ตรงกับสมาชิกที่สมัครในระบบ สามารถผูกเข้ากับสมาชิกที่มีอยู่ได้</p>
+          <div id="legacyCustomerList"><p class="muted">กำลังตรวจสอบข้อมูล...</p></div>
+        </div>
         <div class="table-responsive"><table id="adminUserTable">
           <thead><tr><th>UID/Username</th><th>ชื่อ-สกุลจริง</th><th>เบอร์โทร</th><th>อายุ</th><th>แต้ม 💎</th><th>รายชื่อ</th><th>จัดการ</th></tr></thead>
           <tbody></tbody>
         </table></div>
-        <h3 style="color:var(--gold); margin: 18px 0 6px; font-size: 14px;">👤 สมาชิกเก่า (จองก่อนมีระบบล็อคอิน / ยังไม่มีบัญชี)</h3>
-        <p class="muted" style="margin: 0 0 8px;">รายชื่อที่พบจากประวัติการจองคิวเดิม แต่ยังไม่มีบัญชีผู้ใช้งาน — กด "สร้างบัญชี" เพื่อออก Username/รหัสผ่านให้เข้าสู่ระบบได้ โดยข้อมูลการจองเดิมจะเชื่อมโยงกับบัญชีใหม่ทันที (ข้อมูลเดิมไม่หายไปไหน)</p>
-        <div class="table-responsive"><table id="adminLegacyUserTable">
-          <thead><tr><th>ชื่อ</th><th>IG Username</th><th>จำนวนครั้งที่เคยจอง</th><th>จัดการ</th></tr></thead>
+      </div>
+
+      <div id="tabProducts" class="admin-content">
+        <div class="admin-subblock">
+          <h4>📂 หมวดหมู่สินค้า</h4>
+          <div class="cat-chip-row" id="adminCatChipRow"><span class="muted">ยังไม่มีหมวดหมู่</span></div>
+          <div class="row">
+            <input type="text" id="newCatName" placeholder="ชื่อหมวดหมู่ใหม่" />
+            <button class="btn btn-gold" onclick="addShopCategory()">+ เพิ่มหมวดหมู่</button>
+          </div>
+        </div>
+        <div class="admin-subblock">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h4 style="margin:0;">🛍️ รายการสินค้า</h4>
+            <button class="btn btn-gold btn-small" onclick="openAdminProductModal()">+ เพิ่มสินค้าใหม่</button>
+          </div>
+          <div id="adminProductList"><p class="muted">ยังไม่มีสินค้า</p></div>
+        </div>
+      </div>
+
+      <div id="tabOrders" class="admin-content">
+        <div class="table-responsive"><table id="adminOrderTable">
+          <thead><tr><th>UID/ผู้สั่ง</th><th>รายการ</th><th>ยอดรวม</th><th>สลิป/ที่อยู่</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
           <tbody></tbody>
         </table></div>
       </div>
@@ -590,13 +729,39 @@
       </div>
 
       <div id="tabSettings" class="admin-content">
-        <div style="max-width: 360px; text-align:left;">
+        <div style="max-width: 400px; text-align:left;">
           <label>ชื่อร้าน</label>
           <input type="text" id="admShopName" placeholder="Horoscope" />
           <label>โลโก้ร้าน</label><br/>
           <img id="admShopLogoPreview" class="logo-preview-sm" src="https://cdn-icons-png.flaticon.com/512/1076/1076829.png" />
           <input type="file" id="admShopLogoInput" accept="image/*" />
           <button class="btn btn-gold" style="margin-top:15px;" onclick="saveShopSettings()">บันทึกการตั้งค่าร้าน</button>
+        </div>
+
+        <div class="admin-subblock" style="margin-top:18px;">
+          <h4>🖼️ พื้นหลังเว็บไซต์ (รองรับรูปภาพ / GIF)</h4>
+          <input type="file" id="admBgInput" accept="image/*,image/gif" />
+          <div class="row" style="margin-top:8px;">
+            <button class="btn btn-gold btn-small" onclick="saveShopBackground()">อัปโหลดใช้เป็นพื้นหลัง</button>
+            <button class="btn btn-outline btn-small" onclick="clearShopBackground()">ล้างพื้นหลัง (ใช้ธีมเดิม)</button>
+          </div>
+        </div>
+
+        <div class="admin-subblock">
+          <h4>📅 ปฏิทินกำหนดวันหยุด</h4>
+          <div class="mini-cal" id="adminHolidayCal"></div>
+          <div class="closed-dates-list" id="closedDatesAdminList"></div>
+        </div>
+
+        <div class="admin-subblock">
+          <h4>🎵 จัดการเพลงประกอบ</h4>
+          <div id="adminMusicList"><p class="muted">ยังไม่มีเพลง</p></div>
+          <label>ชื่อเพลง</label><input type="text" id="newMusicName" placeholder="ชื่อเพลง" />
+          <label>ไฟล์เพลง (mp3 ขนาดเล็ก) หรือวางลิงก์ด้านล่างแทนได้</label>
+          <input type="file" id="newMusicFile" accept="audio/*" />
+          <label>หรือ ลิงก์ไฟล์เพลงโดยตรง (URL)</label>
+          <input type="text" id="newMusicUrl" placeholder="https://.../song.mp3" />
+          <button class="btn btn-gold btn-small" style="margin-top:8px;" onclick="addMusicTrack()">+ เพิ่มเพลง</button>
         </div>
       </div>
 
@@ -631,6 +796,32 @@
       <div class="row" style="margin-top: 15px;">
         <button class="btn btn-gold" onclick="saveAdminEditedUser()">บันทึก</button>
         <button class="btn btn-danger" onclick="$('#adminEditUserModal').classList.remove('show')">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup Admin Add/Edit Product -->
+  <div class="modal-overlay" id="adminProductModal">
+    <div class="modal-content">
+      <button class="close-modal-x" onclick="$('#adminProductModal').classList.remove('show')">&times;</button>
+      <h2>🛍️ เพิ่ม/แก้ไขสินค้า</h2>
+      <input type="hidden" id="pmDocId" />
+      <label>หมวดหมู่</label>
+      <select id="pmCategory"></select>
+      <label>ชื่อสินค้า</label><input type="text" id="pmName" placeholder="ชื่อสินค้า" />
+      <label>ราคา (บาท)</label><input type="number" id="pmPrice" placeholder="0" min="0" />
+      <label>รายละเอียดสินค้า</label><textarea id="pmDesc" rows="3" placeholder="รายละเอียดสินค้า"></textarea>
+      <label>สถานะสินค้า</label>
+      <select id="pmStatus">
+        <option value="available">พร้อมจำหน่าย</option>
+        <option value="soldout">สินค้าหมด</option>
+      </select>
+      <label>รูปภาพสินค้า</label><br/>
+      <img id="pmImgPreview" class="logo-preview-sm" style="border-radius:10px; width:80px; height:80px; display:none;" />
+      <input type="file" id="pmImgInput" accept="image/*" />
+      <div class="row" style="margin-top:15px;">
+        <button class="btn btn-gold" onclick="saveAdminProduct()">บันทึกสินค้า</button>
+        <button class="btn btn-danger" onclick="$('#adminProductModal').classList.remove('show')">ยกเลิก</button>
       </div>
     </div>
   </div>
@@ -693,21 +884,37 @@
               </div>
             </div>
 
-            <div class="row" style="margin-bottom: 10px;">
-              <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold);" onclick="openTreasureModal()">🎁 เช็คอินรายวัน</button>
-              <button class="btn btn-outline" style="border-color:#ff4d4d; color:#ff4d4d;" onclick="$('#gachaModal').classList.add('show')">🎡 เสี่ยงดวง</button>
-            </div>
-
-            <div class="row">
-              <button class="btn btn-gold" onclick="$('#topupModal').classList.add('show')">➕ เติมแต้ม VIP</button>
-              <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
+            <div class="quick-actions-grid">
+              <div class="qa-btn" onclick="openTreasureModal()"><span class="ic">🎁</span><span class="lbl">เช็คอินรายวัน</span></div>
+              <div class="qa-btn" onclick="$('#gachaModal').classList.add('show')"><span class="ic">🎡</span><span class="lbl">เสี่ยงดวง</span></div>
+              <div class="qa-btn" onclick="$('#topupModal').classList.add('show')"><span class="ic">💎</span><span class="lbl">เติมแต้ม VIP</span></div>
+              <div class="qa-btn" onclick="showPage('shop')"><span class="ic">🛍️</span><span class="lbl">ร้านค้า</span></div>
+              <div class="qa-btn" onclick="showPage('missions')"><span class="ic">🎯</span><span class="lbl">ภารกิจ</span></div>
+              <div class="qa-btn danger" onclick="logout()"><span class="ic">🚪</span><span class="lbl">ออกจากระบบ</span></div>
             </div>
           </div>
+
+          <section class="card">
+            <h2 class="title">🔥 หมวดหมู่ยอดนิยม</h2>
+            <p class="muted">แตะเพื่อไปจองคิวในหมวดหมู่ที่สนใจได้ทันที</p>
+            <div class="popular-cats" id="popularCatsGrid">
+              <div class="popcat-card" onclick="goToBookingCategory('ดูดวงส่วนตัวครอบคลุม')"><div class="ic">🔮</div><div class="lbl">ดูดวงส่วนตัวครอบคลุม</div></div>
+              <div class="popcat-card" onclick="goToBookingCategory('เจาะลึกความรัก')"><div class="ic">💞</div><div class="lbl">เจาะลึกความรัก</div></div>
+              <div class="popcat-card" onclick="goToBookingCategory('ชี้แนะการงาน/ธุรกิจ')"><div class="ic">💼</div><div class="lbl">ชี้แนะการงาน/ธุรกิจ</div></div>
+              <div class="popcat-card" onclick="goToBookingCategory('การเงินและโชคลาภ')"><div class="ic">💰</div><div class="lbl">การเงินและโชคลาภ</div></div>
+            </div>
+          </section>
+
           <span class="footer-link" id="triggerAdmin">© 2026 <span id="footerBrandName">Horoscope</span> | Admin Control Panel</span>
         </div>
 
         <!-- PAGE: Booking -->
         <div class="page" id="page-booking">
+          <section class="card">
+            <h2 class="title">🕒 ตรวจเช็กเวลาทำการ</h2>
+            <p class="muted">โปรดตรวจสอบวันที่ร้านหยุดพักก่อนทำการจองคิว</p>
+            <div id="closedDatesInfo" style="font-size:12.5px; text-align:left;"><span class="muted">กำลังตรวจสอบวันหยุด...</span></div>
+          </section>
           <section class="card">
             <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
             <p class="muted">ให้บริการ 17:00-19:00 น. (จองได้ทีละ 1 คิวจนกว่าจะดูเสร็จ)</p>
@@ -745,6 +952,18 @@
               <div><label>Instagram ของคุณ</label><input id="igUsername" type="text" required placeholder="@username" /></div>
               <button type="submit" class="btn btn-gold" id="btnSubmitBook" style="padding: 16px; font-size: 16px; margin-top:15px;">✨ ยืนยันการจองคิว ✨</button>
             </form>
+          </section>
+        </div>
+
+        <!-- PAGE: Shop -->
+        <div class="page" id="page-shop">
+          <section class="card">
+            <h2 class="title">🛍️ ร้านค้าออนไลน์</h2>
+            <p class="muted">ค่าจัดส่งคิดอัตโนมัติ +50 บาทต่อออเดอร์</p>
+            <div class="shop-cat-tabs" id="shopCatTabs"></div>
+            <div class="product-grid" id="shopProductGrid">
+              <p class="empty-cat-msg">กำลังโหลดสินค้า...</p>
+            </div>
           </section>
         </div>
 
@@ -839,6 +1058,17 @@
     let selectedStarRating = 5;
     let activeMissionId = null;
 
+    /* ---- New feature globals ---- */
+    let shopCategories = {};
+    let shopProducts = {};
+    let activeShopCatId = null;
+    let cart = [];
+    let closedDatesCache = [];
+    let adminCalDate = new Date();
+    let musicTracks = [];
+    let currentMusicIndex = 0;
+    let musicPlaying = false;
+
     const missionsDict = {
       "m1": { title: "1. กดติดตาม Instagram", points: 3, type: 'main' },
       "m2": { title: "2. กดใจ 1 โพสต์บน Instagram", points: 2, type: 'main' },
@@ -847,9 +1077,8 @@
       "s2": { title: "โพสต์รีวิวร้าน (ต่อ 1 แฟลตฟอร์ม)", points: 10, type: 'special' },
       "s3": { title: "แนะนำเพื่อนส่วนตัว", points: 5, type: 'special' }
     };
-    const CHECKIN_CYCLE_DAYS = 30;
     const CHECKIN_DAILY_POINTS = 2;
-    const CHECKIN_RESET_AFTER_MS = 3 * 24 * 60 * 60 * 1000; // 3 days missed => restart at day 1
+    const CHECKIN_TOTAL_DAYS = 30;
     const WHEEL_LABELS = ["20 แต้ม","15 แต้ม","ดูดวงฟรีตลอดชีวิต","10 แต้ม","5 แต้ม","เสียใจด้วย","1 แต้ม","8 แต้ม"];
 
     /* ---------------- Custom Notification Popup ---------------- */
@@ -871,23 +1100,6 @@
       $("#mainContainer").scrollTop = 0;
     };
 
-    /* ---------------- Collapsible Nav Bar ---------------- */
-    window.toggleNavBar = () => {
-      const wrap = $("#appNavWrap");
-      const collapsed = wrap.classList.toggle("collapsed");
-      $("#navToggleLabel").textContent = collapsed ? "ขยายเมนู" : "ย่อเมนู";
-      $("#navToggleRow .chev").textContent = collapsed ? "▼" : "▲";
-      localStorage.setItem("nav_collapsed", collapsed ? "1" : "0");
-    };
-    (function restoreNavBarState() {
-      if (localStorage.getItem("nav_collapsed") === "1") {
-        const wrap = $("#appNavWrap");
-        if (wrap) { wrap.classList.add("collapsed"); }
-        const lbl = $("#navToggleLabel"); if (lbl) lbl.textContent = "ขยายเมนู";
-        const chev = document.querySelector("#navToggleRow .chev"); if (chev) chev.textContent = "▼";
-      }
-    })();
-
     /* ---------------- Shop Branding ---------------- */
     db.collection("settings").doc("shop").onSnapshot((doc) => {
       const d = doc.exists ? doc.data() : {};
@@ -899,7 +1111,391 @@
       $("#footerBrandName").textContent = name;
       $("#admShopName").value = name;
       $("#admShopLogoPreview").src = logo;
+
+      if (d.background) { document.body.style.backgroundImage = `url(${d.background})`; document.body.classList.add('custom-bg'); }
+      else { document.body.style.backgroundImage = ''; document.body.classList.remove('custom-bg'); }
+
+      closedDatesCache = d.closedDates || [];
+      renderMemberClosedDatesInfo();
+      if ($("#adminHolidayCal")) renderAdminHolidayCal();
     });
+
+    /* ---------------- Nav toggle & quick category jump ---------------- */
+    window.toggleNav = () => {
+      $("#appNav").classList.toggle("nav-collapsed");
+      $("#navToggleBtn").classList.toggle("open");
+    };
+    window.goToBookingCategory = (catName) => {
+      showPage('booking');
+      const sel = $("#category");
+      if (sel) sel.value = catName;
+    };
+
+    /* ---------------- Shop: Categories & Products (member view) ---------------- */
+    db.collection("shopCategories").orderBy("name").onSnapshot(snap => {
+      shopCategories = {};
+      snap.forEach(doc => shopCategories[doc.id] = doc.data());
+      renderShopCategoryTabs();
+      renderAdminCategoryChips();
+      renderAdminProductCategorySelect();
+    });
+
+    db.collection("products").onSnapshot(snap => {
+      shopProducts = {};
+      snap.forEach(doc => shopProducts[doc.id] = doc.data());
+      renderShopProductGrid();
+      renderAdminProductList();
+    });
+
+    function renderShopCategoryTabs() {
+      const wrap = $("#shopCatTabs"); if (!wrap) return;
+      const ids = Object.keys(shopCategories);
+      if (ids.length === 0) { wrap.innerHTML = ""; activeShopCatId = null; renderShopProductGrid(); return; }
+      if (!activeShopCatId || !shopCategories[activeShopCatId]) activeShopCatId = ids[0];
+      wrap.innerHTML = ids.map(id => `<div class="shop-cat-tab ${id === activeShopCatId ? 'active' : ''}" onclick="selectShopCategory('${id}')">${shopCategories[id].name}</div>`).join('');
+      renderShopProductGrid();
+    }
+    window.selectShopCategory = (id) => { activeShopCatId = id; renderShopCategoryTabs(); };
+
+    function renderShopProductGrid() {
+      const grid = $("#shopProductGrid"); if (!grid) return;
+      const catIds = Object.keys(shopCategories);
+      if (catIds.length === 0) { grid.innerHTML = '<p class="empty-cat-msg">ยังไม่มีหมวดหมู่สินค้าในระบบ</p>'; return; }
+      const items = Object.entries(shopProducts).filter(([id, p]) => p.categoryId === activeShopCatId);
+      if (items.length === 0) { grid.innerHTML = '<p class="empty-cat-msg">🕐 รอจำหน่ายเร็วๆ นี้</p>'; return; }
+      grid.innerHTML = items.map(([id, p]) => {
+        const soldout = p.status === 'soldout';
+        return `<div class="product-card">
+          <img src="${p.image || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png'}" alt="${p.name}"/>
+          <div class="p-body">
+            <span class="product-status ${soldout ? 'soldout' : 'available'}">${soldout ? 'สินค้าหมด' : 'พร้อมจำหน่าย'}</span>
+            <div class="p-name">${p.name}</div>
+            <div class="p-desc">${p.description || ''}</div>
+            <div class="p-price">${p.price || 0} บาท</div>
+            <button class="btn btn-gold btn-small" style="margin-top:auto;" ${soldout ? 'disabled' : ''} onclick="addToCart('${id}')">${soldout ? 'สินค้าหมด' : '➕ เพิ่มลงตะกร้า'}</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    /* ---------------- Shop: Cart & Checkout ---------------- */
+    window.addToCart = (productId) => {
+      if (!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนสั่งซื้อสินค้า");
+      const p = shopProducts[productId];
+      if (!p || p.status === 'soldout') return;
+      const existing = cart.find(c => c.productId === productId);
+      if (existing) existing.qty += 1;
+      else cart.push({ productId, name: p.name, price: p.price || 0, qty: 1 });
+      updateCartUI();
+      showCustomAlert("เพิ่มลงตะกร้าแล้ว", `เพิ่ม "${p.name}" ลงตะกร้าเรียบร้อย`);
+    };
+    window.changeCartQty = (idx, delta) => {
+      cart[idx].qty += delta;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      updateCartUI(); renderCartModal();
+    };
+    function updateCartUI() {
+      const totalQty = cart.reduce((s, c) => s + c.qty, 0);
+      const fab = $("#cartFab"), badge = $("#cartBadge");
+      if (!fab) return;
+      if (totalQty > 0) { fab.classList.add('show'); badge.style.display = 'flex'; badge.textContent = totalQty; }
+      else { fab.classList.remove('show'); badge.style.display = 'none'; }
+    }
+    function renderCartModal() {
+      const list = $("#cartItemsList");
+      if (cart.length === 0) { list.innerHTML = '<p class="muted">ยังไม่มีสินค้าในตะกร้า</p>'; $("#cartGrandTotal").textContent = 0; return; }
+      let subtotal = 0;
+      list.innerHTML = cart.map((c, idx) => {
+        subtotal += c.price * c.qty;
+        return `<div class="cart-item-row"><span>${c.name}</span><div class="qty-ctrl"><button onclick="changeCartQty(${idx},-1)">-</button><span>${c.qty}</span><button onclick="changeCartQty(${idx},1)">+</button><span style="color:var(--gold);">${c.price * c.qty}บ.</span></div></div>`;
+      }).join('');
+      $("#cartGrandTotal").textContent = subtotal + 50;
+    }
+    window.openCheckoutModal = () => {
+      if (cart.length === 0) return showCustomAlert("ตะกร้าว่าง", "กรุณาเลือกสินค้าก่อนทำการสั่งซื้อ");
+      renderCartModal();
+      $("#cartModal").classList.add("show");
+    };
+    window.submitOrder = () => {
+      if (!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อน");
+      if (cart.length === 0) return showCustomAlert("แจ้งเตือน", "ตะกร้าสินค้าว่างเปล่า");
+      const fullName = $("#orderFullName").value.trim();
+      const address = $("#orderAddress").value.trim();
+      const contact = $("#orderContact").value.trim();
+      const file = $("#orderSlipImg").files[0];
+      if (!fullName || !address || !contact) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลผู้รับให้ครบถ้วน");
+      if (!file) return showCustomAlert("แจ้งเตือน", "โปรดแนบสลิปชำระเงิน");
+      const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          await db.collection("orders").add({
+            uid: currentUser.uid, name: currentUser.name, items: cart, subtotal, shipping: 50, total: subtotal + 50,
+            fullName, address, contact, slip: e.target.result, status: 'pending', timestamp: new Date()
+          });
+          cart = []; updateCartUI();
+          $("#cartModal").classList.remove("show");
+          $("#orderFullName").value = ""; $("#orderAddress").value = ""; $("#orderContact").value = ""; $("#orderSlipImg").value = "";
+          showCustomAlert("สั่งซื้อสำเร็จ", "ทำรายการสั่งซื้อเรียบร้อยแล้ว รอแอดมินตรวจสอบและจัดส่งสินค้า");
+        } catch (err) { showCustomAlert("ผิดพลาด", err.message); }
+      };
+      reader.readAsDataURL(file);
+    };
+
+    /* ---------------- Shop: Admin Categories & Products ---------------- */
+    window.addShopCategory = async () => {
+      const name = $("#newCatName").value.trim();
+      if (!name) return showCustomAlert("แจ้งเตือน", "กรุณากรอกชื่อหมวดหมู่");
+      await db.collection("shopCategories").add({ name, createdAt: new Date() });
+      $("#newCatName").value = "";
+    };
+    window.deleteShopCategory = async (id) => {
+      if (!confirm("ลบหมวดหมู่นี้? สินค้าภายในจะยังคงอยู่แต่ไม่ถูกจัดกลุ่ม")) return;
+      await db.collection("shopCategories").doc(id).delete();
+    };
+    function renderAdminCategoryChips() {
+      const wrap = $("#adminCatChipRow"); if (!wrap) return;
+      const ids = Object.keys(shopCategories);
+      if (ids.length === 0) { wrap.innerHTML = '<span class="muted">ยังไม่มีหมวดหมู่</span>'; return; }
+      wrap.innerHTML = ids.map(id => `<span class="cat-chip">${shopCategories[id].name}<button onclick="deleteShopCategory('${id}')">×</button></span>`).join('');
+    }
+    function renderAdminProductCategorySelect() {
+      const sel = $("#pmCategory"); if (!sel) return;
+      const ids = Object.keys(shopCategories);
+      sel.innerHTML = ids.length ? ids.map(id => `<option value="${id}">${shopCategories[id].name}</option>`).join('') : '<option value="">-- ยังไม่มีหมวดหมู่ --</option>';
+    }
+    window.openAdminProductModal = (id) => {
+      if (Object.keys(shopCategories).length === 0) return showCustomAlert("แจ้งเตือน", "กรุณาเพิ่มหมวดหมู่สินค้าก่อน");
+      renderAdminProductCategorySelect();
+      $("#pmImgPreview").style.display = "none"; $("#pmImgPreview").src = "";
+      if (id && shopProducts[id]) {
+        const p = shopProducts[id];
+        $("#pmDocId").value = id; $("#pmCategory").value = p.categoryId || ""; $("#pmName").value = p.name || "";
+        $("#pmPrice").value = p.price || 0; $("#pmDesc").value = p.description || ""; $("#pmStatus").value = p.status || 'available';
+        if (p.image) { $("#pmImgPreview").src = p.image; $("#pmImgPreview").style.display = "inline-block"; }
+      } else {
+        $("#pmDocId").value = ""; $("#pmName").value = ""; $("#pmPrice").value = ""; $("#pmDesc").value = ""; $("#pmStatus").value = "available";
+      }
+      $("#pmImgInput").value = "";
+      $("#adminProductModal").classList.add("show");
+    };
+    window.saveAdminProduct = () => {
+      const id = $("#pmDocId").value;
+      const data = {
+        categoryId: $("#pmCategory").value, name: $("#pmName").value.trim(), price: parseFloat($("#pmPrice").value) || 0,
+        description: $("#pmDesc").value.trim(), status: $("#pmStatus").value
+      };
+      if (!data.name || !data.categoryId) return showCustomAlert("แจ้งเตือน", "กรุณากรอกชื่อสินค้าและเลือกหมวดหมู่");
+      const finish = async (imgData) => {
+        if (imgData) data.image = imgData;
+        try {
+          if (id) await db.collection("products").doc(id).update(data);
+          else { data.createdAt = new Date(); await db.collection("products").add(data); }
+          $("#adminProductModal").classList.remove("show");
+          showCustomAlert("สำเร็จ", "บันทึกข้อมูลสินค้าเรียบร้อยแล้ว");
+        } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+      };
+      const file = $("#pmImgInput").files[0];
+      if (file) { const r = new FileReader(); r.onload = (e) => finish(e.target.result); r.readAsDataURL(file); }
+      else finish(null);
+    };
+    window.deleteProduct = async (id) => { if (confirm("ลบสินค้านี้?")) await db.collection("products").doc(id).delete(); };
+    function renderAdminProductList() {
+      const wrap = $("#adminProductList"); if (!wrap) return;
+      const entries = Object.entries(shopProducts);
+      if (entries.length === 0) { wrap.innerHTML = '<p class="muted">ยังไม่มีสินค้า</p>'; return; }
+      wrap.innerHTML = entries.map(([id, p]) => `<div class="admin-product-row">
+        <img src="${p.image || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png'}" />
+        <div class="info"><b>${p.name}</b><br>${shopCategories[p.categoryId] ? shopCategories[p.categoryId].name : '-'} | ${p.price || 0} บ. | ${p.status === 'soldout' ? 'สินค้าหมด' : 'พร้อมจำหน่าย'}</div>
+        <div class="admin-actions">
+          <button class="btn btn-outline btn-small" onclick="openAdminProductModal('${id}')">✏️</button>
+          <button class="btn btn-danger btn-small" onclick="deleteProduct('${id}')">ลบ</button>
+        </div>
+      </div>`).join('');
+    }
+
+    /* ---------------- Admin: Orders ---------------- */
+    async function loadAdminOrders() {
+      const tbody = $("#adminOrderTable tbody"); tbody.innerHTML = "<tr><td colspan='6'>กำลังดึงข้อมูล...</td></tr>";
+      const snap = await db.collection("orders").orderBy("timestamp", "desc").get(); tbody.innerHTML = "";
+      $("#statOrders").textContent = snap.docs.filter(d => !d.data().status || d.data().status === 'pending').length;
+      snap.forEach(doc => {
+        const d = doc.data();
+        const itemsHtml = (d.items || []).map(i => `${i.name} x${i.qty}`).join('<br>');
+        const actions = `
+          <select onchange="updateOrderStatus('${doc.id}', this.value)" style="width:auto; padding:4px 6px; font-size:11px; margin-bottom:4px;">
+            <option value="pending" ${(!d.status || d.status === 'pending') ? 'selected' : ''}>รอดำเนินการ</option>
+            <option value="shipped" ${d.status === 'shipped' ? 'selected' : ''}>จัดส่งแล้ว</option>
+            <option value="rejected" ${d.status === 'rejected' ? 'selected' : ''}>ยกเลิก</option>
+          </select><br>
+          <button class="btn btn-danger btn-small" onclick="deleteDoc('orders','${doc.id}')">ลบ</button>`;
+        tbody.innerHTML += `<tr><td>UID: ${d.uid}<br>${d.fullName || ''}</td><td>${itemsHtml}</td><td style="color:var(--gold);">${d.total || 0} บ.</td><td><img src="${d.slip}" width="46" onclick="window.open('${d.slip}')" style="cursor:pointer;" /><br><small>${d.address || ''}</small><br><small>${d.contact || ''}</small></td><td>${statusPill(d.status)}</td><td class="admin-actions">${actions}</td></tr>`;
+      });
+    }
+    window.updateOrderStatus = async (id, status) => { await db.collection("orders").doc(id).update({ status }); loadAdminOrders(); };
+
+    /* ---------------- Admin: Legacy Customer Merge ---------------- */
+    async function renderLegacyCustomers() {
+      const wrap = $("#legacyCustomerList"); if (!wrap) return;
+      wrap.innerHTML = '<p class="muted">กำลังตรวจสอบข้อมูล...</p>';
+      try {
+        const usersSnap = await db.collection("users").get();
+        const knownUids = new Set(); usersSnap.forEach(d => knownUids.add(d.data().uid));
+        const queueSnap = await db.collection("queues").get();
+        const orphanMap = {};
+        queueSnap.forEach(doc => {
+          const d = doc.data();
+          if (d.uid && !knownUids.has(d.uid)) {
+            if (!orphanMap[d.uid]) orphanMap[d.uid] = { count: 0, name: d.name || '-' };
+            orphanMap[d.uid].count++;
+          }
+        });
+        const orphanKeys = Object.keys(orphanMap);
+        if (orphanKeys.length === 0) { wrap.innerHTML = '<p class="muted">ไม่พบข้อมูลลูกค้าเก่าที่ยังไม่ได้ผูกบัญชี</p>'; return; }
+        wrap.innerHTML = orphanKeys.map(uidOld => `<div class="admin-product-row"><div class="info"><b>UID เดิม: ${uidOld}</b> (${orphanMap[uidOld].name}) — ${orphanMap[uidOld].count} คิว</div><div class="admin-actions"><button class="btn btn-gold btn-small" onclick="mergeLegacyCustomer('${uidOld}')">🔗 ผูกกับสมาชิก</button></div></div>`).join('');
+      } catch (e) { wrap.innerHTML = `<p class="muted">โหลดข้อมูลไม่สำเร็จ: ${e.message}</p>`; }
+    }
+    window.mergeLegacyCustomer = async (oldUid) => {
+      const targetUid = prompt(`กรอก UID ของสมาชิกที่ต้องการผูกข้อมูลเก่านี้เข้าด้วย (UID เดิม: ${oldUid})`);
+      if (!targetUid) return;
+      try {
+        const usnap = await db.collection("users").where("uid", "==", targetUid.trim()).get();
+        if (usnap.empty) return showCustomAlert("ไม่พบสมาชิก", "ไม่พบ UID สมาชิกที่ระบุในระบบ");
+        const qsnap = await db.collection("queues").where("uid", "==", oldUid).get();
+        const batch = db.batch();
+        qsnap.forEach(doc => batch.update(doc.ref, { uid: targetUid.trim() }));
+        await batch.commit();
+        showCustomAlert("สำเร็จ", `ผูกข้อมูลคิวเก่า ${qsnap.size} รายการเข้ากับสมาชิก UID ${targetUid.trim()} เรียบร้อยแล้ว`);
+        renderLegacyCustomers(); loadAdminQueues();
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
+
+    /* ---------------- Admin: Stats bar ---------------- */
+    async function loadAdminStats() {
+      try {
+        const [u, q, t, v, m] = await Promise.all([
+          db.collection("users").get(), db.collection("queues").get(),
+          db.collection("topups").get(), db.collection("verifies").get(), db.collection("missionProofs").get()
+        ]);
+        $("#statUsers").textContent = u.size;
+        $("#statQueues").textContent = q.size;
+        const pendingCount = [t, v, m].reduce((sum, snap) => sum + snap.docs.filter(d => !d.data().status || d.data().status === 'pending').length, 0);
+        $("#statPending").textContent = pendingCount;
+      } catch (e) {}
+    }
+
+    /* ---------------- Admin: Background upload ---------------- */
+    window.saveShopBackground = () => {
+      const file = $("#admBgInput").files[0];
+      if (!file) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกไฟล์รูปภาพ/GIF ก่อน");
+      if (file.size > 3 * 1024 * 1024) return showCustomAlert("ไฟล์ใหญ่เกินไป", "กรุณาใช้ไฟล์ขนาดไม่เกิน 3MB");
+      const r = new FileReader();
+      r.onload = async (e) => {
+        try {
+          await db.collection("settings").doc("shop").set({ background: e.target.result }, { merge: true });
+          showCustomAlert("สำเร็จ", "ตั้งค่าพื้นหลังเรียบร้อยแล้ว");
+          $("#admBgInput").value = "";
+        } catch (err) { showCustomAlert("ผิดพลาด", err.message); }
+      };
+      r.readAsDataURL(file);
+    };
+    window.clearShopBackground = async () => {
+      try {
+        await db.collection("settings").doc("shop").set({ background: firebase.firestore.FieldValue.delete() }, { merge: true });
+        showCustomAlert("สำเร็จ", "ล้างพื้นหลังกำหนดเองเรียบร้อยแล้ว");
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
+
+    /* ---------------- Admin: Holiday Calendar ---------------- */
+    function renderAdminHolidayCal() {
+      const wrap = $("#adminHolidayCal"); if (!wrap) return;
+      const year = adminCalDate.getFullYear(), month = adminCalDate.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthNames = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+      let html = `<div class="mini-cal-head"><button class="btn btn-outline btn-small" onclick="changeAdminCalMonth(-1)">‹</button><b>${monthNames[month]} ${year + 543}</b><button class="btn btn-outline btn-small" onclick="changeAdminCalMonth(1)">›</button></div>`;
+      html += `<div class="mini-cal-grid">`;
+      ["อา","จ","อ","พ","พฤ","ศ","ส"].forEach(dn => html += `<div class="dow">${dn}</div>`);
+      for (let i = 0; i < firstDay; i++) html += `<div class="mini-cal-day empty"></div>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const isClosed = closedDatesCache.includes(dateStr);
+        html += `<div class="mini-cal-day ${isClosed ? 'closed' : ''}" onclick="toggleClosedDate('${dateStr}')">${d}</div>`;
+      }
+      html += `</div>`;
+      wrap.innerHTML = html;
+      renderClosedDatesList();
+    }
+    window.changeAdminCalMonth = (delta) => { adminCalDate.setMonth(adminCalDate.getMonth() + delta); renderAdminHolidayCal(); };
+    window.toggleClosedDate = async (dateStr) => {
+      const idx = closedDatesCache.indexOf(dateStr);
+      if (idx >= 0) closedDatesCache.splice(idx, 1); else closedDatesCache.push(dateStr);
+      try { await db.collection("settings").doc("shop").set({ closedDates: closedDatesCache }, { merge: true }); }
+      catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
+    function renderClosedDatesList() {
+      const wrap = $("#closedDatesAdminList"); if (!wrap) return;
+      if (closedDatesCache.length === 0) { wrap.innerHTML = '<span class="muted">ยังไม่มีวันหยุดที่กำหนด</span>'; return; }
+      wrap.innerHTML = closedDatesCache.slice().sort().map(d => `<span class="closed-date-chip">${d}<button onclick="toggleClosedDate('${d}')">×</button></span>`).join('');
+    }
+    function renderMemberClosedDatesInfo() {
+      const wrap = $("#closedDatesInfo"); if (!wrap) return;
+      const future = closedDatesCache.filter(d => new Date(d + 'T23:59:59') >= new Date()).sort();
+      if (future.length === 0) { wrap.innerHTML = '<span style="color:var(--ok);">✅ ไม่มีวันหยุดที่ประกาศในขณะนี้ สามารถจองคิวได้ตามปกติ</span>'; return; }
+      wrap.innerHTML = '<span class="muted">ร้านหยุดพักในวันที่:</span><br>' + future.map(d => `<span class="closed-date-chip" style="cursor:default;">${d}</span>`).join(' ');
+    }
+
+    /* ---------------- Background Music ---------------- */
+    db.collection("musicTracks").orderBy("createdAt").onSnapshot(snap => {
+      musicTracks = [];
+      snap.forEach(doc => musicTracks.push({ id: doc.id, ...doc.data() }));
+      renderAdminMusicList();
+      const player = $("#bgMusicPlayer");
+      if (musicTracks.length > 0 && player && !player.src) player.src = musicTracks[0].url;
+    });
+    window.toggleMusic = () => {
+      const player = $("#bgMusicPlayer");
+      if (musicTracks.length === 0) return showCustomAlert("แจ้งเตือน", "ยังไม่มีเพลงในระบบ กรุณาให้แอดมินเพิ่มเพลงก่อน");
+      if (musicPlaying) { player.pause(); musicPlaying = false; $("#musicFab").classList.remove('playing'); }
+      else {
+        if (!player.src) player.src = musicTracks[currentMusicIndex].url;
+        player.play().catch(() => {});
+        musicPlaying = true; $("#musicFab").classList.add('playing');
+      }
+    };
+    document.addEventListener("DOMContentLoaded", () => {
+      const player = document.getElementById("bgMusicPlayer");
+      if (player) player.addEventListener("ended", () => {
+        if (musicTracks.length === 0) return;
+        currentMusicIndex = (currentMusicIndex + 1) % musicTracks.length;
+        player.src = musicTracks[currentMusicIndex].url;
+        player.play().catch(() => {});
+      });
+    });
+    window.addMusicTrack = () => {
+      const name = $("#newMusicName").value.trim();
+      const url = $("#newMusicUrl").value.trim();
+      const file = $("#newMusicFile").files[0];
+      if (!name) return showCustomAlert("แจ้งเตือน", "กรุณากรอกชื่อเพลง");
+      const finish = async (finalUrl) => {
+        try {
+          await db.collection("musicTracks").add({ name, url: finalUrl, createdAt: new Date() });
+          $("#newMusicName").value = ""; $("#newMusicUrl").value = ""; $("#newMusicFile").value = "";
+          showCustomAlert("สำเร็จ", "เพิ่มเพลงเรียบร้อยแล้ว");
+        } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+      };
+      if (file) {
+        if (file.size > 900 * 1024) return showCustomAlert("ไฟล์ใหญ่เกินไป", "กรุณาใช้ไฟล์เพลงขนาดเล็กกว่า 900KB หรือใช้ลิงก์ URL แทน");
+        const r = new FileReader(); r.onload = e => finish(e.target.result); r.readAsDataURL(file);
+      } else if (url) finish(url);
+      else showCustomAlert("แจ้งเตือน", "กรุณาอัปโหลดไฟล์เพลงหรือใส่ลิงก์เพลง");
+    };
+    window.deleteMusicTrack = async (id) => { if (confirm("ลบเพลงนี้?")) await db.collection("musicTracks").doc(id).delete(); };
+    function renderAdminMusicList() {
+      const wrap = $("#adminMusicList"); if (!wrap) return;
+      if (musicTracks.length === 0) { wrap.innerHTML = '<p class="muted">ยังไม่มีเพลง</p>'; return; }
+      wrap.innerHTML = musicTracks.map(t => `<div class="music-track-row"><span>🎵 ${t.name}</span><button class="btn btn-danger btn-small" style="margin:0; width:auto; padding:4px 10px;" onclick="deleteMusicTrack('${t.id}')">ลบ</button></div>`).join('');
+    }
 
     window.saveShopSettings = async () => {
       const name = $("#admShopName").value.trim() || "Horoscope";
@@ -1331,24 +1927,22 @@
 
     function renderCheckinBoxes() {
       if (!currentUser) return;
-      const streak = currentUser.checkinStreak || 0;
+      const total30 = currentUser.checkinTotal30 || 0;
       const wrap = $("#checkinBoxes"); if (!wrap) return;
       wrap.innerHTML = "";
-      for (let i = 1; i <= CHECKIN_CYCLE_DAYS; i++) {
-        const done = i <= streak;
-        const isNext = i === streak + 1 || (streak >= CHECKIN_CYCLE_DAYS && i === 1);
-        wrap.innerHTML += `<div class="checkin-box ${done ? 'done' : ''} ${isNext ? 'next' : ''}">
+      for (let i = 1; i <= CHECKIN_TOTAL_DAYS; i++) {
+        const done = i <= total30;
+        const isNext = i === total30 + 1 || (total30 >= CHECKIN_TOTAL_DAYS && i === 1);
+        const isCycleEnd = i % 3 === 0;
+        wrap.innerHTML += `<div class="checkin-box-sm ${done ? 'done' : ''} ${isNext ? 'next' : ''} ${isCycleEnd ? 'cycle-end' : ''}">
           <div class="cb-day">วัน ${i}</div><div class="cb-pts">+${CHECKIN_DAILY_POINTS}</div>${done ? '<div class="cb-check">✓</div>' : ''}
         </div>`;
       }
-      const lbl = $("#checkinDayLabel"); if (lbl) lbl.textContent = `วันที่ ${streak} / ${CHECKIN_CYCLE_DAYS}`;
-      const tot = $("#checkinTotalLabel"); if (tot) tot.textContent = streak * CHECKIN_DAILY_POINTS;
     }
 
     $("#checkinClaimBtn").addEventListener("click", async () => {
       if (!currentUser) return;
       const now = new Date();
-      let streak = currentUser.checkinStreak || 0;
       if (currentUser.lastClaimed) {
         const diff = now - currentUser.lastClaimed.toDate();
         if (diff < 24 * 60 * 60 * 1000) {
@@ -1356,18 +1950,19 @@
           $("#treasureMsg").textContent = `⏳ เช็คอินแล้ววันนี้ กลับมาใหม่อีก ${remain} ชม.`;
           return;
         }
-        // Missed check-in for 3 days or more -> restart the 30-day cycle at day 1
-        if (diff >= CHECKIN_RESET_AFTER_MS) streak = 0;
       }
-      streak = streak >= CHECKIN_CYCLE_DAYS ? 1 : streak + 1;
+      let total30 = currentUser.checkinTotal30 || 0;
+      total30 = total30 >= CHECKIN_TOTAL_DAYS ? 1 : total30 + 1;
+      let cycleDay = (currentUser.checkinCycleDay || 0) % 3 + 1;
       const pts = CHECKIN_DAILY_POINTS;
       try {
         await db.collection("users").doc(currentUserDocId).update({
-          points: firebase.firestore.FieldValue.increment(pts), lastClaimed: new Date(), checkinStreak: streak
+          points: firebase.firestore.FieldValue.increment(pts), lastClaimed: new Date(),
+          checkinTotal30: total30, checkinCycleDay: cycleDay
         });
-        $("#treasureMsg").textContent = streak === CHECKIN_CYCLE_DAYS
-          ? `🎉 ครบ ${CHECKIN_CYCLE_DAYS} วัน! ได้รับ +${pts} แต้ม (เริ่มรอบใหม่พรุ่งนี้)`
-          : `🎉 เช็คอินวันที่ ${streak} สำเร็จ! ได้รับ +${pts} แต้ม`;
+        $("#treasureMsg").textContent = cycleDay === 3
+          ? `🎉 ครบรอบ 3 วัน! ได้รับ +${pts} แต้ม (เริ่มรอบใหม่วันถัดไป) • สะสมแล้ว ${total30}/${CHECKIN_TOTAL_DAYS} วัน`
+          : `🎉 เช็คอินสำเร็จ! ได้รับ +${pts} แต้ม • สะสมแล้ว ${total30}/${CHECKIN_TOTAL_DAYS} วัน`;
         renderCheckinBoxes();
       } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     });
@@ -1388,6 +1983,7 @@
 
       const type = $("#queueType").value, isVip = (type === 'vip');
       if (isVip && (currentUser.points || 0) < 30) return showCustomAlert("แต้มไม่พอ", "แต้มสะสมของคุณไม่พอ (ต้องการ 30 แต้ม)");
+      if (closedDatesCache.includes($("#date").value)) return showCustomAlert("ร้านหยุดพัก", "ร้านหยุดพักในวันที่ท่านเลือก กรุณาตรวจสอบ 'ตรวจเช็กเวลาทำการ' และเลือกวันอื่น");
 
       const payload = {
         uid: currentUser.uid, name: currentUser.name, fullName: currentUser.fullName || '',
@@ -1541,6 +2137,7 @@
       if (pass === 'horoscope') {
         $("#adminModal").classList.add("show");
         loadAdminQueues(); loadAdminUsers(); loadAdminReviews(); loadAdminTopups(); loadAdminVerifies(); loadAdminMissions();
+        loadAdminOrders(); renderLegacyCustomers(); loadAdminStats(); renderAdminHolidayCal();
       } else if (pass !== null) { showCustomAlert("แจ้งเตือน", "รหัสผ่านไม่ถูกต้อง!"); }
     });
 
@@ -1567,86 +2164,12 @@
 
     async function loadAdminUsers() {
       const tbody = $("#adminUserTable tbody"); tbody.innerHTML = "<tr><td colspan='7'>กำลังดึงข้อมูล...</td></tr>";
-      // NOTE: no orderBy() here on purpose — Firestore silently excludes any document
-      // missing the sort field, which was hiding older member accounts that predate
-      // the "createdAt" field. We fetch everyone, then sort client-side instead.
-      const snap = await db.collection("users").get();
-      const docs = snap.docs.slice().sort((a, b) => {
-        const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
-        const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
-        return tb - ta;
-      });
-      tbody.innerHTML = "";
-      docs.forEach(doc => {
+      const snap = await db.collection("users").orderBy("createdAt", "desc").get(); tbody.innerHTML = "";
+      snap.forEach(doc => {
         const d = doc.data();
         tbody.innerHTML += `<tr><td><b>UID: ${d.uid}</b><br>${d.username}</td><td>${d.fullName || '-'}<br><small>(${d.name || '-'})</small></td><td>${d.phone || '-'}</td><td>${d.dob || '-'}<br><b>อายุ: ${calculateAge(d.dob)} ปี</b></td><td style="color:var(--gold); font-weight:bold;">${d.points || 0}</td><td>${(d.contacts && d.contacts.length > 0) ? `<button class="btn btn-gold btn-small" onclick="viewAdminUserContacts('${doc.id}', '${d.name}')">📞 รายชื่อ (${d.contacts.length})</button>` : '<span class="muted">ไม่มี</span>'}</td><td><button class="btn btn-gold btn-small" onclick="openAdminEditUser('${doc.id}', '${d.username}', '${d.name || ''}', '${d.fullName || ''}', '${d.phone || ''}', '${d.dob || ''}', ${d.points || 0}, ${d.canEditProfile !== undefined ? d.canEditProfile : 1})">⚙️</button> <button class="btn btn-danger btn-small" onclick="deleteDoc('users','${doc.id}')">ลบ</button></td></tr>`;
       });
-      loadAdminLegacyUsers();
     }
-
-    /* Old members who only ever appear in "queues" (booked before the login system
-       existed, or whose uid doesn't match any account) get grouped here so the admin
-       can still see them and, if needed, issue them a real account. */
-    let legacyUsersCache = [];
-    async function loadAdminLegacyUsers() {
-      const tbody = $("#adminLegacyUserTable tbody");
-      if (!tbody) return;
-      tbody.innerHTML = "<tr><td colspan='4'>กำลังดึงข้อมูล...</td></tr>";
-      const [queueSnap, userSnap] = await Promise.all([
-        db.collection("queues").get(),
-        db.collection("users").get()
-      ]);
-      const knownUids = new Set();
-      userSnap.forEach(u => { const uid = u.data().uid; if (uid) knownUids.add(String(uid)); });
-
-      const groups = {};
-      queueSnap.forEach(doc => {
-        const d = doc.data();
-        const hasAccount = d.uid && knownUids.has(String(d.uid));
-        if (hasAccount) return;
-        const key = (d.name || 'ไม่ระบุชื่อ') + '||' + (d.igUsername || '');
-        if (!groups[key]) groups[key] = { name: d.name || 'ไม่ระบุชื่อ', ig: d.igUsername || '-', count: 0 };
-        groups[key].count++;
-      });
-
-      legacyUsersCache = Object.values(groups);
-      tbody.innerHTML = "";
-      if (legacyUsersCache.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='4' class='muted'>ไม่พบสมาชิกเก่าที่ตกหล่น — ข้อมูลครบถ้วนแล้ว</td></tr>";
-        return;
-      }
-      legacyUsersCache.forEach((g, idx) => {
-        tbody.innerHTML += `<tr><td>${g.name}</td><td>${g.ig}</td><td>${g.count} ครั้ง</td><td><button class="btn btn-gold btn-small" onclick="convertLegacyToAccount(${idx})">➕ สร้างบัญชี</button></td></tr>`;
-      });
-    }
-
-    window.convertLegacyToAccount = async (idx) => {
-      const g = legacyUsersCache[idx];
-      if (!g) return;
-      const suggestedUser = (g.ig || g.name || 'user').replace(/[^a-zA-Z0-9._]/g, '').toLowerCase() || ('user' + Date.now());
-      const username = prompt("ตั้ง Username ให้สมาชิกเก่ารายนี้:", suggestedUser);
-      if (!username) return;
-      const password = prompt("ตั้งรหัสผ่านเริ่มต้นให้สมาชิก (แจ้งให้สมาชิกเปลี่ยนภายหลัง):", "123456");
-      if (!password) return;
-      try {
-        const check = await db.collection("users").where("username", "==", username).get();
-        if (!check.empty) return showCustomAlert("แจ้งเตือน", "Username นี้มีผู้ใช้งานแล้ว กรุณาลองใหม่");
-        const uid = Math.floor(100000 + Math.random() * 900000).toString();
-        const newUserRef = await db.collection("users").add({
-          uid, username, password, name: g.name, fullName: g.name, phone: '', dob: '',
-          points: 0, canEditProfile: 1, avatar: '', location: 'สร้างโดยแอดมิน (สมาชิกเก่า)', createdAt: new Date(),
-          verified: false, mainMissionStep: 1, spinCount: 0, checkinStreak: 0,
-          referredBy: '', referredCount: 0, migratedFromLegacy: true
-        });
-        // Link every old booking that matches this legacy member to the new account
-        const queueSnap = await db.collection("queues").where("name", "==", g.name).where("igUsername", "==", g.ig === '-' ? '' : g.ig).get();
-        const batch = db.batch();
-        queueSnap.forEach(doc => { if (!doc.data().uid) batch.update(doc.ref, { uid }); });
-        await batch.commit();
-        showCustomAlert("สำเร็จ", `สร้างบัญชีให้ ${g.name} แล้ว\nUID: ${uid}\nUsername: ${username}\nรหัสผ่าน: ${password}\n\nประวัติการจองเดิมเชื่อมโยงกับบัญชีนี้เรียบร้อย`);
-        loadAdminUsers();
-      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
-    };
 
     async function loadAdminReviews() {
       const tbody = $("#adminReviewTable tbody"); tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูล...</td></tr>";
@@ -1748,4 +2271,51 @@
 
     window.deleteDoc = async (collection, id) => {
       if (confirm("แน่ใจหรือไม่ที่จะลบรายการนี้?")) {
-        await db.collection(coll
+        await db.collection(collection).doc(id).delete();
+        if (collection === 'queues') loadAdminQueues(); if (collection === 'users') loadAdminUsers();
+        if (collection === 'reviews') loadAdminReviews(); if (collection === 'topups') loadAdminTopups();
+        if (collection === 'verifies') loadAdminVerifies(); if (collection === 'missionProofs') loadAdminMissions();
+        if (collection === 'orders') loadAdminOrders();
+      }
+    };
+
+    $("#pmImgInput").addEventListener("change", function () {
+      const f = this.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = (e) => { $("#pmImgPreview").src = e.target.result; $("#pmImgPreview").style.display = "inline-block"; };
+      r.readAsDataURL(f);
+    });
+
+    async function viewAdminUserContacts(docId, userName) {
+      const doc = await db.collection("users").doc(docId).get();
+      if (!doc.exists) return; const data = doc.data();
+      $("#adminContactUserTitle").textContent = `รายชื่อของ: ${userName} (UID: ${data.uid})`;
+      const listContainer = $("#adminContactsList"); listContainer.innerHTML = "";
+      if (data.contacts && data.contacts.length > 0) {
+        data.contacts.forEach((c, idx) => { listContainer.innerHTML += `<p style="margin:4px 0;"><b>${idx + 1}. ${c.name}:</b> ${c.tel}</p>`; });
+      } else { listContainer.innerHTML = "<p class='muted'>ไม่พบข้อมูล</p>"; }
+      $("#adminContactsModal").classList.add("show");
+    }
+
+    window.openAdminEditUser = (id, username, name, fullName, phone, dob, points, canEdit) => {
+      $("#admEditDocId").value = id; $("#admEditUsername").value = username; $("#admEditName").value = name;
+      $("#admEditFullName").value = fullName; $("#admEditPhone").value = phone; $("#admEditDob").value = dob;
+      $("#admEditPoints").value = points; $("#admEditCanEdit").value = canEdit;
+      $("#adminEditUserModal").classList.add("show");
+    };
+
+    window.saveAdminEditedUser = async () => {
+      const id = $("#admEditDocId").value;
+      try {
+        await db.collection("users").doc(id).update({
+          name: $("#admEditName").value.trim(), fullName: $("#admEditFullName").value.trim(),
+          phone: $("#admEditPhone").value.trim(), dob: $("#admEditDob").value,
+          points: parseInt($("#admEditPoints").value) || 0, canEditProfile: parseInt($("#admEditCanEdit").value) || 0
+        });
+        showCustomAlert("สำเร็จ", "แอดมินอัปเดตข้อมูลสมาชิกสำเร็จ!");
+        $("#adminEditUserModal").classList.remove("show"); loadAdminUsers();
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
+  </script>
+</body>
+</html>
