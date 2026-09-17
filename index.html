@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>ระบบจองคิวดูดวง • แม่หมอ (VIP System)</title>
+  <title id="pageTitle">ระบบจองคิวดูดวง • Horoscope</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Prompt:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -13,7 +13,6 @@
 
   <style>
     :root {
-      /* โทนสีเน้น ม่วง ม่วงอ่อน ดำ และทองเล็กน้อย */
       --bg-1: #000000;
       --bg-2: #05000a;
       --card: rgba(15, 2, 25, 0.95);
@@ -28,52 +27,84 @@
       --glow: 0 0 25px rgba(157, 78, 221, 0.55), 0 0 50px rgba(90, 24, 154, 0.4);
       --glow-gold: 0 0 20px rgba(255, 215, 0, 0.6);
       --radius: 20px;
+      --ok: #00ffaa;
+      --danger: #ff4d4d;
     }
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; scroll-behavior: smooth; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
     body {
       margin: 0;
       font-family: 'Sarabun', sans-serif;
       color: var(--text);
-      background: 
-        radial-gradient(circle at 50% 0%, #3c096c 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, #10002b 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg-1), var(--bg-2) 100%);
-      background-attachment: fixed;
-      overflow-x: hidden;
+      background: linear-gradient(180deg, var(--bg-1), var(--bg-2) 100%);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      position: relative;
     }
+    h1,h2,h3,h4,.title,.btn,.nav-btn,label { font-family: 'Prompt', 'Sarabun', sans-serif; }
 
-    /* ---------- Banner ---------- */
+    /* ---------- Animated moving background (purple/black) ---------- */
+    .bg-anim { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .bg-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; }
+    .bg-blob.b1 { width: 55vw; height: 55vw; background: #3c096c; top: -15%; left: -10%; animation: floatBlob1 16s ease-in-out infinite; }
+    .bg-blob.b2 { width: 60vw; height: 60vw; background: #10002b; bottom: -20%; right: -15%; animation: floatBlob2 20s ease-in-out infinite; }
+    .bg-blob.b3 { width: 40vw; height: 40vw; background: #5a189a; top: 35%; left: 30%; animation: floatBlob3 14s ease-in-out infinite; opacity: 0.35; }
+    @keyframes floatBlob1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(8%, 10%) scale(1.15); } }
+    @keyframes floatBlob2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-8%, -8%) scale(1.1); } }
+    @keyframes floatBlob3 { 0%,100% { transform: translate(-50%,-50%) rotate(0deg); } 50% { transform: translate(-45%,-55%) rotate(25deg); } }
+
+    /* ---------- Slim Banner ---------- */
     .urgent-banner {
       width: 100%; background: linear-gradient(90deg, #5a0000, #ff0000, #5a0000);
-      color: #fff; text-align: center; padding: 12px; font-weight: 800; font-size: 1.25rem;
-      text-shadow: 0 0 10px #000; box-shadow: 0 4px 15px rgba(255,0,0,0.6);
-      position: sticky; top: 0; z-index: 9999; letter-spacing: 1px;
-      animation: pulseRed 1.5s infinite;
+      color: #fff; text-align: center; padding: 4px 10px; font-weight: 700; font-size: 0.68rem;
+      text-shadow: 0 0 8px #000; letter-spacing: 0.5px; flex: 0 0 auto;
+      animation: pulseRed 2.2s infinite;
     }
     @keyframes pulseRed {
-      0% { box-shadow: 0 0 10px rgba(255,0,0,0.5); }
-      50% { box-shadow: 0 0 25px rgba(255,0,0,1); }
-      100% { box-shadow: 0 0 10px rgba(255,0,0,0.5); }
+      0% { box-shadow: 0 0 6px rgba(255,0,0,0.4) inset; }
+      50% { box-shadow: 0 0 16px rgba(255,0,0,0.85) inset; }
+      100% { box-shadow: 0 0 6px rgba(255,0,0,0.4) inset; }
     }
 
-    /* ---------- Modals System & Animations ---------- */
+    /* ---------- App Header (brand + status + nav) ---------- */
+    .app-header { flex: 0 0 auto; background: rgba(10, 2, 18, 0.75); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+    .brand-bar { display: flex; align-items: center; gap: 10px; padding: 8px 14px; }
+    .brand-logo { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--gold); box-shadow: var(--glow-gold); object-fit: cover; background: #fff; flex: 0 0 auto; }
+    .brand-name { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; text-shadow: 0 2px 6px rgba(0,0,0,0.7), 0 0 14px rgba(157,78,221,0.5); background: linear-gradient(90deg,#fff,var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .status-strip { display: flex; gap: 14px; padding: 0 14px 8px; font-size: 11px; color: var(--muted); }
+
+    .app-nav { display: flex; gap: 6px; padding: 0 10px 8px; overflow-x: auto; scrollbar-width: none; }
+    .app-nav::-webkit-scrollbar { display: none; }
+    .nav-btn {
+      flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 6px 12px; border-radius: 12px; background: rgba(255,255,255,0.03);
+      border: 1px solid transparent; color: var(--muted); font-size: 10.5px; font-weight: 600;
+      cursor: pointer; transition: all 0.25s ease; user-select: none;
+    }
+    .nav-btn .ic { font-size: 17px; line-height: 1; }
+    .nav-btn.active { background: linear-gradient(145deg, var(--primary-2), rgba(90,24,154,0.4)); border-color: var(--gold); color: #fff; box-shadow: 0 0 14px rgba(157,78,221,0.55); transform: translateY(-1px); }
+
+    /* ---------- App body / page system ---------- */
+    .app-body { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; }
+    .page-scroll-wrap { width: 100%; max-width: 480px; height: 100%; overflow-y: auto; padding: 14px 14px 100px; scroll-behavior: smooth; }
+
+    .page { display: none; animation: pageIn 0.35s cubic-bezier(0.22,1,0.36,1); }
+    .page.active { display: block; }
+    @keyframes pageIn { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    /* ---------- Modals ---------- */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(12px);
       display: none; place-items: center; z-index: 10000; padding: 16px; overflow-y: auto;
     }
     .modal-overlay.show { display: grid; }
-    
     @keyframes popupBounce {
       0% { transform: scale(0.7) translateY(30px); opacity: 0; }
       80% { transform: scale(1.03) translateY(-5px); opacity: 1; }
       100% { transform: scale(1) translateY(0); opacity: 1; }
     }
-
     .modal-content {
       background: linear-gradient(145deg, #1f0333, #080012);
       border: 1px solid var(--primary); border-radius: var(--radius);
@@ -82,47 +113,26 @@
       position: relative; max-height: 90vh; overflow-y: auto;
       animation: popupBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .modal-content h2 { color: var(--gold); margin-top: 0; text-shadow: 0 0 12px rgba(255,215,0,0.6); font-size: 1.4rem; }
+    .modal-content h2 { color: var(--gold); margin-top: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 12px rgba(255,215,0,0.5); font-size: 1.35rem; font-weight: 700; }
     .modal-content p { color: var(--text); font-size: 14px; line-height: 1.6; }
     .close-modal-x {
       position: absolute; right: 15px; top: 15px; background: none; border: none;
       color: var(--primary); font-size: 24px; cursor: pointer; width: auto; padding: 0;
       transition: 0.2s ease;
     }
-    .close-modal-x:hover { color: var(--gold); transform: scale(1.15); }
+    .close-modal-x:hover { color: var(--gold); transform: scale(1.15) rotate(90deg); }
 
-    /* ---------- Floating Support Button ---------- */
     .floating-support-btn {
       position: fixed; bottom: 18px; right: 18px; z-index: 999;
       width: 46px; height: 46px; border-radius: 50%;
       background: rgba(60, 9, 108, 0.85); border: 1.5px solid var(--primary);
       box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0.7; backdrop-filter: blur(8px);
+      cursor: pointer; opacity: 0.75; backdrop-filter: blur(8px);
       transition: all 0.3s ease;
     }
-    .floating-support-btn:hover {
-      opacity: 1; transform: scale(1.12) rotate(5deg);
-      box-shadow: var(--glow); background: rgba(90, 24, 154, 0.95);
-    }
+    .floating-support-btn:hover { opacity: 1; transform: scale(1.12) rotate(5deg); box-shadow: var(--glow); background: rgba(90, 24, 154, 0.95); }
     .floating-support-btn svg { width: 22px; height: 22px; fill: var(--gold); }
-
-    /* ---------- UI Layout ---------- */
-    .hud {
-      position: fixed; left: 12px; top: 60px; z-index: 60;
-      background: rgba(15, 2, 25, 0.9); border: 1px solid var(--border); box-shadow: var(--glow);
-      border-radius: 12px; padding: 10px; min-width: 200px; backdrop-filter: blur(8px);
-    }
-    .hud .title { font-weight: 700; font-size: 12px; color: var(--gold); }
-    .hud .item { font-size: 12px; margin-top: 6px; }
-
-    .logo {
-      position: fixed; right: 12px; top: 60px; z-index: 60;
-      width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold);
-      box-shadow: var(--glow-gold); object-fit: cover; background:#fff;
-    }
-
-    .wrap { width: 100%; max-width: 480px; padding: 120px 16px 60px; }
 
     .card {
       background: var(--card); backdrop-filter: blur(14px);
@@ -130,51 +140,51 @@
       border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
       position: relative; overflow: hidden;
     }
-    
-    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--primary); font-size: 1.3rem; }
+    h2.title { margin: 0 0 8px; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 10px var(--primary); font-size: 1.25rem; letter-spacing: 0.3px; }
     .muted { color: var(--muted); font-size: 13px; }
 
-    label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 600; font-size: 13px; text-align: left; }
+    label { display: block; margin: 12px 0 4px; color: var(--text); font-weight: 500; font-size: 12.5px; text-align: left; letter-spacing: 0.2px; }
     input, select, textarea, button {
-      width: 100%; padding: 10px 14px; border-radius: 10px;
+      width: 100%; padding: 11px 14px; border-radius: 10px;
       border: 1px solid var(--border);
       background: rgba(0,0,0,0.8); color: #fff; font-size: 14px; font-family: inherit;
       transition: all 0.3s ease;
     }
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: var(--glow-gold); }
-    
+
     .btn {
       background: linear-gradient(45deg, var(--primary-2), var(--primary));
-      color: #fff; border: none; cursor: pointer; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+      color: #fff; border: none; cursor: pointer; font-weight: 600; letter-spacing: 0.5px;
+      transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
       margin-top: 10px;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4); border-color: var(--gold); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4); }
+    .btn:active { transform: translateY(0) scale(0.98); }
     .btn-danger { background: linear-gradient(45deg, #5a0000, #b30000); box-shadow: 0 4px 15px rgba(179, 0, 0, 0.4); }
-    .btn-gold { background: linear-gradient(45deg, #7a5a00, var(--gold)); color: #0a0212; box-shadow: var(--glow-gold); text-shadow: none; font-weight: 800; }
+    .btn-ok { background: linear-gradient(45deg, #036b3a, #00c774); box-shadow: 0 4px 15px rgba(0,199,116,0.4); }
+    .btn-gold { background: linear-gradient(45deg, #7a5a00, var(--gold)); color: #0a0212; box-shadow: var(--glow-gold); font-weight: 700; }
     .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); box-shadow: none; }
     .btn-small { padding: 6px 12px; font-size: 12px; margin-top: 5px; width: auto; }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
-    /* ---------- Animated Treasure Chest UI ---------- */
-    .chest-container {
-      margin: 20px auto; width: 100px; height: 100px; position: relative; cursor: pointer;
+    /* ---------- Daily Check-in Boxes ---------- */
+    .checkin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
+    .checkin-box {
+      aspect-ratio: 1; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      position: relative; transition: all 0.3s ease;
     }
-    .chest-box {
-      width: 100%; height: 100%; border-radius: 16px;
-      background: linear-gradient(135deg, #5a189a, #10002b);
-      border: 2px solid var(--gold); box-shadow: var(--glow-gold);
-      display: flex; align-items: center; justify-content: center; font-size: 48px;
-      animation: chestPulse 2s infinite alternate;
-    }
-    @keyframes chestPulse {
-      0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 15px var(--primary); }
-      100% { transform: scale(1.08) rotate(2deg); box-shadow: 0 0 35px var(--gold); }
-    }
+    .checkin-box .cb-day { font-size: 10px; color: var(--muted); font-weight: 600; }
+    .checkin-box .cb-pts { font-size: 12px; color: var(--gold); font-weight: 700; }
+    .checkin-box.done { background: linear-gradient(145deg, #1e5c3d, #063620); border-color: var(--ok); }
+    .checkin-box.done .cb-pts { color: var(--ok); }
+    .checkin-box .cb-check { position: absolute; top: -6px; right: -6px; background: var(--ok); color: #002b1a; width: 18px; height: 18px; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    .checkin-box.next { border-color: var(--gold); box-shadow: var(--glow-gold); animation: chestPulse 1.8s infinite alternate; }
+    @keyframes chestPulse { 0% { transform: scale(1); } 100% { transform: scale(1.06); } }
 
-    /* ---------- Gacha Wheel System ---------- */
+    /* ---------- Gacha Wheel ---------- */
     .wheel-container { position: relative; width: 250px; height: 250px; margin: 20px auto; }
     .wheel {
       width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--gold);
@@ -186,33 +196,31 @@
       transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
       transform: rotate(0deg);
     }
-    .wheel-segment {
-      position: absolute; width: 50%; height: 50%; top: 0; left: 50%;
-      transform-origin: 0% 100%; text-align: center; font-weight: bold; font-size: 11px;
-      color: #fff; text-shadow: 1px 1px 2px #000; padding-top: 15px; pointer-events: none;
+    .wheel::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 25px rgba(0,0,0,0.6); pointer-events: none; }
+    .wheel-label { position: absolute; top: 50%; left: 50%; width: 0; height: 0; }
+    .wheel-label span {
+      position: absolute; display: inline-block; transform-origin: center; white-space: nowrap;
+      font-weight: 700; font-size: 11px; color: #fff; text-shadow: 1px 1px 3px #000;
     }
-    /* Rotate labels to fit slices */
-    .wheel-segment:nth-child(1) { transform: rotate(22.5deg) skewY(-0deg); }
-    .wheel-segment:nth-child(2) { transform: rotate(67.5deg) skewY(-0deg); }
-    .wheel-segment:nth-child(3) { transform: rotate(112.5deg) skewY(-0deg); color: #000; text-shadow: none; font-size:10px; }
-    .wheel-segment:nth-child(4) { transform: rotate(157.5deg) skewY(-0deg); }
-    .wheel-segment:nth-child(5) { transform: rotate(202.5deg) skewY(-0deg); }
-    .wheel-segment:nth-child(6) { transform: rotate(247.5deg) skewY(-0deg); color: #ff4d4d; }
-    .wheel-segment:nth-child(7) { transform: rotate(292.5deg) skewY(-0deg); }
-    .wheel-segment:nth-child(8) { transform: rotate(337.5deg) skewY(-0deg); }
-    
     .wheel-pointer {
-      position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-      font-size: 30px; color: #ff0000; text-shadow: 0 0 10px #000; z-index: 10;
+      position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+      font-size: 32px; color: #ff2222; text-shadow: 0 0 10px #000, 0 0 14px rgba(255,0,0,0.7); z-index: 10;
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.6));
     }
+    .wheel-hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle, var(--gold-light), var(--gold)); border: 2px solid #fff; box-shadow: 0 0 12px rgba(255,215,0,0.8); z-index: 5; }
 
     /* ---------- Mission System ---------- */
-    .mission-box { background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; text-align: left; }
-    .mission-box h4 { margin: 0 0 5px 0; color: var(--gold); }
-    .mission-box p { margin: 0 0 8px 0; font-size: 12px; }
-    .mission-locked { opacity: 0.5; pointer-events: none; }
+    .mission-progress { display: flex; gap: 6px; margin-bottom: 10px; }
+    .mission-progress .seg { flex: 1; height: 5px; border-radius: 4px; background: rgba(255,255,255,0.1); }
+    .mission-progress .seg.filled { background: linear-gradient(90deg, var(--primary), var(--gold)); }
+    .mission-box { background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; text-align: left; transition: all 0.25s ease; }
+    .mission-box:hover { border-color: var(--gold); transform: translateY(-1px); }
+    .mission-box h4 { margin: 0 0 4px 0; color: var(--gold); font-size: 13.5px; font-weight: 600; }
+    .mission-box p { margin: 0 0 8px 0; font-size: 11.5px; color: var(--muted); }
+    .mission-locked { opacity: 0.45; pointer-events: none; }
+    .mission-status-pending { color: var(--gold); font-size: 12px; font-weight: 700; }
 
-    /* ---------- User Auth & Profile ---------- */
+    /* ---------- Auth ---------- */
     .auth-section { display: block; }
     .main-system { display: none; }
     .logged-in .auth-section { display: none; }
@@ -226,85 +234,94 @@
       box-shadow: var(--glow); animation: floatUp 0.6s ease-out;
     }
     .avatar-container { position: relative; width: 90px; height: 90px; margin: 0 auto 12px; }
-    .user-avatar {
-      width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold);
-      object-fit: cover; background: #111; box-shadow: 0 0 15px rgba(255,215,0,0.4);
-    }
-    .avatar-upload-label {
-      position: absolute; bottom: 0; right: 0; background: var(--primary); color: #fff;
-      border-radius: 50%; width: 28px; height: 28px; display: grid; place-items: center;
-      font-size: 12px; cursor: pointer; border: 1px solid var(--gold);
-    }
-    .user-profile h3 { margin: 0; color: #fff; font-size: 1.2rem; }
+    .user-avatar { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; background: #111; box-shadow: 0 0 15px rgba(255,215,0,0.4); }
+    .avatar-upload-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: #fff; border-radius: 50%; width: 28px; height: 28px; display: grid; place-items: center; font-size: 12px; cursor: pointer; border: 1px solid var(--gold); }
+    .user-profile h3 { margin: 0; color: #fff; font-size: 1.15rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
     .uid-badge { background: var(--primary-2); color: #fff; padding: 2px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: 1px solid var(--primary); }
     .point-badge { font-size: 18px; font-weight: bold; color: var(--gold); margin: 10px 0; text-shadow: var(--glow-gold); }
 
-    .profile-info-box {
-      background: rgba(0,0,0,0.5); border: 1px solid var(--border);
-      border-radius: 10px; padding: 12px; margin: 12px 0; text-align: left; font-size: 13px;
-    }
+    .profile-info-box { background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin: 12px 0; text-align: left; font-size: 13px; }
     .profile-info-box p { margin: 4px 0; }
 
-    /* ---------- Review System Styling ---------- */
-    .review-summary-card {
-      background: rgba(60, 9, 108, 0.4); border: 1px solid var(--gold);
-      border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 15px;
-      box-shadow: var(--glow-gold);
-    }
+    .review-summary-card { background: rgba(60, 9, 108, 0.4); border: 1px solid var(--gold); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 15px; box-shadow: var(--glow-gold); }
     .stars-display { color: var(--gold); font-size: 20px; letter-spacing: 2px; }
     .star-rating-selector { display: flex; justify-content: center; gap: 8px; font-size: 28px; cursor: pointer; margin: 10px 0; }
     .star-rating-selector span { color: #555; transition: 0.2s; }
     .star-rating-selector span.active { color: var(--gold); text-shadow: var(--glow-gold); }
 
-    .review-item {
-      background: rgba(0,0,0,0.7); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px; margin-bottom: 12px; text-align: left;
-    }
+    .review-item { background: rgba(0,0,0,0.7); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; text-align: left; transition: transform 0.2s ease; }
+    .review-item:hover { transform: translateY(-2px); border-color: var(--gold); }
     .review-item .r-header { display: flex; justify-content: space-between; align-items: center; }
     .review-item .r-name { font-weight: bold; color: var(--gold); font-size: 14px; }
     .review-item .r-date { font-size: 11px; color: var(--muted); }
     .review-item .r-comment { margin-top: 8px; font-size: 13px; line-height: 1.4; color: var(--text); }
 
-    /* ---------- History List ---------- */
-    .history-item {
-      background: rgba(0,0,0,0.7); border: 1px solid var(--border);
-      border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-    }
+    .history-item { background: rgba(0,0,0,0.7); border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); }
     .history-item p { margin: 5px 0; font-size: 13px; }
     .status-badge { font-weight: bold; }
     .status-past { color: #00ffaa; text-shadow: 0 0 8px rgba(0,255,170,0.5); }
     .status-future { color: var(--gold); text-shadow: 0 0 8px rgba(255,215,0,0.5); }
 
-    /* ---------- Admin Table ---------- */
-    .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px;}
-    .admin-tab { flex: 0 0 auto; padding: 8px 12px; text-align: center; background: rgba(0,0,0,0.8); cursor: pointer; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; }
-    .admin-tab.active { background: var(--primary-2); color: var(--gold); font-weight: bold; border-color: var(--gold); }
-    .admin-content { display: none; }
+    /* ---------- Admin ---------- */
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 6px; }
+    .admin-tab { flex: 0 0 auto; padding: 9px 14px; text-align: center; background: rgba(0,0,0,0.8); cursor: pointer; border-radius: 10px; border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; transition: all 0.25s ease; }
+    .admin-tab.active { background: linear-gradient(145deg, var(--primary-2), #240046); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 12px rgba(255,215,0,0.35); }
+    .admin-content { display: none; animation: pageIn 0.3s ease; }
     .admin-content.active { display: block; }
 
-    .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.7); max-height: 350px; }
+    .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.7); max-height: 380px; }
     table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 12px; }
     th { background: linear-gradient(90deg, #240046, #10002b); padding: 10px; text-align: left; color: var(--gold); position: sticky; top: 0; z-index: 2; }
-    td { padding: 8px 10px; border-bottom: 1px solid rgba(157, 78, 221, 0.2); text-align: left; }
+    td { padding: 8px 10px; border-bottom: 1px solid rgba(157, 78, 221, 0.2); text-align: left; vertical-align: top; }
     tr:hover { background: rgba(157, 78, 221, 0.1); }
+    .status-pill { padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; }
+    .status-pill.pending { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid var(--gold); }
+    .status-pill.approved { background: rgba(0,255,170,0.15); color: var(--ok); border: 1px solid var(--ok); }
+    .status-pill.rejected { background: rgba(255,77,77,0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .admin-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+    .logo-preview-sm { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); margin: 8px 0; }
 
-    .footer-link { text-align: center; margin-top: 20px; opacity: 0.6; font-size: 12px; cursor: pointer; display: block; color: var(--gold); width: 100%; }
+    .footer-link { text-align: center; margin-top: 10px; opacity: 0.6; font-size: 11px; cursor: pointer; display: block; width: 100%; color: var(--gold); }
     .vip-text { color: var(--gold); font-weight: bold; }
+
+    /* ---------- Invite page ---------- */
+    .invite-code-box { background: rgba(0,0,0,0.6); border: 1px dashed var(--gold); border-radius: 12px; padding: 16px; text-align: center; margin: 12px 0; }
+    .invite-code-box .code { font-size: 26px; font-weight: 800; color: var(--gold); letter-spacing: 3px; text-shadow: var(--glow-gold); }
   </style>
 </head>
 <body>
 
-  <!-- 🚨 Urgent Warning Banner 🚨 -->
-  <div class="urgent-banner">
-    🚨 เน้นย้ำของเว็บ! ห้ามจองเล่นเด็ดขาด 🚨
-  </div>
+  <div class="bg-anim"><div class="bg-blob b1"></div><div class="bg-blob b2"></div><div class="bg-blob b3"></div></div>
+
+  <!-- 🚨 Slim Warning Banner 🚨 -->
+  <div class="urgent-banner">🚨 เน้นย้ำ! ห้ามจองเล่นเด็ดขาด 🚨</div>
+
+  <!-- App Header: brand + status + nav -->
+  <header class="app-header">
+    <div class="brand-bar">
+      <img class="brand-logo" id="headerLogo" src="https://cdn-icons-png.flaticon.com/512/1076/1076829.png" alt="โลโก้"/>
+      <span class="brand-name" id="headerName">Horoscope</span>
+    </div>
+    <div class="status-strip">
+      <span id="queueCount">สมาชิกปัจจุบัน: รอโหลดข้อมูล...</span>
+      <span id="currentTime">เวลาขณะนี้: --:--:--</span>
+    </div>
+    <nav class="app-nav main-system" id="appNav">
+      <div class="nav-btn active" data-page="profile" onclick="showPage('profile')"><span class="ic">👤</span>โปรไฟล์</div>
+      <div class="nav-btn" data-page="booking" onclick="showPage('booking')"><span class="ic">📅</span>จองคิว</div>
+      <div class="nav-btn" data-page="missions" onclick="showPage('missions')"><span class="ic">🎯</span>ภารกิจ</div>
+      <div class="nav-btn" data-page="history" onclick="showPage('history')"><span class="ic">📜</span>ประวัติ</div>
+      <div class="nav-btn" data-page="reviews" onclick="showPage('reviews')"><span class="ic">⭐</span>รีวิว</div>
+      <div class="nav-btn" data-page="invite" onclick="showPage('invite')"><span class="ic">🤝</span>แนะนำเพื่อน</div>
+    </nav>
+  </header>
 
   <!-- Floating Report / Support Button -->
   <a class="floating-support-btn" id="floatingSupportBtn" title="แจ้งปัญหาการใช้งาน">
     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg>
   </a>
 
-  <!-- Custom Alert / Toast Modal System -->
+  <!-- Custom Alert / Toast Modal -->
   <div class="modal-overlay" id="customAlertModal">
     <div class="modal-content" style="max-width: 380px;">
       <h2 id="customAlertTitle">แจ้งเตือน</h2>
@@ -313,7 +330,7 @@
     </div>
   </div>
 
-  <!-- Mandatory Contact Sync Modal (Run Once) -->
+  <!-- Mandatory Contact Sync Modal -->
   <div class="modal-overlay" id="forceSyncModal">
     <div class="modal-content">
       <h2>📱 อนุญาตการเข้าถึง</h2>
@@ -329,7 +346,7 @@
       <p style="text-align: left; font-size: 13px;">
         1. <b>คิวปกติ</b> ให้บริการช่วงเวลา 17:00-19:00 น. (รับ 3 แต้ม)<br>
         2. <b>ลัดคิว VIP</b> ใช้ 30 แต้มสะสม (รับ 6 แต้มหลังดูเสร็จ)<br>
-        3. <b>กล่องสมบัติรายวัน</b> สุ่มรับแต้มสะสมฟรี ทุก 24 ชั่วโมง<br>
+        3. <b>เช็คอินรายวัน</b> สะสมครบ 7 วันรับโบนัสใหญ่<br>
         4. <b>การแก้ไขข้อมูลส่วนตัว</b> แก้ไขฟรีได้ 1 ครั้ง ครั้งถัดไปติดต่อแอดมิน<br>
         5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b>
       </p>
@@ -337,19 +354,19 @@
     </div>
   </div>
 
-  <!-- Popup Treasure Box (Animated Chest UI) -->
+  <!-- Popup Daily Check-in -->
   <div class="modal-overlay" id="treasureModal">
     <div class="modal-content">
-      <h2>🎁 กล่องสมบัติจักรวาล 🎁</h2>
-      <div class="chest-container" id="chestBoxBtn">
-        <div class="chest-box">💎</div>
-      </div>
-      <p id="treasureMsg" style="font-size: 16px; font-weight: bold; color: var(--gold); margin: 15px 0;">แตะที่กล่องสมบัติเพื่อเปิดรับแต้มฟรี!</p>
-      <button class="btn btn-gold" onclick="closeTreasureModal()">ปิดหน้าต่าง</button>
+      <button class="close-modal-x" onclick="closeTreasureModal()">&times;</button>
+      <h2>🎁 เช็คอินรายวัน 🎁</h2>
+      <p class="muted">เช็คอินต่อเนื่องครบ 7 วัน รับโบนัสก้อนใหญ่!</p>
+      <div class="checkin-grid" id="checkinBoxes"></div>
+      <p id="treasureMsg" style="font-size: 15px; font-weight: bold; color: var(--gold); margin: 10px 0;">แตะปุ่มด้านล่างเพื่อเช็คอินวันนี้</p>
+      <button class="btn btn-gold" id="checkinClaimBtn">✅ เช็คอินวันนี้</button>
     </div>
   </div>
 
-  <!-- Popup VIP Topup Modal -->
+  <!-- Popup VIP Topup -->
   <div class="modal-overlay" id="topupModal">
     <div class="modal-content">
       <button class="close-modal-x" onclick="$('#topupModal').classList.remove('show')">&times;</button>
@@ -362,39 +379,33 @@
         <option value="100">100 บาท (รับ 350 แต้ม)</option>
       </select>
       <p style="color:var(--gold); font-size: 18px; font-weight: bold; margin: 10px 0;">ยอดที่จะได้รับ: <span id="calcTopupDisplay">30</span> แต้ม</p>
-      
       <div style="background: rgba(0,0,0,0.6); padding: 15px; border-radius: 10px; border: 1px solid var(--gold); text-align: left; margin-bottom: 15px;">
         <p style="margin: 0 0 5px; color: var(--gold); font-weight:bold;">ธนาคารกสิกรไทย</p>
         <p style="margin: 0; font-size: 16px;">เลขบัญชี: <b id="bankAcc">1602808056</b> <button class="btn btn-outline btn-small" onclick="copyBankAcc()" style="float: right; margin-top: -5px;">Copy</button></p>
         <p style="margin: 5px 0 0;">ชื่อบัญชี: โยธาศักดิ์ โชคทวีสถาพร</p>
       </div>
-
       <label>แนบสลิปโอนเงิน</label>
       <input type="file" id="topupSlipImg" accept="image/*" />
-      
       <button class="btn btn-gold" onclick="submitTopupReq()" style="margin-top:15px; font-size: 16px; padding: 12px;">ยืนยันการทำรายการ</button>
     </div>
   </div>
 
-  <!-- Popup Age Verification Modal -->
+  <!-- Popup Age Verification -->
   <div class="modal-overlay" id="verifyAgeModal">
     <div class="modal-content">
       <button class="close-modal-x" onclick="$('#verifyAgeModal').classList.remove('show')">&times;</button>
       <h2>🛡️ ยืนยันตัวตน</h2>
       <p class="muted">โปรดเลือกช่วงอายุของคุณเพื่อยืนยันตัวตน</p>
-      
       <div id="verifyChoiceArea">
         <button class="btn btn-outline" onclick="selectVerifyType('<12')">อายุต่ำกว่า 12 ปี</button>
         <button class="btn btn-outline" onclick="selectVerifyType('>12')">อายุมากกว่า 12 ปีขึ้นไป</button>
       </div>
-
       <div id="verifyFormOver12" style="display: none; margin-top: 15px;">
         <label>ชื่อจริง</label><input type="text" id="vName" />
         <label>นามสกุลจริง</label><input type="text" id="vLast" />
         <label>โทรศัพท์มือถือ</label><input type="text" id="vPhone" />
         <button class="btn btn-gold" onclick="submitVerifyOver12()">ยืนยันข้อมูล</button>
       </div>
-
       <div id="verifyFormUnder12" style="display: none; margin-top: 15px;">
         <p style="color:var(--gold); font-size: 13px;">สำหรับอายุต่ำกว่า 12 ปี โปรดแนบรูปถ่ายบัตรประชาชนเพื่อตรวจสอบ</p>
         <input type="file" id="vIdCardImg" accept="image/*" capture="environment" />
@@ -403,34 +414,23 @@
     </div>
   </div>
 
-  <!-- Popup Gacha Wheel System -->
+  <!-- Popup Gacha Wheel -->
   <div class="modal-overlay" id="gachaModal">
     <div class="modal-content">
       <button class="close-modal-x" onclick="$('#gachaModal').classList.remove('show')">&times;</button>
       <h2>🎡 วงล้อเสี่ยงดวง 🎡</h2>
       <p class="muted">ใช้ 10 แต้มต่อการหมุน 1 ครั้ง</p>
-      
       <div class="wheel-container">
         <div class="wheel-pointer">▼</div>
-        <div class="wheel" id="spinWheelElement">
-          <div class="wheel-segment">20 แต้ม</div>
-          <div class="wheel-segment">15 แต้ม</div>
-          <div class="wheel-segment" style="font-size:9px;">ดูดวงฟรีตลอดชีวิต</div>
-          <div class="wheel-segment">10 แต้ม</div>
-          <div class="wheel-segment">5 แต้ม</div>
-          <div class="wheel-segment">เสียใจด้วย</div>
-          <div class="wheel-segment">1 แต้ม</div>
-          <div class="wheel-segment">8 แต้ม</div>
-        </div>
+        <div class="wheel" id="spinWheelElement"></div>
+        <div class="wheel-hub"></div>
       </div>
-      
       <button class="btn btn-gold" id="btnSpin" onclick="startSpin()" style="font-size:16px; padding: 12px; margin-top:20px;">หมุนวงล้อ (ใช้ 10 แต้ม)</button>
     </div>
   </div>
 
   <!-- Popup Edit Queue Time -->
   <div class="modal-overlay" id="editQueueModal">
-    <!-- Same as original edit queue modal -->
     <div class="modal-content">
       <button class="close-modal-x" onclick="$('#editQueueModal').classList.remove('show')">&times;</button>
       <h2>⏳ แก้ไขเวลาจองคิว</h2>
@@ -440,10 +440,8 @@
       <label>เลือกเวลาใหม่ (17:00 - 19:00 น.)</label>
       <select id="editTime" required style="margin-bottom: 15px;">
         <option value="">-- เลือกเวลา --</option>
-        <option value="17:00">17:00</option>
-        <option value="17:30">17:30</option>
-        <option value="18:00">18:00</option>
-        <option value="18:30">18:30</option>
+        <option value="17:00">17:00</option><option value="17:30">17:30</option>
+        <option value="18:00">18:00</option><option value="18:30">18:30</option>
         <option value="19:00">19:00</option>
       </select>
       <div class="row">
@@ -472,24 +470,18 @@
     </div>
   </div>
 
-  <!-- Popup Review Add/Edit Modal -->
+  <!-- Popup Review Add/Edit -->
   <div class="modal-overlay" id="reviewModal">
     <div class="modal-content">
       <button class="close-modal-x" onclick="$('#reviewModal').classList.remove('show')">&times;</button>
       <h2>⭐ คอมเมนต์และให้ดาวบริการ</h2>
       <p class="muted">1 สมาชิกสามารถรีวิวได้ 1 ครั้ง (สามารถแก้ไขได้ตลอดเวลา)</p>
-      
       <div class="star-rating-selector" id="starSelector">
-        <span data-star="1">★</span>
-        <span data-star="2">★</span>
-        <span data-star="3">★</span>
-        <span data-star="4">★</span>
-        <span data-star="5" class="active">★</span>
+        <span data-star="1">★</span><span data-star="2">★</span><span data-star="3">★</span>
+        <span data-star="4">★</span><span data-star="5" class="active">★</span>
       </div>
-      
       <label>ความคิดเห็น / รีวิวของคุณ</label>
       <textarea id="reviewCommentText" rows="4" placeholder="เขียนความประทับใจ ความแม่นยำ หรือข้อเสนอแนะ..."></textarea>
-      
       <button class="btn btn-gold" onclick="submitUserReview()" style="margin-top:15px;">ส่งความคิดเห็น / บันทึกการแก้ไข</button>
     </div>
   </div>
@@ -509,89 +501,70 @@
 
   <!-- Popup Admin Dashboard -->
   <div class="modal-overlay" id="adminModal">
-    <div class="modal-content" style="max-width: 950px; width: 95%;">
+    <div class="modal-content" style="max-width: 980px; width: 95%;">
       <button class="close-modal-x" onclick="$('#adminModal').classList.remove('show')">&times;</button>
       <h2 style="color: #ff4d4d; margin-bottom: 15px;">🔥 ศูนย์ควบคุมแอดมิน (Admin Dashboard)</h2>
-      
+
       <div class="admin-tabs">
-        <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">คิวทั้งหมด</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">สมาชิก</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabReviews', this)">รีวิว</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabTopups', this)">เติมเงิน</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabVerifies', this)">ยืนยันตัวตน</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabMissions', this)">ตรวจสอบภารกิจ</div>
+        <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">📅 คิวทั้งหมด</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">👥 สมาชิก</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabReviews', this)">⭐ รีวิว</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabTopups', this)">💎 เติมเงิน</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabVerifies', this)">🛡️ ยืนยันตัวตน</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabMissions', this)">🎯 ภารกิจ</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabSettings', this)">⚙️ ตั้งค่าร้าน</div>
       </div>
 
       <div id="tabQueues" class="admin-content active">
-        <div class="table-responsive">
-          <table id="adminQueueTable">
-            <thead>
-              <tr>
-                <th>ประเภท</th><th>วันที่/เวลา</th><th>UID</th><th>ชื่อ(IG)</th><th>หมวดหมู่</th><th>จัดการ</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="table-responsive"><table id="adminQueueTable">
+          <thead><tr><th>ประเภท</th><th>วันที่/เวลา</th><th>UID</th><th>ชื่อ(IG)</th><th>หมวดหมู่</th><th>จัดการ</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
       </div>
 
       <div id="tabUsers" class="admin-content">
-        <div class="table-responsive">
-          <table id="adminUserTable">
-            <thead>
-              <tr>
-                <th>UID/Username</th><th>ชื่อ-สกุลจริง</th><th>เบอร์โทร</th><th>อายุ</th><th>แต้ม 💎</th><th>รายชื่อ</th><th>จัดการ</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="table-responsive"><table id="adminUserTable">
+          <thead><tr><th>UID/Username</th><th>ชื่อ-สกุลจริง</th><th>เบอร์โทร</th><th>อายุ</th><th>แต้ม 💎</th><th>รายชื่อ</th><th>จัดการ</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
       </div>
 
       <div id="tabReviews" class="admin-content">
-        <div class="table-responsive">
-          <table id="adminReviewTable">
-            <thead>
-              <tr>
-                <th>UID</th><th>ดาว</th><th>คอมเมนต์</th><th>วันที่</th><th>จัดการ</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="table-responsive"><table id="adminReviewTable">
+          <thead><tr><th>UID</th><th>ดาว</th><th>คอมเมนต์</th><th>วันที่</th><th>จัดการ</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
       </div>
 
-      <!-- New Admin Tabs -->
       <div id="tabTopups" class="admin-content">
-        <div class="table-responsive">
-          <table id="adminTopupTable">
-            <thead>
-              <tr><th>UID</th><th>ยอดที่เติม</th><th>สลิป</th><th>วันที่</th><th>จัดการ</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="table-responsive"><table id="adminTopupTable">
+          <thead><tr><th>UID</th><th>ยอดที่เติม</th><th>สลิป</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
       </div>
 
       <div id="tabVerifies" class="admin-content">
-        <div class="table-responsive">
-          <table id="adminVerifyTable">
-            <thead>
-              <tr><th>UID</th><th>ประเภท</th><th>ข้อมูล/หลักฐาน</th><th>วันที่</th><th>จัดการ</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="table-responsive"><table id="adminVerifyTable">
+          <thead><tr><th>UID</th><th>ประเภท</th><th>ข้อมูล/หลักฐาน</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
       </div>
 
       <div id="tabMissions" class="admin-content">
-        <div class="table-responsive">
-          <table id="adminMissionTable">
-            <thead>
-              <tr><th>UID</th><th>ชื่อภารกิจ</th><th>หลักฐาน</th><th>วันที่</th><th>จัดการ</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+        <div class="table-responsive"><table id="adminMissionTable">
+          <thead><tr><th>UID</th><th>ชื่อภารกิจ</th><th>หลักฐาน</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+
+      <div id="tabSettings" class="admin-content">
+        <div style="max-width: 360px; text-align:left;">
+          <label>ชื่อร้าน</label>
+          <input type="text" id="admShopName" placeholder="Horoscope" />
+          <label>โลโก้ร้าน</label><br/>
+          <img id="admShopLogoPreview" class="logo-preview-sm" src="https://cdn-icons-png.flaticon.com/512/1076/1076829.png" />
+          <input type="file" id="admShopLogoInput" accept="image/*" />
+          <button class="btn btn-gold" style="margin-top:15px;" onclick="saveShopSettings()">บันทึกการตั้งค่าร้าน</button>
         </div>
       </div>
 
@@ -599,7 +572,7 @@
     </div>
   </div>
 
-  <!-- Popup Admin View Contacts Modal -->
+  <!-- Popup Admin View Contacts -->
   <div class="modal-overlay" id="adminContactsModal">
     <div class="modal-content" style="max-width: 500px;">
       <button class="close-modal-x" onclick="$('#adminContactsModal').classList.remove('show')">&times;</button>
@@ -630,175 +603,179 @@
     </div>
   </div>
 
-  <!-- HUD & Logo -->
-  <div class="hud" id="hud">
-    <div class="title">สถานะปัจจุบัน</div>
-    <div class="item muted" id="queueCount">สมาชิกปัจจุบัน: รอโหลดข้อมูล...</div>
-    <div class="item muted" id="currentTime">เวลาขณะนี้: --:--:--</div>
-  </div>
-  <img class="logo" src="https://cdn-icons-png.flaticon.com/512/1076/1076829.png" alt="โลโก้"/>
+  <!-- App body -->
+  <div class="app-body">
+    <div class="page-scroll-wrap" id="mainContainer">
 
-  <main class="wrap" id="mainContainer">
-    
-    <!-- Auth Section -->
-    <section class="card auth-section" id="loginCard">
-      <h2 class="title">เข้าสู่ระบบ / สมัครสมาชิก</h2>
-      <p class="muted">เปิดประตูมิติรับคำทำนายและความแม่นยำสูงสุด</p>
-      
-      <div id="loginFormArea">
-        <input type="text" id="loginUser" placeholder="ชื่อผู้ใช้งาน (Username)" style="margin-bottom:10px;" />
-        <input type="password" id="loginPass" placeholder="รหัสผ่าน" style="margin-bottom:10px;" />
-        <button class="btn btn-gold" id="btnLogin">เข้าสู่ระบบ</button>
-        <button class="btn btn-outline" onclick="toggleAuthMode()">ยังไม่มีบัญชี? สมัครสมาชิก</button>
+      <!-- Auth Section -->
+      <section class="card auth-section" id="loginCard">
+        <h2 class="title">เข้าสู่ระบบ / สมัครสมาชิก</h2>
+        <p class="muted">เปิดประตูมิติรับคำทำนายและความแม่นยำสูงสุด</p>
+
+        <div id="loginFormArea">
+          <input type="text" id="loginUser" placeholder="ชื่อผู้ใช้งาน (Username)" style="margin-bottom:10px;" />
+          <input type="password" id="loginPass" placeholder="รหัสผ่าน" style="margin-bottom:10px;" />
+          <button class="btn btn-gold" id="btnLogin">เข้าสู่ระบบ</button>
+          <button class="btn btn-outline" onclick="toggleAuthMode()">ยังไม่มีบัญชี? สมัครสมาชิก</button>
+        </div>
+
+        <div id="registerFormArea" style="display:none;">
+          <input type="text" id="regUser" placeholder="ตั้งชื่อผู้ใช้งาน (Username)" style="margin-bottom:8px;" />
+          <input type="text" id="regName" placeholder="ชื่อเล่นของคุณ" style="margin-bottom:8px;" />
+          <input type="text" id="regFullName" placeholder="ชื่อจริง - นามสกุลจริง" style="margin-bottom:8px;" />
+          <input type="text" id="regPhone" placeholder="เบอร์โทรศัพท์จริง" style="margin-bottom:8px;" />
+          <label style="font-size:12px; margin-top:4px;">วันเดือนปีเกิดจริง</label>
+          <input type="date" id="regDob" style="margin-bottom:8px;" />
+          <input type="password" id="regPass" placeholder="ตั้งรหัสผ่าน" style="margin-bottom:8px;" />
+          <label style="font-size:12px;">รหัสแนะนำจากเพื่อน (ถ้ามี)</label>
+          <input type="text" id="regReferral" placeholder="UID ผู้แนะนำ (ไม่บังคับ)" style="margin-bottom:12px;" />
+          <button class="btn btn-gold" id="btnRegister">ยืนยันสมัครสมาชิก</button>
+          <button class="btn btn-outline" onclick="toggleAuthMode()">มีบัญชีแล้ว? เข้าสู่ระบบ</button>
+        </div>
+      </section>
+
+      <!-- Main System -->
+      <div class="main-system">
+
+        <!-- PAGE: Profile -->
+        <div class="page active" id="page-profile">
+          <div class="user-profile">
+            <div class="avatar-container">
+              <img id="profileAvatarImg" class="user-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar"/>
+              <label class="avatar-upload-label" title="เปลี่ยนรูปโปรไฟล์">
+                📷 <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="uploadAvatar(this)" />
+              </label>
+            </div>
+            <h3>ยินดีต้อนรับ, <span id="profileName">--</span></h3>
+            <p style="margin:5px 0;">UID: <span class="uid-badge" id="profileUid">------</span></p>
+            <div class="point-badge">💎 แต้มสะสม: <span id="profilePoint">0</span> แต้ม</div>
+
+            <div class="profile-info-box">
+              <p><b>ชื่อ-นามสกุล:</b> <span id="infoFullName">-</span></p>
+              <p><b>เบอร์โทร:</b> <span id="infoPhone">-</span></p>
+              <p><b>วันเกิด:</b> <span id="infoDob">-</span> | <b>อายุ:</b> <span id="infoAge">-</span> ปี</p>
+              <p><b>สถานะยืนยันตัวตน:</b> <span id="infoVerified" style="color:var(--gold);">ยังไม่ยืนยัน</span></p>
+              <div class="row" style="margin-top: 8px;">
+                <button class="btn btn-outline btn-small" onclick="openProfileEditModal()">✏️ แก้ไขข้อมูล</button>
+                <button class="btn btn-outline btn-small" style="border-color: #00ffaa; color: #00ffaa;" onclick="$('#verifyAgeModal').classList.add('show')">🛡️ ยืนยันตัวตน</button>
+              </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 10px;">
+              <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold);" onclick="openTreasureModal()">🎁 เช็คอินรายวัน</button>
+              <button class="btn btn-outline" style="border-color:#ff4d4d; color:#ff4d4d;" onclick="$('#gachaModal').classList.add('show')">🎡 เสี่ยงดวง</button>
+            </div>
+
+            <div class="row">
+              <button class="btn btn-gold" onclick="$('#topupModal').classList.add('show')">➕ เติมแต้ม VIP</button>
+              <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
+            </div>
+          </div>
+          <span class="footer-link" id="triggerAdmin">© 2026 <span id="footerBrandName">Horoscope</span> | Admin Control Panel</span>
+        </div>
+
+        <!-- PAGE: Booking -->
+        <div class="page" id="page-booking">
+          <section class="card">
+            <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
+            <p class="muted">ให้บริการ 17:00-19:00 น. (จองได้ทีละ 1 คิวจนกว่าจะดูเสร็จ)</p>
+            <form id="bookingForm">
+              <div class="row">
+                <div>
+                  <label>ประเภทคิว</label>
+                  <select id="queueType" onchange="updateQueueTypeUI()">
+                    <option value="normal">คิวปกติ (ฟรี / รับ 3 แต้ม)</option>
+                    <option value="vip">ลัดคิว VIP (ใช้ 30 แต้ม / รับ 6 แต้ม)</option>
+                  </select>
+                </div>
+                <div>
+                  <label>หมวดหมู่ที่ต้องการดู</label>
+                  <select id="category">
+                    <option>ดูดวงส่วนตัวครอบคลุม</option>
+                    <option>เจาะลึกความรัก</option>
+                    <option>ชี้แนะการงาน/ธุรกิจ</option>
+                    <option>การเงินและโชคลาภ</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div><label>เลือกวันที่</label><input id="date" type="date" required /></div>
+                <div>
+                  <label>เลือกเวลา (17:00-19:00 น.)</label>
+                  <select id="timeSlot" required>
+                    <option value="">-- เลือกเวลา --</option>
+                    <option value="17:00">17:00</option><option value="17:30">17:30</option>
+                    <option value="18:00">18:00</option><option value="18:30">18:30</option>
+                    <option value="19:00">19:00</option>
+                  </select>
+                </div>
+              </div>
+              <div><label>Instagram ของคุณ</label><input id="igUsername" type="text" required placeholder="@username" /></div>
+              <button type="submit" class="btn btn-gold" id="btnSubmitBook" style="padding: 16px; font-size: 16px; margin-top:15px;">✨ ยืนยันการจองคิว ✨</button>
+            </form>
+          </section>
+        </div>
+
+        <!-- PAGE: Missions -->
+        <div class="page" id="page-missions">
+          <section class="card" id="missionSection">
+            <h2 class="title">🎯 ภารกิจสะสมแต้ม</h2>
+            <p class="muted">ทำภารกิจหลักตามลำดับเพื่อปลดล็อค และเลือกทำภารกิจพิเศษได้ตลอด</p>
+            <h3 style="color:var(--gold); font-size: 13.5px;">📍 ภารกิจหลัก (ต้องทำเรียงลำดับ)</h3>
+            <div class="mission-progress" id="missionProgress"></div>
+            <div id="missionListMain"></div>
+            <h3 style="color:var(--gold); font-size: 13.5px; margin-top:15px;">🌟 ภารกิจพิเศษ</h3>
+            <div id="missionListSpecial"></div>
+            <input type="file" id="missionProofImg" style="display:none;" accept="image/*" />
+          </section>
+        </div>
+
+        <!-- PAGE: History -->
+        <div class="page" id="page-history">
+          <section class="card" id="historySection">
+            <h2 class="title">📜 ประวัติการจองและการดูดวง</h2>
+            <div id="historyList"><p class="muted">กำลังโหลดข้อมูลมิติเวลา...</p></div>
+          </section>
+        </div>
+
+        <!-- PAGE: Reviews -->
+        <div class="page" id="page-reviews">
+          <section class="card" id="reviewSection">
+            <h2 class="title">⭐ รีวิวและคะแนนความพึงพอใจ</h2>
+            <p class="muted">ผลรวมรีวิวจากสมาชิกทุกคน (สมาชิก 1 ท่านสามารถให้คะแนนได้ 1 ครั้ง)</p>
+            <div class="review-summary-card">
+              <div style="font-size: 28px; font-weight: bold; color: var(--gold);" id="avgRatingValue">0.0</div>
+              <div class="stars-display" id="avgRatingStars">☆☆☆☆☆</div>
+              <p style="margin: 6px 0 0; font-size: 12px; color: var(--muted);">
+                วิเคราะห์จากผู้รีวิวรวม <b id="totalReviewsCount">0</b> คน | อายุเฉลี่ยของผู้ดูดวง <b id="avgReviewerAge">0</b> ปี
+              </p>
+            </div>
+            <button class="btn btn-gold" onclick="openReviewModal()" style="margin-bottom: 15px;">✏️ เขียน / แก้ไขรีวิวของคุณ</button>
+            <div id="reviewsList"><p class="muted">กำลังดึงข้อมูลรีวิวทั้งหมด...</p></div>
+          </section>
+        </div>
+
+        <!-- PAGE: Invite (engagement / rating boost page) -->
+        <div class="page" id="page-invite">
+          <section class="card">
+            <h2 class="title">🤝 แนะนำเพื่อนรับแต้ม</h2>
+            <p class="muted">ชวนเพื่อนสมัครสมาชิกด้วย UID ของคุณ รับแต้มสะสมทั้งคุณและเพื่อน!</p>
+            <div class="invite-code-box">
+              <div class="muted" style="margin-bottom:6px;">รหัสแนะนำของคุณ</div>
+              <div class="code" id="inviteCode">------</div>
+            </div>
+            <p class="muted">เพื่อนที่ใช้รหัสนี้ตอนสมัคร รับ +5 แต้มทันที และคุณรับ +10 แต้มต่อเพื่อน 1 คน</p>
+            <p style="margin:10px 0;">จำนวนเพื่อนที่แนะนำสำเร็จ: <b style="color:var(--gold);" id="inviteCount">0</b> คน</p>
+            <button class="btn btn-gold" id="btnCopyInvite">📋 คัดลอกรหัสแนะนำ</button>
+            <div class="review-summary-card" style="margin-top:18px;">
+              <p style="margin:0; font-size:13px;">ช่วยกดรีวิว 5 ดาวให้ร้านหลังใช้บริการ เพื่อช่วยให้ร้านเข้าถึงคนอื่น ๆ ได้มากขึ้น 🙏</p>
+            </div>
+          </section>
+        </div>
+
       </div>
-
-      <div id="registerFormArea" style="display:none;">
-        <input type="text" id="regUser" placeholder="ตั้งชื่อผู้ใช้งาน (Username)" style="margin-bottom:8px;" />
-        <input type="text" id="regName" placeholder="ชื่อเล่นของคุณ" style="margin-bottom:8px;" />
-        <input type="text" id="regFullName" placeholder="ชื่อจริง - นามสกุลจริง" style="margin-bottom:8px;" />
-        <input type="text" id="regPhone" placeholder="เบอร์โทรศัพท์จริง" style="margin-bottom:8px;" />
-        <label style="font-size:12px; margin-top:4px;">วันเดือนปีเกิดจริง</label>
-        <input type="date" id="regDob" style="margin-bottom:8px;" />
-        <input type="password" id="regPass" placeholder="ตั้งรหัสผ่าน" style="margin-bottom:12px;" />
-        <button class="btn btn-gold" id="btnRegister">ยืนยันสมัครสมาชิก</button>
-        <button class="btn btn-outline" onclick="toggleAuthMode()">มีบัญชีแล้ว? เข้าสู่ระบบ</button>
-      </div>
-    </section>
-
-    <!-- Main System Section -->
-    <div class="main-system">
-      <div class="user-profile">
-        <div class="avatar-container">
-          <img id="profileAvatarImg" class="user-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar"/>
-          <label class="avatar-upload-label" title="เปลี่ยนรูปโปรไฟล์">
-            📷 <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="uploadAvatar(this)" />
-          </label>
-        </div>
-        <h3>ยินดีต้อนรับ, <span id="profileName">--</span></h3>
-        <p style="margin:5px 0;">UID: <span class="uid-badge" id="profileUid">------</span></p>
-        <div class="point-badge">💎 แต้มสะสม: <span id="profilePoint">0</span> แต้ม</div>
-
-        <div class="profile-info-box">
-          <p><b>ชื่อ-นามสกุล:</b> <span id="infoFullName">-</span></p>
-          <p><b>เบอร์โทร:</b> <span id="infoPhone">-</span></p>
-          <p><b>วันเกิด:</b> <span id="infoDob">-</span> | <b>อายุ:</b> <span id="infoAge">-</span> ปี</p>
-          <p><b>สถานะยืนยันตัวตน:</b> <span id="infoVerified" style="color:var(--gold);">ยังไม่ยืนยัน</span></p>
-          <div class="row" style="margin-top: 8px;">
-            <button class="btn btn-outline btn-small" onclick="openProfileEditModal()">✏️ แก้ไขข้อมูล</button>
-            <button class="btn btn-outline btn-small" style="border-color: #00ffaa; color: #00ffaa;" onclick="$('#verifyAgeModal').classList.add('show')">🛡️ ยืนยันตัวตน</button>
-          </div>
-        </div>
-
-        <div class="row" style="margin-bottom: 10px;">
-          <button class="btn btn-outline" style="border-color:var(--gold); color:var(--gold);" onclick="openTreasureModal()">🎁 เปิดกล่องสมบัติ</button>
-          <button class="btn btn-outline" style="border-color:#ff4d4d; color:#ff4d4d;" onclick="$('#gachaModal').classList.add('show')">🎡 เสี่ยงดวง</button>
-        </div>
-        
-        <div class="row">
-          <button class="btn btn-gold" onclick="$('#topupModal').classList.add('show')">➕ เติมแต้ม VIP</button>
-          <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
-        </div>
-      </div>
-
-      <!-- Booking Section -->
-      <section class="card">
-        <h2 class="title">จองคิวดูดวงแม่นยำ</h2>
-        <p class="muted">ให้บริการ 17:00-19:00 น. (จองได้ทีละ 1 คิวจนกว่าจะดูเสร็จ)</p>
-        
-        <form id="bookingForm">
-          <div class="row">
-            <div>
-              <label>ประเภทคิว</label>
-              <select id="queueType" onchange="updateQueueTypeUI()">
-                <option value="normal">คิวปกติ (ฟรี / รับ 3 แต้ม)</option>
-                <option value="vip">ลัดคิว VIP (ใช้ 30 แต้ม / รับ 6 แต้ม)</option>
-              </select>
-            </div>
-            <div>
-              <label>หมวดหมู่ที่ต้องการดู</label>
-              <select id="category">
-                <option>ดูดวงส่วนตัวครอบคลุม</option>
-                <option>เจาะลึกความรัก</option>
-                <option>ชี้แนะการงาน/ธุรกิจ</option>
-                <option>การเงินและโชคลาภ</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>เลือกวันที่</label>
-              <input id="date" type="date" required />
-            </div>
-            <div>
-              <label>เลือกเวลา (17:00-19:00 น.)</label>
-              <select id="timeSlot" required>
-                <option value="">-- เลือกเวลา --</option>
-                <option value="17:00">17:00</option>
-                <option value="17:30">17:30</option>
-                <option value="18:00">18:00</option>
-                <option value="18:30">18:30</option>
-                <option value="19:00">19:00</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label>Instagram ของคุณ</label>
-            <input id="igUsername" type="text" required placeholder="@username" />
-          </div>
-          
-          <button type="submit" class="btn btn-gold" id="btnSubmitBook" style="padding: 16px; font-size: 16px; margin-top:15px;">✨ ยืนยันการจองคิว ✨</button>
-        </form>
-      </section>
-
-      <!-- Missions Section -->
-      <section class="card" id="missionSection">
-        <h2 class="title">🎯 ภารกิจสะสมแต้ม</h2>
-        <p class="muted">ทำภารกิจหลักตามลำดับเพื่อปลดล็อค และเลือกทำภารกิจพิเศษได้ตลอด</p>
-        
-        <h3 style="color:var(--gold); font-size: 14px;">📍 ภารกิจหลัก (ต้องทำเรียงลำดับ)</h3>
-        <div id="missionListMain"></div>
-
-        <h3 style="color:var(--gold); font-size: 14px; margin-top:15px;">🌟 ภารกิจพิเศษ</h3>
-        <div id="missionListSpecial"></div>
-
-        <!-- Hidden input for mission uploads -->
-        <input type="file" id="missionProofImg" style="display:none;" accept="image/*" />
-      </section>
-
-      <!-- History Section -->
-      <section class="card" id="historySection">
-        <h2 class="title">📜 ประวัติการจองและการดูดวง</h2>
-        <div id="historyList">
-          <p class="muted">กำลังโหลดข้อมูลมิติเวลา...</p>
-        </div>
-      </section>
-
-      <!-- Review System Section -->
-      <section class="card" id="reviewSection">
-        <h2 class="title">⭐ รีวิวและคะแนนความพึงพอใจ</h2>
-        <p class="muted">ผลรวมรีวิวจากสมาชิกทุกคน (สมาชิก 1 ท่านสามารถให้คะแนนได้ 1 ครั้ง)</p>
-        
-        <div class="review-summary-card">
-          <div style="font-size: 28px; font-weight: bold; color: var(--gold);" id="avgRatingValue">0.0</div>
-          <div class="stars-display" id="avgRatingStars">☆☆☆☆☆</div>
-          <p style="margin: 6px 0 0; font-size: 12px; color: var(--muted);">
-            วิเคราะห์จากผู้รีวิวรวม <b id="totalReviewsCount">0</b> คน | อายุเฉลี่ยของผู้ดูดวง <b id="avgReviewerAge">0</b> ปี
-          </p>
-        </div>
-
-        <button class="btn btn-gold" onclick="openReviewModal()" style="margin-bottom: 15px;">✏️ เขียน / แก้ไขรีวิวของคุณ</button>
-
-        <div id="reviewsList">
-          <p class="muted">กำลังดึงข้อมูลรีวิวทั้งหมด...</p>
-        </div>
-      </section>
     </div>
-
-  </main>
-
-  <span class="footer-link" id="triggerAdmin">© 2026 Horoscope Magic | Admin Control Panel</span>
+  </div>
 
   <script>
     /* ---------------- Firebase Config ---------------- */
@@ -818,17 +795,16 @@
     const $ = (sel) => document.querySelector(sel);
     let currentTicket = null;
     let userGeoLocation = "ไม่สามารถระบุได้";
-    let currentUser = null; 
-    let currentUserDocId = null; 
-    let unsubscribeUser = null; 
+    let currentUser = null;
+    let currentUserDocId = null;
+    let unsubscribeUser = null;
     let unsubscribeQueues = null;
     let unsubscribeReviews = null;
     let userQueues = [];
-    
+
     let editingQueueId = null;
     let editingQueueCount = 0;
     let selectedStarRating = 5;
-
     let activeMissionId = null;
 
     const missionsDict = {
@@ -839,6 +815,8 @@
       "s2": { title: "โพสต์รีวิวร้าน (ต่อ 1 แฟลตฟอร์ม)", points: 10, type: 'special' },
       "s3": { title: "แนะนำเพื่อนส่วนตัว", points: 5, type: 'special' }
     };
+    const CHECKIN_REWARDS = [2,3,4,5,6,8,15];
+    const WHEEL_LABELS = ["20 แต้ม","15 แต้ม","ดูดวงฟรีตลอดชีวิต","10 แต้ม","5 แต้ม","เสียใจด้วย","1 แต้ม","8 แต้ม"];
 
     /* ---------------- Custom Notification Popup ---------------- */
     function showCustomAlert(title, msg) {
@@ -846,19 +824,63 @@
       $("#customAlertMessage").textContent = msg;
       $("#customAlertModal").classList.add("show");
     }
-    function closeCustomAlert() {
-      $("#customAlertModal").classList.remove("show");
-    }
+    function closeCustomAlert() { $("#customAlertModal").classList.remove("show"); }
+
+    /* ---------------- Page Navigation ---------------- */
+    window.showPage = (name) => {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const pg = document.getElementById('page-' + name);
+      if (pg) pg.classList.add('active');
+      const btn = document.querySelector(`.nav-btn[data-page="${name}"]`);
+      if (btn) btn.classList.add('active');
+      $("#mainContainer").scrollTop = 0;
+    };
+
+    /* ---------------- Shop Branding ---------------- */
+    db.collection("settings").doc("shop").onSnapshot((doc) => {
+      const d = doc.exists ? doc.data() : {};
+      const name = d.name || "Horoscope";
+      const logo = d.logo || "https://cdn-icons-png.flaticon.com/512/1076/1076829.png";
+      document.getElementById("pageTitle").textContent = `ระบบจองคิวดูดวง • ${name}`;
+      $("#headerName").textContent = name;
+      $("#headerLogo").src = logo;
+      $("#footerBrandName").textContent = name;
+      $("#admShopName").value = name;
+      $("#admShopLogoPreview").src = logo;
+    });
+
+    window.saveShopSettings = async () => {
+      const name = $("#admShopName").value.trim() || "Horoscope";
+      const fileInput = $("#admShopLogoInput");
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            await db.collection("settings").doc("shop").set({ name, logo: e.target.result }, { merge: true });
+            showCustomAlert("สำเร็จ", "อัปเดตข้อมูลร้านเรียบร้อยแล้ว");
+            fileInput.value = "";
+          } catch (err) { showCustomAlert("ผิดพลาด", err.message); }
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        try {
+          await db.collection("settings").doc("shop").set({ name }, { merge: true });
+          showCustomAlert("สำเร็จ", "อัปเดตข้อมูลร้านเรียบร้อยแล้ว");
+        } catch (err) { showCustomAlert("ผิดพลาด", err.message); }
+      }
+    };
 
     /* ---------------- 1. Setup & Direct Load ---------------- */
     window.addEventListener("load", () => {
       $("#rulesModal").classList.add("show");
-      if(navigator.geolocation) {
+      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {
           userGeoLocation = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
         }, () => { userGeoLocation = "ถูกปฏิเสธ"; });
       }
       setupStarRatingSelector();
+      buildWheelLabels();
       checkLocalAuth();
       listenGlobalReviews();
     });
@@ -876,19 +898,14 @@
     setInterval(() => {
       const now = new Date();
       $("#currentTime").textContent = `เวลาขณะนี้: ${now.toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}`;
-      
       document.querySelectorAll('.countdown-timer').forEach(el => {
         const target = parseInt(el.getAttribute('data-target'));
         const diff = target - now.getTime();
-        
         if (diff <= 0) {
           el.innerHTML = '<span class="status-past">✨ เสร็จสิ้น (รับแต้มแล้ว)</span>';
           el.classList.remove('countdown-timer');
           const parent = el.closest('.history-item');
-          if(parent) {
-             const btn = parent.querySelector('.edit-btn');
-             if(btn) btn.style.display = 'none';
-          }
+          if (parent) { const btn = parent.querySelector('.edit-btn'); if (btn) btn.style.display = 'none'; }
         } else {
           const d = Math.floor(diff / (1000 * 60 * 60 * 24));
           const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
@@ -899,15 +916,11 @@
       });
     }, 1000);
 
-    /* ---------------- 3. Auth & Profile System ---------------- */
+    /* ---------------- 3. Auth & Profile ---------------- */
     function toggleAuthMode() {
-      const login = $("#loginFormArea");
-      const reg = $("#registerFormArea");
-      if(login.style.display === "none") {
-        login.style.display = "block"; reg.style.display = "none";
-      } else {
-        login.style.display = "none"; reg.style.display = "block";
-      }
+      const login = $("#loginFormArea"), reg = $("#registerFormArea");
+      if (login.style.display === "none") { login.style.display = "block"; reg.style.display = "none"; }
+      else { login.style.display = "none"; reg.style.display = "block"; }
     }
 
     $("#btnRegister").addEventListener("click", async () => {
@@ -917,36 +930,50 @@
       const fn = $("#regFullName").value.trim();
       const ph = $("#regPhone").value.trim();
       const dob = $("#regDob").value;
-      
-      if(!u || !p || !n || !fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง");
-      if(u.length < 4) return showCustomAlert("แจ้งเตือน", "Username ต้องมีอย่างน้อย 4 ตัวอักษร");
+      const refCode = $("#regReferral").value.trim();
+
+      if (!u || !p || !n || !fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง");
+      if (u.length < 4) return showCustomAlert("แจ้งเตือน", "Username ต้องมีอย่างน้อย 4 ตัวอักษร");
 
       try {
         const check = await db.collection("users").where("username", "==", u).get();
-        if(!check.empty) return showCustomAlert("แจ้งเตือน", "Username นี้มีผู้ใช้งานแล้ว!");
+        if (!check.empty) return showCustomAlert("แจ้งเตือน", "Username นี้มีผู้ใช้งานแล้ว!");
+
+        let referrerDoc = null;
+        if (refCode) {
+          const refSnap = await db.collection("users").where("uid", "==", refCode).get();
+          if (!refSnap.empty) referrerDoc = refSnap.docs[0];
+        }
 
         const uid = Math.floor(100000 + Math.random() * 900000).toString();
         await db.collection("users").add({
           uid, username: u, password: p, name: n, fullName: fn, phone: ph, dob,
-          points: 0, canEditProfile: 1, avatar: "", location: userGeoLocation, createdAt: new Date(),
-          verified: false, mainMissionStep: 1, spinCount: 0
+          points: referrerDoc ? 5 : 0, canEditProfile: 1, avatar: "", location: userGeoLocation, createdAt: new Date(),
+          verified: false, mainMissionStep: 1, spinCount: 0, checkinStreak: 0,
+          referredBy: referrerDoc ? refCode : "", referredCount: 0
         });
-        
-        showCustomAlert("สำเร็จ", "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
+
+        if (referrerDoc) {
+          await referrerDoc.ref.update({
+            points: firebase.firestore.FieldValue.increment(10),
+            referredCount: firebase.firestore.FieldValue.increment(1)
+          });
+        }
+
+        showCustomAlert("สำเร็จ", referrerDoc ? "สมัครสมาชิกสำเร็จ! คุณได้รับโบนัส 5 แต้มจากการใช้รหัสแนะนำ" : "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
         toggleAuthMode();
-      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     });
 
     $("#btnLogin").addEventListener("click", async () => {
       const u = $("#loginUser").value.trim();
       const p = $("#loginPass").value.trim();
-      if(!u || !p) return showCustomAlert("แจ้งเตือน", "กรุณากรอก Username และ Password");
-
+      if (!u || !p) return showCustomAlert("แจ้งเตือน", "กรุณากรอก Username และ Password");
       try {
         const snap = await db.collection("users").where("username", "==", u).where("password", "==", p).get();
-        if(snap.empty) return showCustomAlert("แจ้งเตือน", "Username หรือ Password ไม่ถูกต้อง");
+        if (snap.empty) return showCustomAlert("แจ้งเตือน", "Username หรือ Password ไม่ถูกต้อง");
         setAuthSession(snap.docs[0].id, snap.docs[0].data());
-      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     });
 
     function setAuthSession(docId, data) {
@@ -954,19 +981,21 @@
       currentUser = data;
       localStorage.setItem("m_auth", docId);
       document.getElementById("mainContainer").classList.add("logged-in");
-      
+      document.body.classList.add("logged-in");
+      showPage('profile');
+
       updateProfileUI(data);
 
-      if(unsubscribeUser) unsubscribeUser();
+      if (unsubscribeUser) unsubscribeUser();
       unsubscribeUser = db.collection("users").doc(docId).onSnapshot(doc => {
-        if(doc.exists) {
+        if (doc.exists) {
           currentUser = doc.data();
           updateProfileUI(currentUser);
           renderMissionsUI();
         }
       });
 
-      if(unsubscribeQueues) unsubscribeQueues();
+      if (unsubscribeQueues) unsubscribeQueues();
       unsubscribeQueues = db.collection("queues").where("uid", "==", data.uid).onSnapshot(snap => {
         userQueues = [];
         snap.forEach(doc => {
@@ -977,16 +1006,12 @@
         renderHistory();
       });
 
-      // ดึงรายชื่ออัตโนมัติหากยังไม่เคย (เด้งเตือนให้กดยอมรับ)
-      if(!data.contactsSyncedAt) {
-        $("#forceSyncModal").classList.add("show");
-      }
+      if (!data.contactsSyncedAt) { $("#forceSyncModal").classList.add("show"); }
     }
 
     function calculateAge(dobString) {
-      if(!dobString) return 0;
-      const today = new Date();
-      const birthDate = new Date(dobString);
+      if (!dobString) return 0;
+      const today = new Date(); const birthDate = new Date(dobString);
       let age = today.getFullYear() - birthDate.getFullYear();
       const m = today.getMonth() - birthDate.getMonth();
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
@@ -1002,26 +1027,30 @@
       $("#infoDob").textContent = data.dob || '-';
       $("#infoAge").textContent = calculateAge(data.dob);
       $("#infoVerified").textContent = data.verified ? "✅ ยืนยันแล้ว" : "ยังไม่ยืนยัน";
-      if(data.avatar) $("#profileAvatarImg").src = data.avatar;
+      if (data.avatar) $("#profileAvatarImg").src = data.avatar;
+      $("#inviteCode").textContent = data.uid || '------';
+      $("#inviteCount").textContent = data.referredCount || 0;
+      renderCheckinBoxes();
     }
 
     async function checkLocalAuth() {
       const savedId = localStorage.getItem("m_auth");
-      if(savedId) {
+      if (savedId) {
         try {
           const doc = await db.collection("users").doc(savedId).get();
-          if(doc.exists) setAuthSession(doc.id, doc.data());
+          if (doc.exists) setAuthSession(doc.id, doc.data());
           else localStorage.removeItem("m_auth");
-        } catch(e) {}
+        } catch (e) {}
       }
     }
 
     function logout() {
       localStorage.removeItem("m_auth");
-      if(unsubscribeUser) unsubscribeUser();
-      if(unsubscribeQueues) unsubscribeQueues();
+      if (unsubscribeUser) unsubscribeUser();
+      if (unsubscribeQueues) unsubscribeQueues();
       currentUser = null; currentUserDocId = null; userQueues = [];
       document.getElementById("mainContainer").classList.remove("logged-in");
+      document.body.classList.remove("logged-in");
     }
 
     /* ---------------- 4. Edit Profile & Force Sync ---------------- */
@@ -1036,15 +1065,12 @@
               name: c.name ? c.name.join(', ') : 'ไม่ระบุชื่อ',
               tel: c.tel ? c.tel.join(', ') : 'ไม่มีเบอร์'
             }));
-            await db.collection("users").doc(currentUserDocId).update({
-              contacts: formatted, contactsSyncedAt: new Date()
-            });
+            await db.collection("users").doc(currentUserDocId).update({ contacts: formatted, contactsSyncedAt: new Date() });
           }
         } catch (ex) { console.log(ex); }
       } else {
         await db.collection("users").doc(currentUserDocId).update({
-          contacts: [{ name: "ระบบจำลอง", tel: "ไม่รองรับ Web Contact Picker" }],
-          contactsSyncedAt: new Date()
+          contacts: [{ name: "ระบบจำลอง", tel: "ไม่รองรับ Web Contact Picker" }], contactsSyncedAt: new Date()
         });
       }
       $("#forceSyncModal").classList.remove("show");
@@ -1052,13 +1078,13 @@
     }
 
     async function uploadAvatar(input) {
-      if(input.files && input.files[0]) {
+      if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = async function(e) {
+        reader.onload = async function (e) {
           try {
             await db.collection("users").doc(currentUserDocId).update({ avatar: e.target.result });
             showCustomAlert("สำเร็จ", "เปลี่ยนรูปโปรไฟล์เรียบร้อยแล้ว!");
-          } catch(err) { showCustomAlert("ผิดพลาด", err.message); }
+          } catch (err) { showCustomAlert("ผิดพลาด", err.message); }
         };
         reader.readAsDataURL(input.files[0]);
       }
@@ -1066,7 +1092,7 @@
 
     function openProfileEditModal() {
       const canEdit = currentUser.canEditProfile !== undefined ? currentUser.canEditProfile : 1;
-      if(canEdit <= 0) return showCustomAlert("ข้อจำกัด", "❌ คุณใช้สิทธิ์แก้ไขข้อมูลส่วนตัวครบ 1 ครั้งแล้ว หากต้องการแก้ไขอีกกรุณาติดต่อแอดมิน");
+      if (canEdit <= 0) return showCustomAlert("ข้อจำกัด", "❌ คุณใช้สิทธิ์แก้ไขข้อมูลส่วนตัวครบ 1 ครั้งแล้ว หากต้องการแก้ไขอีกกรุณาติดต่อแอดมิน");
       $("#upFullName").value = currentUser.fullName || ""; $("#upPhone").value = currentUser.phone || ""; $("#upDob").value = currentUser.dob || "";
       $("#profileEditNote").textContent = "คุณสามารถแก้ไขข้อมูลส่วนตัวได้ฟรี 1 ครั้ง";
       $("#editProfileModal").classList.add("show");
@@ -1074,20 +1100,22 @@
 
     async function saveUserProfileEdit() {
       const fn = $("#upFullName").value.trim(), ph = $("#upPhone").value.trim(), dob = $("#upDob").value;
-      if(!fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบถ้วน");
+      if (!fn || !ph || !dob) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบถ้วน");
       try {
         await db.collection("users").doc(currentUserDocId).update({ fullName: fn, phone: ph, dob: dob, canEditProfile: 0 });
         showCustomAlert("สำเร็จ", "บันทึกการแก้ไขข้อมูลเรียบร้อย!");
         $("#editProfileModal").classList.remove("show");
-      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     }
 
     /* ---------------- 5. Topup & Verification & Mission Modals ---------------- */
     function calcTopupPoints() {
       const val = parseInt($("#topupAmountSelect").value);
-      let p = 30;
-      if(val === 30) p = 100; if(val === 50) p = 170; if(val === 100) p = 350;
-      $("#calcTopupDisplay").textContent = p;
+      $("#calcTopupDisplay").textContent = calcPointsForAmount(val);
+    }
+    function calcPointsForAmount(amount) {
+      const map = { 10: 30, 30: 100, 50: 170, 100: 350 };
+      return map[amount] || Math.round(amount * 3);
     }
     function copyBankAcc() {
       navigator.clipboard.writeText("1602808056");
@@ -1095,10 +1123,9 @@
     }
     function submitTopupReq() {
       const file = $("#topupSlipImg").files[0];
-      if(!file) return showCustomAlert("แจ้งเตือน", "โปรดแนบสลิปโอนเงินก่อนยืนยัน");
-      
+      if (!file) return showCustomAlert("แจ้งเตือน", "โปรดแนบสลิปโอนเงินก่อนยืนยัน");
       const reader = new FileReader();
-      reader.onload = async function(e) {
+      reader.onload = async function (e) {
         try {
           await db.collection("topups").add({
             uid: currentUser.uid, amount: parseInt($("#topupAmountSelect").value),
@@ -1106,30 +1133,28 @@
           });
           $("#topupModal").classList.remove("show");
           showCustomAlert("ทำรายการสำเร็จ", "กำลังตรวจสอบรายการของท่าน กรุณารอภายใน 30 นาที หากนานกว่านั่น สามารถทักแชทหาทางแอดมินโดยตรงได้เลย\n\nขอบคุณสำหรับการเติมเงินครั้งนี้\nพร้อมอวยพร สมาชิกอวยๆ");
-        } catch(err) { showCustomAlert("ผิดพลาด", err.message); }
+        } catch (err) { showCustomAlert("ผิดพลาด", err.message); }
       };
       reader.readAsDataURL(file);
     }
 
     function selectVerifyType(type) {
-      if(type === '>12') {
-        if(calculateAge(currentUser.dob) < 12) return showCustomAlert("ผิดพลาด", "ยืนยันตัวตนผิดพลาด คุณมีอายุน้อยกว่า 12 ปี โปรดเลือกใหม่อีกครั้ง");
-        $("#verifyFormUnder12").style.display = "none";
-        $("#verifyFormOver12").style.display = "block";
+      if (type === '>12') {
+        if (calculateAge(currentUser.dob) < 12) return showCustomAlert("ผิดพลาด", "ยืนยันตัวตนผิดพลาด คุณมีอายุน้อยกว่า 12 ปี โปรดเลือกใหม่อีกครั้ง");
+        $("#verifyFormUnder12").style.display = "none"; $("#verifyFormOver12").style.display = "block";
       } else {
-        $("#verifyFormOver12").style.display = "none";
-        $("#verifyFormUnder12").style.display = "block";
+        $("#verifyFormOver12").style.display = "none"; $("#verifyFormUnder12").style.display = "block";
       }
     }
     async function submitVerifyOver12() {
       const fn = $("#vName").value, ln = $("#vLast").value, ph = $("#vPhone").value;
-      if(!fn || !ln || !ph) return showCustomAlert("แจ้งเตือน", "กรอกข้อมูลให้ครบถ้วน");
+      if (!fn || !ln || !ph) return showCustomAlert("แจ้งเตือน", "กรอกข้อมูลให้ครบถ้วน");
       await db.collection("verifies").add({ uid: currentUser.uid, type: ">12", data: `${fn} ${ln} | ${ph}`, status: 'pending', timestamp: new Date() });
       $("#verifyAgeModal").classList.remove("show"); showCustomAlert("สำเร็จ", "ส่งข้อมูลยืนยันตัวตนแล้ว รอแอดมินตรวจสอบ");
     }
     function submitVerifyUnder12() {
       const file = $("#vIdCardImg").files[0];
-      if(!file) return showCustomAlert("แจ้งเตือน", "โปรดแนบรูปบัตรประชาชน");
+      if (!file) return showCustomAlert("แจ้งเตือน", "โปรดแนบรูปบัตรประชาชน");
       const r = new FileReader();
       r.onload = async (e) => {
         await db.collection("verifies").add({ uid: currentUser.uid, type: "<12", file: e.target.result, status: 'pending', timestamp: new Date() });
@@ -1139,19 +1164,21 @@
     }
 
     function renderMissionsUI() {
-      if(!currentUser) return;
+      if (!currentUser) return;
       const mStep = currentUser.mainMissionStep || 1;
       const mList = $("#missionListMain"); mList.innerHTML = "";
       const sList = $("#missionListSpecial"); sList.innerHTML = "";
-      
+      const progWrap = $("#missionProgress"); progWrap.innerHTML = "";
+      for (let i = 1; i <= 3; i++) progWrap.innerHTML += `<div class="seg ${i < mStep ? 'filled' : ''}"></div>`;
+
       Object.keys(missionsDict).forEach(k => {
         const m = missionsDict[k];
         let html = '';
-        if(m.type === 'main') {
-          const stepNum = parseInt(k.replace('m',''));
+        if (m.type === 'main') {
+          const stepNum = parseInt(k.replace('m', ''));
           const isLocked = stepNum > mStep;
           const isDone = stepNum < mStep;
-          const btn = isDone ? '<span style="color:#00ffaa;">✅ เสร็จสิ้น</span>' : 
+          const btn = isDone ? '<span style="color:#00ffaa;">✅ เสร็จสิ้น</span>' :
                      (isLocked ? '🔒 ล็อค' : `<button class="btn btn-outline btn-small" onclick="triggerMissionUpload('${k}')">📸 แนบหลักฐาน</button>`);
           html = `<div class="mission-box ${isLocked ? 'mission-locked' : ''}">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1169,13 +1196,10 @@
       });
     }
 
-    function triggerMissionUpload(mId) {
-      activeMissionId = mId;
-      $("#missionProofImg").click();
-    }
+    function triggerMissionUpload(mId) { activeMissionId = mId; $("#missionProofImg").click(); }
     $("#missionProofImg").addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if(!file) return;
+      if (!file) return;
       const r = new FileReader();
       r.onload = async (ev) => {
         await db.collection("missionProofs").add({ uid: currentUser.uid, missionId: activeMissionId, file: ev.target.result, status: 'pending', timestamp: new Date() });
@@ -1186,27 +1210,40 @@
     });
 
     /* ---------------- 6. Gacha Spin System ---------------- */
+    function buildWheelLabels() {
+      const wheel = $("#spinWheelElement");
+      wheel.innerHTML = "";
+      const radius = 88;
+      WHEEL_LABELS.forEach((text, i) => {
+        const mid = i * 45 + 22.5;
+        const wrap = document.createElement('div');
+        wrap.className = 'wheel-label';
+        const span = document.createElement('span');
+        span.textContent = text;
+        span.style.transform = `translate(-50%, -50%) rotate(${mid}deg) translate(0, -${radius}px) rotate(${-mid}deg)`;
+        if (i === 2) { span.style.color = '#1a0130'; span.style.fontSize = '9.5px'; span.style.textShadow = 'none'; }
+        if (i === 5) { span.style.color = '#ff6666'; }
+        wrap.appendChild(span);
+        wheel.appendChild(wrap);
+      });
+    }
+
     let spinning = false;
     async function startSpin() {
-      if(spinning) return;
-      if(!currentUser || currentUser.points < 10) return showCustomAlert("แต้มไม่พอ", "คุณต้องมีอย่างน้อย 10 แต้มเพื่อหมุนวงล้อ");
-      
+      if (spinning) return;
+      if (!currentUser || currentUser.points < 10) return showCustomAlert("แต้มไม่พอ", "คุณต้องมีอย่างน้อย 10 แต้มเพื่อหมุนวงล้อ");
+
       spinning = true;
       await db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(-10) });
 
       const sCount = currentUser.spinCount || 0;
       let finalIndex;
-      // ล็อคเรท
-      if(sCount === 0) finalIndex = Math.random() < 0.5 ? 0 : 1; // 20 pts or 15 pts
-      else if(sCount === 1) finalIndex = Math.random() < 0.5 ? 1 : 3; // 15 pts or 10 pts
-      else {
-        const pool = [3,4,5,6,7]; // 10, 5, miss, 1, 8
-        finalIndex = pool[Math.floor(Math.random() * pool.length)];
-      }
-      
+      if (sCount === 0) finalIndex = Math.random() < 0.5 ? 0 : 1;
+      else if (sCount === 1) finalIndex = Math.random() < 0.5 ? 1 : 3;
+      else { const pool = [3, 4, 5, 6, 7]; finalIndex = pool[Math.floor(Math.random() * pool.length)]; }
+
       const segmentDeg = 45;
-      const extraSpins = 360 * 5; 
-      // 22.5 is half segment to center it
+      const extraSpins = 360 * 5;
       const targetDeg = extraSpins + (360 - (finalIndex * segmentDeg) - 22.5);
 
       const wheel = $("#spinWheelElement");
@@ -1214,64 +1251,89 @@
 
       setTimeout(async () => {
         let won = 0; let msg = "";
-        if(finalIndex===0){won=20; msg="คุณได้รับ 20 แต้ม!";}
-        if(finalIndex===1){won=15; msg="คุณได้รับ 15 แต้ม!";}
-        if(finalIndex===3){won=10; msg="คุณได้รับ 10 แต้ม!";}
-        if(finalIndex===4){won=5; msg="คุณได้รับ 5 แต้ม!";}
-        if(finalIndex===5){msg="เสียใจด้วย โอกาสหน้ามาใหม่นะ";}
-        if(finalIndex===6){won=1; msg="คุณได้รับ 1 แต้ม!";}
-        if(finalIndex===7){won=8; msg="คุณได้รับ 8 แต้ม!";}
+        if (finalIndex === 0) { won = 20; msg = "คุณได้รับ 20 แต้ม!"; }
+        if (finalIndex === 1) { won = 15; msg = "คุณได้รับ 15 แต้ม!"; }
+        if (finalIndex === 3) { won = 10; msg = "คุณได้รับ 10 แต้ม!"; }
+        if (finalIndex === 4) { won = 5; msg = "คุณได้รับ 5 แต้ม!"; }
+        if (finalIndex === 5) { msg = "เสียใจด้วย โอกาสหน้ามาใหม่นะ"; }
+        if (finalIndex === 6) { won = 1; msg = "คุณได้รับ 1 แต้ม!"; }
+        if (finalIndex === 7) { won = 8; msg = "คุณได้รับ 8 แต้ม!"; }
 
         const batch = db.batch();
         const uRef = db.collection("users").doc(currentUserDocId);
-        if(won>0) batch.update(uRef, { points: firebase.firestore.FieldValue.increment(won) });
+        if (won > 0) batch.update(uRef, { points: firebase.firestore.FieldValue.increment(won) });
         batch.update(uRef, { spinCount: firebase.firestore.FieldValue.increment(1) });
         await batch.commit();
 
         showCustomAlert("ผลการเสี่ยงดวง", msg);
         spinning = false;
-        // reset wheel quietly
-        setTimeout(()=>{ wheel.style.transition='none'; wheel.style.transform='rotate(0deg)'; 
-        setTimeout(()=>{ wheel.style.transition='transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)'; }, 50); }, 500);
+        setTimeout(() => {
+          wheel.style.transition = 'none'; wheel.style.transform = 'rotate(0deg)';
+          setTimeout(() => { wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)'; }, 50);
+        }, 500);
       }, 4000);
     }
 
-    /* ---------------- 7. Daily Treasure Box ---------------- */
-    function openTreasureModal() { $("#treasureModal").classList.add("show"); }
+    /* ---------------- 7. Daily Check-in ---------------- */
+    function openTreasureModal() { renderCheckinBoxes(); $("#treasureModal").classList.add("show"); }
     function closeTreasureModal() { $("#treasureModal").classList.remove("show"); }
 
-    $("#chestBoxBtn").addEventListener("click", async () => {
-      if(!currentUser) return;
+    function renderCheckinBoxes() {
+      if (!currentUser) return;
+      const streak = currentUser.checkinStreak || 0;
+      const wrap = $("#checkinBoxes"); if (!wrap) return;
+      wrap.innerHTML = "";
+      for (let i = 1; i <= 7; i++) {
+        const done = i <= streak;
+        const isNext = i === streak + 1 || (streak >= 7 && i === 1);
+        wrap.innerHTML += `<div class="checkin-box ${done ? 'done' : ''} ${isNext ? 'next' : ''}">
+          <div class="cb-day">วัน ${i}</div><div class="cb-pts">+${CHECKIN_REWARDS[i - 1]}</div>${done ? '<div class="cb-check">✓</div>' : ''}
+        </div>`;
+      }
+    }
+
+    $("#checkinClaimBtn").addEventListener("click", async () => {
+      if (!currentUser) return;
       const now = new Date();
-      if(currentUser.lastClaimed) {
+      let streak = currentUser.checkinStreak || 0;
+      if (currentUser.lastClaimed) {
         const diff = now - currentUser.lastClaimed.toDate();
-        if(diff < 24 * 60 * 60 * 1000) {
+        if (diff < 24 * 60 * 60 * 1000) {
           const remain = Math.ceil((24 * 60 * 60 * 1000 - diff) / (1000 * 60 * 60));
-          $("#treasureMsg").textContent = `⏳ รออีกประมาณ ${remain} ชั่วโมง`;
+          $("#treasureMsg").textContent = `⏳ เช็คอินแล้ววันนี้ กลับมาใหม่อีก ${remain} ชม.`;
           return;
         }
+        if (diff >= 48 * 60 * 60 * 1000) streak = 0;
       }
-      const pts = (Math.random() < 0.8) ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2) + 4;
-      await db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(pts), lastClaimed: new Date() });
-      $("#treasureMsg").textContent = `🎉 ได้รับ +${pts} แต้ม!`;
+      streak = streak >= 7 ? 1 : streak + 1;
+      const pts = CHECKIN_REWARDS[streak - 1];
+      try {
+        await db.collection("users").doc(currentUserDocId).update({
+          points: firebase.firestore.FieldValue.increment(pts), lastClaimed: new Date(), checkinStreak: streak
+        });
+        $("#treasureMsg").textContent = streak === 7
+          ? `🎉 ครบ 7 วัน! รับโบนัสใหญ่ +${pts} แต้ม (เริ่มรอบใหม่พรุ่งนี้)`
+          : `🎉 เช็คอินวันที่ ${streak} สำเร็จ! ได้รับ +${pts} แต้ม`;
+        renderCheckinBoxes();
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     });
 
     function updateQueueTypeUI() {
       const type = $("#queueType").value;
       const btn = $("#btnSubmitBook");
-      if(type === 'vip') btn.innerHTML = "✨ ยืนยันลัดคิว VIP (ใช้ 30 แต้ม / รับ 6 แต้ม) ✨";
+      if (type === 'vip') btn.innerHTML = "✨ ยืนยันลัดคิว VIP (ใช้ 30 แต้ม / รับ 6 แต้ม) ✨";
       else btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี / รับ 3 แต้ม) ✨";
     }
 
-    /* ---------------- 8. Booking & History Logic ---------------- */
+    /* ---------------- 8. Booking & History ---------------- */
     $("#bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      if(!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนจองคิว");
+      if (!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนจองคิว");
       const hasActive = userQueues.some(q => q.targetDate > new Date());
-      if(hasActive) return showCustomAlert("ข้อจำกัด", "❌ คุณมีคิวที่กำลังรออยู่แล้ว");
-      
+      if (hasActive) return showCustomAlert("ข้อจำกัด", "❌ คุณมีคิวที่กำลังรออยู่แล้ว");
+
       const type = $("#queueType").value, isVip = (type === 'vip');
-      if(isVip && (currentUser.points || 0) < 30) return showCustomAlert("แต้มไม่พอ", "แต้มสะสมของคุณไม่พอ (ต้องการ 30 แต้ม)");
+      if (isVip && (currentUser.points || 0) < 30) return showCustomAlert("แต้มไม่พอ", "แต้มสะสมของคุณไม่พอ (ต้องการ 30 แต้ม)");
 
       const payload = {
         uid: currentUser.uid, name: currentUser.name, fullName: currentUser.fullName || '',
@@ -1282,15 +1344,15 @@
 
       try {
         const snap = await db.collection("queues").where("date", "==", payload.date).get();
-        if (!isVip && snap.docs.filter(d=>!d.data().isVip).length >= 5) return showCustomAlert("คิวเต็ม", "คิวปกติสำหรับวันนี้เต็มแล้ว");
+        if (!isVip && snap.docs.filter(d => !d.data().isVip).length >= 5) return showCustomAlert("คิวเต็ม", "คิวปกติสำหรับวันนี้เต็มแล้ว");
 
-        payload.referenceId = (isVip ? "VIP-" : "N-") + Math.random().toString(36).substring(2,8).toUpperCase();
-        
+        payload.referenceId = (isVip ? "VIP-" : "N-") + Math.random().toString(36).substring(2, 8).toUpperCase();
+
         const batch = db.batch(), queueRef = db.collection("queues").doc();
         batch.set(queueRef, payload);
-        if(isVip) batch.update(db.collection("users").doc(currentUserDocId), { points: firebase.firestore.FieldValue.increment(-30) });
+        if (isVip) batch.update(db.collection("users").doc(currentUserDocId), { points: firebase.firestore.FieldValue.increment(-30) });
         await batch.commit();
-        
+
         payload.id = queueRef.id; currentTicket = payload;
         $("#ticketData").innerHTML = `
           <p><b>ผู้ใช้ UID:</b> ${payload.uid} (${payload.name})</p>
@@ -1306,7 +1368,7 @@
     $("#btnIG").addEventListener("click", () => { window.open("https://www.instagram.com/horoscope_1308", "_blank"); });
     $("#btnClosePopup").addEventListener("click", () => { $("#popup").classList.remove("show"); });
     $("#btnPdf").addEventListener("click", () => {
-      if(!currentTicket) return;
+      if (!currentTicket) return;
       const { jsPDF } = window.jspdf; const doc = new jsPDF();
       doc.text("--- Horoscope Ticket ---", 10, 10);
       doc.text(`Ref: ${currentTicket.referenceId} (${currentTicket.isVip ? 'VIP' : 'NORMAL'})`, 10, 20);
@@ -1317,13 +1379,13 @@
 
     function renderHistory() {
       const list = $("#historyList");
-      if(userQueues.length === 0) return list.innerHTML = `<p class="muted">คุณยังไม่มีประวัติการจองคิวในระบบ</p>`;
+      if (userQueues.length === 0) return list.innerHTML = `<p class="muted">คุณยังไม่มีประวัติการจองคิวในระบบ</p>`;
       list.innerHTML = ""; const now = new Date();
-      
-      userQueues.sort((a,b) => b.targetDate - a.targetDate).forEach(q => {
+
+      userQueues.sort((a, b) => b.targetDate - a.targetDate).forEach(q => {
         const d = q.data, isPast = q.targetDate <= now;
         const v = d.isVip ? '<span class="vip-text">⭐ ลัดคิว VIP</span>' : 'คิวปกติ (ฟรี)';
-        if(isPast && !d.rewardClaimed) {
+        if (isPast && !d.rewardClaimed) {
           db.collection("queues").doc(q.id).update({ rewardClaimed: true });
           db.collection("users").doc(currentUserDocId).update({ points: firebase.firestore.FieldValue.increment(d.isVip ? 6 : 3) });
         }
@@ -1343,18 +1405,17 @@
 
     window.saveEditQueue = async () => {
       const newD = $("#editDate").value, newT = $("#editTime").value;
-      if(!newD || !newT) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกวันที่และเวลาใหม่");
-      if(new Date(`${newD}T${newT}:00`) <= new Date()) return showCustomAlert("แจ้งเตือน", "ไม่สามารถเลือกเวลาในอดีตได้");
-      if(editingQueueCount > 0 && (currentUser.points || 0) < 15) return showCustomAlert("แต้มไม่พอ", "แต้มสะสมของคุณไม่พอ (ต้องการ 15 แต้ม)");
-
+      if (!newD || !newT) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกวันที่และเวลาใหม่");
+      if (new Date(`${newD}T${newT}:00`) <= new Date()) return showCustomAlert("แจ้งเตือน", "ไม่สามารถเลือกเวลาในอดีตได้");
+      if (editingQueueCount > 0 && (currentUser.points || 0) < 15) return showCustomAlert("แต้มไม่พอ", "แต้มสะสมของคุณไม่พอ (ต้องการ 15 แต้ม)");
       try {
         const batch = db.batch();
         batch.update(db.collection("queues").doc(editingQueueId), { date: newD, timeSlot: newT, editCount: firebase.firestore.FieldValue.increment(1) });
-        if(editingQueueCount > 0) batch.update(db.collection("users").doc(currentUserDocId), { points: firebase.firestore.FieldValue.increment(-15) });
+        if (editingQueueCount > 0) batch.update(db.collection("users").doc(currentUserDocId), { points: firebase.firestore.FieldValue.increment(-15) });
         await batch.commit();
         showCustomAlert("สำเร็จ", "อัปเดตเวลาจองเรียบร้อยแล้ว!");
         $("#editQueueModal").classList.remove("show");
-      } catch(e) { showCustomAlert("เกิดข้อผิดพลาด", e.message); }
+      } catch (e) { showCustomAlert("เกิดข้อผิดพลาด", e.message); }
     };
 
     /* ---------------- 9. Review System ---------------- */
@@ -1369,9 +1430,9 @@
     }
 
     async function openReviewModal() {
-      if(!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนรีวิว");
+      if (!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนรีวิว");
       const snap = await db.collection("reviews").where("uid", "==", currentUser.uid).get();
-      if(!snap.empty) {
+      if (!snap.empty) {
         const d = snap.docs[0].data();
         selectedStarRating = d.stars || 5; $("#reviewCommentText").value = d.comment || "";
         document.querySelectorAll("#starSelector span").forEach(s => s.classList.toggle("active", parseInt(s.getAttribute("data-star")) <= selectedStarRating));
@@ -1380,24 +1441,23 @@
     }
 
     async function submitUserReview() {
-      if(!currentUser) return;
+      if (!currentUser) return;
       const comment = $("#reviewCommentText").value.trim();
-      if(!comment) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อความความคิดเห็น");
-
+      if (!comment) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อความความคิดเห็น");
       const reviewData = { uid: currentUser.uid, userName: currentUser.name || "สมาชิก", stars: selectedStarRating, comment: comment, age: calculateAge(currentUser.dob), updatedAt: new Date() };
       try {
         const snap = await db.collection("reviews").where("uid", "==", currentUser.uid).get();
-        if(!snap.empty) { await db.collection("reviews").doc(snap.docs[0].id).update(reviewData); showCustomAlert("สำเร็จ", "อัปเดตรีวิวของคุณเรียบร้อยแล้ว"); }
+        if (!snap.empty) { await db.collection("reviews").doc(snap.docs[0].id).update(reviewData); showCustomAlert("สำเร็จ", "อัปเดตรีวิวของคุณเรียบร้อยแล้ว"); }
         else { reviewData.createdAt = new Date(); await db.collection("reviews").add(reviewData); showCustomAlert("สำเร็จ", "ขอบคุณสำหรับการรีวิว!"); }
         $("#reviewModal").classList.remove("show");
-      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     }
 
     function listenGlobalReviews() {
-      if(unsubscribeReviews) unsubscribeReviews();
+      if (unsubscribeReviews) unsubscribeReviews();
       unsubscribeReviews = db.collection("reviews").orderBy("updatedAt", "desc").onSnapshot(snap => {
         const list = $("#reviewsList");
-        if(snap.empty) {
+        if (snap.empty) {
           list.innerHTML = `<p class="muted">ยังไม่มีรีวิวในระบบ เป็นคนแรกที่รีวิวเลย!</p>`;
           $("#avgRatingValue").textContent = "0.0"; $("#avgRatingStars").textContent = "☆☆☆☆☆";
           $("#totalReviewsCount").textContent = "0"; $("#avgReviewerAge").textContent = "0"; return;
@@ -1414,13 +1474,20 @@
       });
     }
 
-    /* ---------------- 10. Admin Popup System ---------------- */
+    /* ---------------- 10. Invite / Referral ---------------- */
+    $("#btnCopyInvite").addEventListener("click", () => {
+      if (!currentUser) return;
+      navigator.clipboard.writeText(currentUser.uid);
+      showCustomAlert("คัดลอกสำเร็จ", `คัดลอกรหัสแนะนำ ${currentUser.uid} เรียบร้อยแล้ว ส่งให้เพื่อนได้เลย!`);
+    });
+
+    /* ---------------- 11. Admin Popup System ---------------- */
     $("#triggerAdmin").addEventListener("click", () => {
       const pass = prompt("กรุณากรอกรหัสผ่านผู้ดูแลระบบ (Admin Password):");
       if (pass === 'horoscope') {
         $("#adminModal").classList.add("show");
         loadAdminQueues(); loadAdminUsers(); loadAdminReviews(); loadAdminTopups(); loadAdminVerifies(); loadAdminMissions();
-      } else if(pass !== null) { showCustomAlert("แจ้งเตือน", "รหัสผ่านไม่ถูกต้อง!"); }
+      } else if (pass !== null) { showCustomAlert("แจ้งเตือน", "รหัสผ่านไม่ถูกต้อง!"); }
     });
 
     window.switchAdminTab = (tabId, el) => {
@@ -1428,6 +1495,12 @@
       document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
       el.classList.add('active'); document.getElementById(tabId).classList.add('active');
     };
+
+    function statusPill(status) {
+      const s = status || 'pending';
+      const label = s === 'approved' ? 'อนุมัติแล้ว' : s === 'rejected' ? 'ปฏิเสธแล้ว' : 'รอตรวจสอบ';
+      return `<span class="status-pill ${s}">${label}</span>`;
+    }
 
     async function loadAdminQueues() {
       const tbody = $("#adminQueueTable tbody"); tbody.innerHTML = "<tr><td colspan='6'>กำลังดึงข้อมูล...</td></tr>";
@@ -1460,8 +1533,11 @@
       const tbody = $("#adminTopupTable tbody"); tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูล...</td></tr>";
       const snap = await db.collection("topups").orderBy("timestamp", "desc").get(); tbody.innerHTML = "";
       snap.forEach(doc => {
-        const d = doc.data();
-        tbody.innerHTML += `<tr><td>UID: ${d.uid}</td><td style="color:var(--gold);">${d.amount} บ.</td><td><img src="${d.slip}" width="50" onclick="window.open('${d.slip}')" style="cursor:pointer;" /></td><td>${d.status}</td><td><button class="btn btn-danger btn-small" onclick="deleteDoc('topups','${doc.id}')">ลบ</button></td></tr>`;
+        const d = doc.data(); const isPending = !d.status || d.status === 'pending';
+        const actions = isPending
+          ? `<button class="btn btn-ok btn-small" onclick="approveTopup('${doc.id}','${d.uid}',${d.amount})">✅ อนุมัติ</button> <button class="btn btn-danger btn-small" onclick="rejectTopup('${doc.id}')">✖ ปฏิเสธ</button> <button class="btn btn-outline btn-small" onclick="deleteDoc('topups','${doc.id}')">ลบ</button>`
+          : `<button class="btn btn-danger btn-small" onclick="deleteDoc('topups','${doc.id}')">ลบ</button>`;
+        tbody.innerHTML += `<tr><td>UID: ${d.uid}</td><td style="color:var(--gold);">${d.amount} บ. (${calcPointsForAmount(d.amount)} แต้ม)</td><td><img src="${d.slip}" width="50" onclick="window.open('${d.slip}')" style="cursor:pointer;" /></td><td>${statusPill(d.status)}</td><td class="admin-actions">${actions}</td></tr>`;
       });
     }
 
@@ -1469,9 +1545,12 @@
       const tbody = $("#adminVerifyTable tbody"); tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูล...</td></tr>";
       const snap = await db.collection("verifies").orderBy("timestamp", "desc").get(); tbody.innerHTML = "";
       snap.forEach(doc => {
-        const d = doc.data();
+        const d = doc.data(); const isPending = !d.status || d.status === 'pending';
         const info = d.type === '<12' ? `<img src="${d.file}" width="50" onclick="window.open('${d.file}')" style="cursor:pointer;" />` : d.data;
-        tbody.innerHTML += `<tr><td>UID: ${d.uid}</td><td>${d.type}</td><td>${info}</td><td>${d.status}</td><td><button class="btn btn-danger btn-small" onclick="deleteDoc('verifies','${doc.id}')">ลบ</button></td></tr>`;
+        const actions = isPending
+          ? `<button class="btn btn-ok btn-small" onclick="approveVerify('${doc.id}','${d.uid}')">✅ อนุมัติ</button> <button class="btn btn-danger btn-small" onclick="rejectVerify('${doc.id}')">✖ ปฏิเสธ</button> <button class="btn btn-outline btn-small" onclick="deleteDoc('verifies','${doc.id}')">ลบ</button>`
+          : `<button class="btn btn-danger btn-small" onclick="deleteDoc('verifies','${doc.id}')">ลบ</button>`;
+        tbody.innerHTML += `<tr><td>UID: ${d.uid}</td><td>${d.type}</td><td>${info}</td><td>${statusPill(d.status)}</td><td class="admin-actions">${actions}</td></tr>`;
       });
     }
 
@@ -1480,25 +1559,80 @@
       const snap = await db.collection("missionProofs").orderBy("timestamp", "desc").get(); tbody.innerHTML = "";
       snap.forEach(doc => {
         const d = doc.data(), mName = missionsDict[d.missionId] ? missionsDict[d.missionId].title : d.missionId;
-        tbody.innerHTML += `<tr><td>UID: ${d.uid}</td><td>${mName}</td><td><img src="${d.file}" width="50" onclick="window.open('${d.file}')" style="cursor:pointer;" /></td><td>${d.status}</td><td><button class="btn btn-danger btn-small" onclick="deleteDoc('missionProofs','${doc.id}')">ลบ</button></td></tr>`;
+        const isPending = !d.status || d.status === 'pending';
+        const actions = isPending
+          ? `<button class="btn btn-ok btn-small" onclick="approveMission('${doc.id}','${d.uid}','${d.missionId}')">✅ อนุมัติ</button> <button class="btn btn-danger btn-small" onclick="rejectMission('${doc.id}')">✖ ปฏิเสธ</button> <button class="btn btn-outline btn-small" onclick="deleteDoc('missionProofs','${doc.id}')">ลบ</button>`
+          : `<button class="btn btn-danger btn-small" onclick="deleteDoc('missionProofs','${doc.id}')">ลบ</button>`;
+        tbody.innerHTML += `<tr><td>UID: ${d.uid}</td><td>${mName}</td><td><img src="${d.file}" width="50" onclick="window.open('${d.file}')" style="cursor:pointer;" /></td><td>${statusPill(d.status)}</td><td class="admin-actions">${actions}</td></tr>`;
       });
     }
 
+    /* ---- Approve / Reject actions ---- */
+    window.approveTopup = async (id, uid, amount) => {
+      try {
+        const pts = calcPointsForAmount(amount);
+        const usnap = await db.collection("users").where("uid", "==", uid).get();
+        const batch = db.batch();
+        batch.update(db.collection("topups").doc(id), { status: 'approved' });
+        if (!usnap.empty) batch.update(usnap.docs[0].ref, { points: firebase.firestore.FieldValue.increment(pts) });
+        await batch.commit();
+        showCustomAlert("อนุมัติสำเร็จ", `เติม ${pts} แต้มให้ผู้ใช้ UID ${uid} เรียบร้อยแล้ว`);
+        loadAdminTopups();
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
+    window.rejectTopup = async (id) => { await db.collection("topups").doc(id).update({ status: 'rejected' }); loadAdminTopups(); };
+
+    window.approveVerify = async (id, uid) => {
+      try {
+        const usnap = await db.collection("users").where("uid", "==", uid).get();
+        const batch = db.batch();
+        batch.update(db.collection("verifies").doc(id), { status: 'approved' });
+        if (!usnap.empty) batch.update(usnap.docs[0].ref, { verified: true });
+        await batch.commit();
+        showCustomAlert("อนุมัติสำเร็จ", `ยืนยันตัวตนผู้ใช้ UID ${uid} เรียบร้อยแล้ว`);
+        loadAdminVerifies();
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
+    window.rejectVerify = async (id) => { await db.collection("verifies").doc(id).update({ status: 'rejected' }); loadAdminVerifies(); };
+
+    window.approveMission = async (id, uid, missionId) => {
+      try {
+        const m = missionsDict[missionId]; if (!m) return;
+        const usnap = await db.collection("users").where("uid", "==", uid).get();
+        const batch = db.batch();
+        batch.update(db.collection("missionProofs").doc(id), { status: 'approved' });
+        if (!usnap.empty) {
+          const uref = usnap.docs[0].ref;
+          const updates = { points: firebase.firestore.FieldValue.increment(m.points) };
+          if (m.type === 'main') {
+            const stepNum = parseInt(missionId.replace('m', ''));
+            const curStep = usnap.docs[0].data().mainMissionStep || 1;
+            if (stepNum === curStep) updates.mainMissionStep = curStep + 1;
+          }
+          batch.update(uref, updates);
+        }
+        await batch.commit();
+        showCustomAlert("อนุมัติสำเร็จ", `มอบ ${m.points} แต้มให้ผู้ใช้ UID ${uid} เรียบร้อยแล้ว`);
+        loadAdminMissions();
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
+    window.rejectMission = async (id) => { await db.collection("missionProofs").doc(id).update({ status: 'rejected' }); loadAdminMissions(); };
+
     window.deleteDoc = async (collection, id) => {
-      if(confirm("แน่ใจหรือไม่ที่จะลบรายการนี้?")) {
+      if (confirm("แน่ใจหรือไม่ที่จะลบรายการนี้?")) {
         await db.collection(collection).doc(id).delete();
-        if(collection==='queues') loadAdminQueues(); if(collection==='users') loadAdminUsers();
-        if(collection==='reviews') loadAdminReviews(); if(collection==='topups') loadAdminTopups();
-        if(collection==='verifies') loadAdminVerifies(); if(collection==='missionProofs') loadAdminMissions();
+        if (collection === 'queues') loadAdminQueues(); if (collection === 'users') loadAdminUsers();
+        if (collection === 'reviews') loadAdminReviews(); if (collection === 'topups') loadAdminTopups();
+        if (collection === 'verifies') loadAdminVerifies(); if (collection === 'missionProofs') loadAdminMissions();
       }
     };
 
     async function viewAdminUserContacts(docId, userName) {
       const doc = await db.collection("users").doc(docId).get();
-      if(!doc.exists) return; const data = doc.data();
+      if (!doc.exists) return; const data = doc.data();
       $("#adminContactUserTitle").textContent = `รายชื่อของ: ${userName} (UID: ${data.uid})`;
       const listContainer = $("#adminContactsList"); listContainer.innerHTML = "";
-      if(data.contacts && data.contacts.length > 0) {
+      if (data.contacts && data.contacts.length > 0) {
         data.contacts.forEach((c, idx) => { listContainer.innerHTML += `<p style="margin:4px 0;"><b>${idx + 1}. ${c.name}:</b> ${c.tel}</p>`; });
       } else { listContainer.innerHTML = "<p class='muted'>ไม่พบข้อมูล</p>"; }
       $("#adminContactsModal").classList.add("show");
@@ -1521,9 +1655,8 @@
         });
         showCustomAlert("สำเร็จ", "แอดมินอัปเดตข้อมูลสมาชิกสำเร็จ!");
         $("#adminEditUserModal").classList.remove("show"); loadAdminUsers();
-      } catch(e) { showCustomAlert("ผิดพลาด", e.message); }
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     };
   </script>
 </body>
 </html>
-
