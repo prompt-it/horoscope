@@ -75,6 +75,18 @@
     .brand-name { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; text-shadow: 0 2px 6px rgba(0,0,0,0.7), 0 0 14px rgba(157,78,221,0.5); background: linear-gradient(90deg,#fff,var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .status-strip { display: flex; gap: 14px; padding: 0 14px 8px; font-size: 11px; color: var(--muted); }
 
+    .nav-toggle-row { display: flex; justify-content: center; align-items: center; padding: 2px 0 0; }
+    .nav-toggle-btn {
+      display: flex; align-items: center; gap: 4px; background: rgba(157,78,221,0.15);
+      border: 1px solid var(--border); color: var(--muted); font-size: 10.5px; font-weight: 600;
+      padding: 2px 14px; border-radius: 0 0 10px 10px; cursor: pointer; user-select: none;
+      transition: all 0.25s ease;
+    }
+    .nav-toggle-btn:hover { color: var(--gold); border-color: var(--gold); }
+    .nav-toggle-btn .chev { transition: transform 0.3s ease; display: inline-block; }
+    .app-nav-wrap { overflow: hidden; max-height: 68px; transition: max-height 0.35s ease; }
+    .app-nav-wrap.collapsed { max-height: 0; }
+    .app-nav-wrap.collapsed + .nav-toggle-row .nav-toggle-btn .chev { transform: rotate(180deg); }
     .app-nav { display: flex; gap: 6px; padding: 0 10px 8px; overflow-x: auto; scrollbar-width: none; }
     .app-nav::-webkit-scrollbar { display: none; }
     .nav-btn {
@@ -170,14 +182,16 @@
     @media (max-width: 400px) { .row { grid-template-columns: 1fr; } }
 
     /* ---------- Daily Check-in Boxes ---------- */
-    .checkin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
+    .checkin-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 14px 0; max-height: 320px; overflow-y: auto; padding-right: 2px; }
     .checkin-box {
-      aspect-ratio: 1; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      aspect-ratio: 1; border-radius: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
       position: relative; transition: all 0.3s ease;
     }
-    .checkin-box .cb-day { font-size: 10px; color: var(--muted); font-weight: 600; }
-    .checkin-box .cb-pts { font-size: 12px; color: var(--gold); font-weight: 700; }
+    .checkin-box .cb-day { font-size: 9px; color: var(--muted); font-weight: 600; }
+    .checkin-box .cb-pts { font-size: 10.5px; color: var(--gold); font-weight: 700; }
+    .checkin-cycle-info { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px; }
+    .checkin-cycle-info b { color: var(--gold); }
     .checkin-box.done { background: linear-gradient(145deg, #1e5c3d, #063620); border-color: var(--ok); }
     .checkin-box.done .cb-pts { color: var(--ok); }
     .checkin-box .cb-check { position: absolute; top: -6px; right: -6px; background: var(--ok); color: #002b1a; width: 18px; height: 18px; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
@@ -306,14 +320,21 @@
       <span id="queueCount">สมาชิกปัจจุบัน: รอโหลดข้อมูล...</span>
       <span id="currentTime">เวลาขณะนี้: --:--:--</span>
     </div>
-    <nav class="app-nav main-system" id="appNav">
-      <div class="nav-btn active" data-page="profile" onclick="showPage('profile')"><span class="ic">👤</span>โปรไฟล์</div>
-      <div class="nav-btn" data-page="booking" onclick="showPage('booking')"><span class="ic">📅</span>จองคิว</div>
-      <div class="nav-btn" data-page="missions" onclick="showPage('missions')"><span class="ic">🎯</span>ภารกิจ</div>
-      <div class="nav-btn" data-page="history" onclick="showPage('history')"><span class="ic">📜</span>ประวัติ</div>
-      <div class="nav-btn" data-page="reviews" onclick="showPage('reviews')"><span class="ic">⭐</span>รีวิว</div>
-      <div class="nav-btn" data-page="invite" onclick="showPage('invite')"><span class="ic">🤝</span>แนะนำเพื่อน</div>
-    </nav>
+    <div class="app-nav-wrap main-system" id="appNavWrap">
+      <nav class="app-nav" id="appNav">
+        <div class="nav-btn active" data-page="profile" onclick="showPage('profile')"><span class="ic">👤</span>โปรไฟล์</div>
+        <div class="nav-btn" data-page="booking" onclick="showPage('booking')"><span class="ic">📅</span>จองคิว</div>
+        <div class="nav-btn" data-page="missions" onclick="showPage('missions')"><span class="ic">🎯</span>ภารกิจ</div>
+        <div class="nav-btn" data-page="history" onclick="showPage('history')"><span class="ic">📜</span>ประวัติ</div>
+        <div class="nav-btn" data-page="reviews" onclick="showPage('reviews')"><span class="ic">⭐</span>รีวิว</div>
+        <div class="nav-btn" data-page="invite" onclick="showPage('invite')"><span class="ic">🤝</span>แนะนำเพื่อน</div>
+      </nav>
+    </div>
+    <div class="nav-toggle-row main-system" id="navToggleRow">
+      <div class="nav-toggle-btn" onclick="toggleNavBar()">
+        <span class="chev">▲</span> <span id="navToggleLabel">ย่อเมนู</span>
+      </div>
+    </div>
   </header>
 
   <!-- Floating Report / Support Button -->
@@ -348,7 +369,8 @@
         2. <b>ลัดคิว VIP</b> ใช้ 30 แต้มสะสม (รับ 6 แต้มหลังดูเสร็จ)<br>
         3. <b>เช็คอินรายวัน</b> สะสมครบ 7 วันรับโบนัสใหญ่<br>
         4. <b>การแก้ไขข้อมูลส่วนตัว</b> แก้ไขฟรีได้ 1 ครั้ง ครั้งถัดไปติดต่อแอดมิน<br>
-        5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b>
+        5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b><br>
+        6. 📌 <b>วิธีใช้เมนูด้านบน:</b> กดแถบ "▲ ย่อเมนู / ▼ ขยายเมนู" ใต้เมนูหลัก เพื่อซ่อนหรือแสดงแถบเมนูโปรไฟล์/จองคิว/ภารกิจ ให้หน้าจอโล่งขึ้นเวลาอ่านเนื้อหา
       </p>
       <button class="btn btn-gold" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
     </div>
@@ -359,7 +381,11 @@
     <div class="modal-content">
       <button class="close-modal-x" onclick="closeTreasureModal()">&times;</button>
       <h2>🎁 เช็คอินรายวัน 🎁</h2>
-      <p class="muted">เช็คอินต่อเนื่องครบ 7 วัน รับโบนัสก้อนใหญ่!</p>
+      <p class="muted">เช็คอินทุกวัน รับวันละ 2 แต้ม ต่อเนื่องครบ 30 วัน (หากขาดเช็คอินติดต่อกัน 3 วัน จะเริ่มนับวันที่ 1 ใหม่)</p>
+      <div class="checkin-cycle-info">
+        <span>ความคืบหน้ารอบนี้: <b id="checkinDayLabel">วันที่ 0 / 30</b></span>
+        <span>รวมแต้มที่ได้ในรอบ: <b id="checkinTotalLabel">0</b> 💎</span>
+      </div>
       <div class="checkin-grid" id="checkinBoxes"></div>
       <p id="treasureMsg" style="font-size: 15px; font-weight: bold; color: var(--gold); margin: 10px 0;">แตะปุ่มด้านล่างเพื่อเช็คอินวันนี้</p>
       <button class="btn btn-gold" id="checkinClaimBtn">✅ เช็คอินวันนี้</button>
@@ -525,6 +551,12 @@
       <div id="tabUsers" class="admin-content">
         <div class="table-responsive"><table id="adminUserTable">
           <thead><tr><th>UID/Username</th><th>ชื่อ-สกุลจริง</th><th>เบอร์โทร</th><th>อายุ</th><th>แต้ม 💎</th><th>รายชื่อ</th><th>จัดการ</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+        <h3 style="color:var(--gold); margin: 18px 0 6px; font-size: 14px;">👤 สมาชิกเก่า (จองก่อนมีระบบล็อคอิน / ยังไม่มีบัญชี)</h3>
+        <p class="muted" style="margin: 0 0 8px;">รายชื่อที่พบจากประวัติการจองคิวเดิม แต่ยังไม่มีบัญชีผู้ใช้งาน — กด "สร้างบัญชี" เพื่อออก Username/รหัสผ่านให้เข้าสู่ระบบได้ โดยข้อมูลการจองเดิมจะเชื่อมโยงกับบัญชีใหม่ทันที (ข้อมูลเดิมไม่หายไปไหน)</p>
+        <div class="table-responsive"><table id="adminLegacyUserTable">
+          <thead><tr><th>ชื่อ</th><th>IG Username</th><th>จำนวนครั้งที่เคยจอง</th><th>จัดการ</th></tr></thead>
           <tbody></tbody>
         </table></div>
       </div>
@@ -815,7 +847,9 @@
       "s2": { title: "โพสต์รีวิวร้าน (ต่อ 1 แฟลตฟอร์ม)", points: 10, type: 'special' },
       "s3": { title: "แนะนำเพื่อนส่วนตัว", points: 5, type: 'special' }
     };
-    const CHECKIN_REWARDS = [2,3,4,5,6,8,15];
+    const CHECKIN_CYCLE_DAYS = 30;
+    const CHECKIN_DAILY_POINTS = 2;
+    const CHECKIN_RESET_AFTER_MS = 3 * 24 * 60 * 60 * 1000; // 3 days missed => restart at day 1
     const WHEEL_LABELS = ["20 แต้ม","15 แต้ม","ดูดวงฟรีตลอดชีวิต","10 แต้ม","5 แต้ม","เสียใจด้วย","1 แต้ม","8 แต้ม"];
 
     /* ---------------- Custom Notification Popup ---------------- */
@@ -836,6 +870,23 @@
       if (btn) btn.classList.add('active');
       $("#mainContainer").scrollTop = 0;
     };
+
+    /* ---------------- Collapsible Nav Bar ---------------- */
+    window.toggleNavBar = () => {
+      const wrap = $("#appNavWrap");
+      const collapsed = wrap.classList.toggle("collapsed");
+      $("#navToggleLabel").textContent = collapsed ? "ขยายเมนู" : "ย่อเมนู";
+      $("#navToggleRow .chev").textContent = collapsed ? "▼" : "▲";
+      localStorage.setItem("nav_collapsed", collapsed ? "1" : "0");
+    };
+    (function restoreNavBarState() {
+      if (localStorage.getItem("nav_collapsed") === "1") {
+        const wrap = $("#appNavWrap");
+        if (wrap) { wrap.classList.add("collapsed"); }
+        const lbl = $("#navToggleLabel"); if (lbl) lbl.textContent = "ขยายเมนู";
+        const chev = document.querySelector("#navToggleRow .chev"); if (chev) chev.textContent = "▼";
+      }
+    })();
 
     /* ---------------- Shop Branding ---------------- */
     db.collection("settings").doc("shop").onSnapshot((doc) => {
@@ -1283,13 +1334,15 @@
       const streak = currentUser.checkinStreak || 0;
       const wrap = $("#checkinBoxes"); if (!wrap) return;
       wrap.innerHTML = "";
-      for (let i = 1; i <= 7; i++) {
+      for (let i = 1; i <= CHECKIN_CYCLE_DAYS; i++) {
         const done = i <= streak;
-        const isNext = i === streak + 1 || (streak >= 7 && i === 1);
+        const isNext = i === streak + 1 || (streak >= CHECKIN_CYCLE_DAYS && i === 1);
         wrap.innerHTML += `<div class="checkin-box ${done ? 'done' : ''} ${isNext ? 'next' : ''}">
-          <div class="cb-day">วัน ${i}</div><div class="cb-pts">+${CHECKIN_REWARDS[i - 1]}</div>${done ? '<div class="cb-check">✓</div>' : ''}
+          <div class="cb-day">วัน ${i}</div><div class="cb-pts">+${CHECKIN_DAILY_POINTS}</div>${done ? '<div class="cb-check">✓</div>' : ''}
         </div>`;
       }
+      const lbl = $("#checkinDayLabel"); if (lbl) lbl.textContent = `วันที่ ${streak} / ${CHECKIN_CYCLE_DAYS}`;
+      const tot = $("#checkinTotalLabel"); if (tot) tot.textContent = streak * CHECKIN_DAILY_POINTS;
     }
 
     $("#checkinClaimBtn").addEventListener("click", async () => {
@@ -1303,16 +1356,17 @@
           $("#treasureMsg").textContent = `⏳ เช็คอินแล้ววันนี้ กลับมาใหม่อีก ${remain} ชม.`;
           return;
         }
-        if (diff >= 48 * 60 * 60 * 1000) streak = 0;
+        // Missed check-in for 3 days or more -> restart the 30-day cycle at day 1
+        if (diff >= CHECKIN_RESET_AFTER_MS) streak = 0;
       }
-      streak = streak >= 7 ? 1 : streak + 1;
-      const pts = CHECKIN_REWARDS[streak - 1];
+      streak = streak >= CHECKIN_CYCLE_DAYS ? 1 : streak + 1;
+      const pts = CHECKIN_DAILY_POINTS;
       try {
         await db.collection("users").doc(currentUserDocId).update({
           points: firebase.firestore.FieldValue.increment(pts), lastClaimed: new Date(), checkinStreak: streak
         });
-        $("#treasureMsg").textContent = streak === 7
-          ? `🎉 ครบ 7 วัน! รับโบนัสใหญ่ +${pts} แต้ม (เริ่มรอบใหม่พรุ่งนี้)`
+        $("#treasureMsg").textContent = streak === CHECKIN_CYCLE_DAYS
+          ? `🎉 ครบ ${CHECKIN_CYCLE_DAYS} วัน! ได้รับ +${pts} แต้ม (เริ่มรอบใหม่พรุ่งนี้)`
           : `🎉 เช็คอินวันที่ ${streak} สำเร็จ! ได้รับ +${pts} แต้ม`;
         renderCheckinBoxes();
       } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
@@ -1513,12 +1567,86 @@
 
     async function loadAdminUsers() {
       const tbody = $("#adminUserTable tbody"); tbody.innerHTML = "<tr><td colspan='7'>กำลังดึงข้อมูล...</td></tr>";
-      const snap = await db.collection("users").orderBy("createdAt", "desc").get(); tbody.innerHTML = "";
-      snap.forEach(doc => {
+      // NOTE: no orderBy() here on purpose — Firestore silently excludes any document
+      // missing the sort field, which was hiding older member accounts that predate
+      // the "createdAt" field. We fetch everyone, then sort client-side instead.
+      const snap = await db.collection("users").get();
+      const docs = snap.docs.slice().sort((a, b) => {
+        const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+        const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+      tbody.innerHTML = "";
+      docs.forEach(doc => {
         const d = doc.data();
         tbody.innerHTML += `<tr><td><b>UID: ${d.uid}</b><br>${d.username}</td><td>${d.fullName || '-'}<br><small>(${d.name || '-'})</small></td><td>${d.phone || '-'}</td><td>${d.dob || '-'}<br><b>อายุ: ${calculateAge(d.dob)} ปี</b></td><td style="color:var(--gold); font-weight:bold;">${d.points || 0}</td><td>${(d.contacts && d.contacts.length > 0) ? `<button class="btn btn-gold btn-small" onclick="viewAdminUserContacts('${doc.id}', '${d.name}')">📞 รายชื่อ (${d.contacts.length})</button>` : '<span class="muted">ไม่มี</span>'}</td><td><button class="btn btn-gold btn-small" onclick="openAdminEditUser('${doc.id}', '${d.username}', '${d.name || ''}', '${d.fullName || ''}', '${d.phone || ''}', '${d.dob || ''}', ${d.points || 0}, ${d.canEditProfile !== undefined ? d.canEditProfile : 1})">⚙️</button> <button class="btn btn-danger btn-small" onclick="deleteDoc('users','${doc.id}')">ลบ</button></td></tr>`;
       });
+      loadAdminLegacyUsers();
     }
+
+    /* Old members who only ever appear in "queues" (booked before the login system
+       existed, or whose uid doesn't match any account) get grouped here so the admin
+       can still see them and, if needed, issue them a real account. */
+    let legacyUsersCache = [];
+    async function loadAdminLegacyUsers() {
+      const tbody = $("#adminLegacyUserTable tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "<tr><td colspan='4'>กำลังดึงข้อมูล...</td></tr>";
+      const [queueSnap, userSnap] = await Promise.all([
+        db.collection("queues").get(),
+        db.collection("users").get()
+      ]);
+      const knownUids = new Set();
+      userSnap.forEach(u => { const uid = u.data().uid; if (uid) knownUids.add(String(uid)); });
+
+      const groups = {};
+      queueSnap.forEach(doc => {
+        const d = doc.data();
+        const hasAccount = d.uid && knownUids.has(String(d.uid));
+        if (hasAccount) return;
+        const key = (d.name || 'ไม่ระบุชื่อ') + '||' + (d.igUsername || '');
+        if (!groups[key]) groups[key] = { name: d.name || 'ไม่ระบุชื่อ', ig: d.igUsername || '-', count: 0 };
+        groups[key].count++;
+      });
+
+      legacyUsersCache = Object.values(groups);
+      tbody.innerHTML = "";
+      if (legacyUsersCache.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='4' class='muted'>ไม่พบสมาชิกเก่าที่ตกหล่น — ข้อมูลครบถ้วนแล้ว</td></tr>";
+        return;
+      }
+      legacyUsersCache.forEach((g, idx) => {
+        tbody.innerHTML += `<tr><td>${g.name}</td><td>${g.ig}</td><td>${g.count} ครั้ง</td><td><button class="btn btn-gold btn-small" onclick="convertLegacyToAccount(${idx})">➕ สร้างบัญชี</button></td></tr>`;
+      });
+    }
+
+    window.convertLegacyToAccount = async (idx) => {
+      const g = legacyUsersCache[idx];
+      if (!g) return;
+      const suggestedUser = (g.ig || g.name || 'user').replace(/[^a-zA-Z0-9._]/g, '').toLowerCase() || ('user' + Date.now());
+      const username = prompt("ตั้ง Username ให้สมาชิกเก่ารายนี้:", suggestedUser);
+      if (!username) return;
+      const password = prompt("ตั้งรหัสผ่านเริ่มต้นให้สมาชิก (แจ้งให้สมาชิกเปลี่ยนภายหลัง):", "123456");
+      if (!password) return;
+      try {
+        const check = await db.collection("users").where("username", "==", username).get();
+        if (!check.empty) return showCustomAlert("แจ้งเตือน", "Username นี้มีผู้ใช้งานแล้ว กรุณาลองใหม่");
+        const uid = Math.floor(100000 + Math.random() * 900000).toString();
+        const newUserRef = await db.collection("users").add({
+          uid, username, password, name: g.name, fullName: g.name, phone: '', dob: '',
+          points: 0, canEditProfile: 1, avatar: '', location: 'สร้างโดยแอดมิน (สมาชิกเก่า)', createdAt: new Date(),
+          verified: false, mainMissionStep: 1, spinCount: 0, checkinStreak: 0,
+          referredBy: '', referredCount: 0, migratedFromLegacy: true
+        });
+        // Link every old booking that matches this legacy member to the new account
+        const queueSnap = await db.collection("queues").where("name", "==", g.name).where("igUsername", "==", g.ig === '-' ? '' : g.ig).get();
+        const batch = db.batch();
+        queueSnap.forEach(doc => { if (!doc.data().uid) batch.update(doc.ref, { uid }); });
+        await batch.commit();
+        showCustomAlert("สำเร็จ", `สร้างบัญชีให้ ${g.name} แล้ว\nUID: ${uid}\nUsername: ${username}\nรหัสผ่าน: ${password}\n\nประวัติการจองเดิมเชื่อมโยงกับบัญชีนี้เรียบร้อย`);
+        loadAdminUsers();
+      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
+    };
 
     async function loadAdminReviews() {
       const tbody = $("#adminReviewTable tbody"); tbody.innerHTML = "<tr><td colspan='5'>กำลังดึงข้อมูล...</td></tr>";
@@ -1620,43 +1748,4 @@
 
     window.deleteDoc = async (collection, id) => {
       if (confirm("แน่ใจหรือไม่ที่จะลบรายการนี้?")) {
-        await db.collection(collection).doc(id).delete();
-        if (collection === 'queues') loadAdminQueues(); if (collection === 'users') loadAdminUsers();
-        if (collection === 'reviews') loadAdminReviews(); if (collection === 'topups') loadAdminTopups();
-        if (collection === 'verifies') loadAdminVerifies(); if (collection === 'missionProofs') loadAdminMissions();
-      }
-    };
-
-    async function viewAdminUserContacts(docId, userName) {
-      const doc = await db.collection("users").doc(docId).get();
-      if (!doc.exists) return; const data = doc.data();
-      $("#adminContactUserTitle").textContent = `รายชื่อของ: ${userName} (UID: ${data.uid})`;
-      const listContainer = $("#adminContactsList"); listContainer.innerHTML = "";
-      if (data.contacts && data.contacts.length > 0) {
-        data.contacts.forEach((c, idx) => { listContainer.innerHTML += `<p style="margin:4px 0;"><b>${idx + 1}. ${c.name}:</b> ${c.tel}</p>`; });
-      } else { listContainer.innerHTML = "<p class='muted'>ไม่พบข้อมูล</p>"; }
-      $("#adminContactsModal").classList.add("show");
-    }
-
-    window.openAdminEditUser = (id, username, name, fullName, phone, dob, points, canEdit) => {
-      $("#admEditDocId").value = id; $("#admEditUsername").value = username; $("#admEditName").value = name;
-      $("#admEditFullName").value = fullName; $("#admEditPhone").value = phone; $("#admEditDob").value = dob;
-      $("#admEditPoints").value = points; $("#admEditCanEdit").value = canEdit;
-      $("#adminEditUserModal").classList.add("show");
-    };
-
-    window.saveAdminEditedUser = async () => {
-      const id = $("#admEditDocId").value;
-      try {
-        await db.collection("users").doc(id).update({
-          name: $("#admEditName").value.trim(), fullName: $("#admEditFullName").value.trim(),
-          phone: $("#admEditPhone").value.trim(), dob: $("#admEditDob").value,
-          points: parseInt($("#admEditPoints").value) || 0, canEditProfile: parseInt($("#admEditCanEdit").value) || 0
-        });
-        showCustomAlert("สำเร็จ", "แอดมินอัปเดตข้อมูลสมาชิกสำเร็จ!");
-        $("#adminEditUserModal").classList.remove("show"); loadAdminUsers();
-      } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
-    };
-  </script>
-</body>
-</html>
+        await db.collection(coll
