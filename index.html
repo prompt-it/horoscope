@@ -352,29 +352,22 @@
     .checkin-box-sm.next { border-color: var(--gold); box-shadow: var(--glow-gold); animation: chestPulse 1.8s infinite alternate; }
     .checkin-box-sm .cb-check { position: absolute; top: -5px; right: -5px; background: var(--ok); color: #002b1a; width: 14px; height: 14px; border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
 
-    /* ---------- Shop / Products ---------- */
-    .shop-cat-tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; scrollbar-width: none; }
-    .shop-cat-tabs::-webkit-scrollbar { display: none; }
-    .shop-cat-tab { flex: 0 0 auto; padding: 8px 14px; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.25s ease; }
-    .shop-cat-tab.active { background: linear-gradient(145deg, var(--primary-2), rgba(90,24,154,0.4)); border-color: var(--gold); color: #fff; }
-    .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .product-card { background: rgba(0,0,0,0.65); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: all 0.25s ease; }
-    .product-card:hover { border-color: var(--gold); transform: translateY(-2px); }
-    .product-card img { width: 100%; aspect-ratio: 1; object-fit: cover; background: #111; display: block; }
-    .product-card .p-body { padding: 10px; text-align: left; flex: 1; display: flex; flex-direction: column; }
-    .product-card .p-name { font-size: 12.5px; font-weight: 700; color: #fff; margin: 0 0 4px; }
-    .product-card .p-desc { font-size: 10.5px; color: var(--muted); margin: 0 0 6px; flex: 1; }
-    .product-card .p-price { font-size: 13.5px; font-weight: 800; color: var(--gold); margin: 0 0 6px; }
-    .product-status { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; display: inline-block; margin-bottom: 6px; width: fit-content; }
-    .product-status.soldout { background: rgba(255,77,77,0.15); color: var(--danger); border: 1px solid var(--danger); }
-    .product-status.available { background: rgba(0,255,170,0.15); color: var(--ok); border: 1px solid var(--ok); }
-    .empty-cat-msg { text-align: center; padding: 34px 10px; color: var(--muted); font-size: 13px; grid-column: 1 / -1; }
-    .cart-fab { position: fixed; bottom: 130px; right: 18px; z-index: 999; width: 46px; height: 46px; border-radius: 50%; background: rgba(122,90,0,0.9); border: 1.5px solid var(--gold); box-shadow: var(--glow-gold); display: none; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; }
-    .cart-fab.show { display: flex; }
-    .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 10px; font-weight: 800; width: 17px; height: 17px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(157,78,221,0.2); font-size: 12.5px; text-align: left; }
-    .cart-item-row .qty-ctrl { display: flex; align-items: center; gap: 6px; }
-    .cart-item-row .qty-ctrl button { width: 24px; padding: 2px; border-radius: 6px; }
+    /* ---------- Activities ---------- */
+    .activity-list { display: flex; flex-direction: column; gap: 14px; }
+    .activity-card { background: linear-gradient(160deg, rgba(30,4,50,0.85), rgba(5,0,10,0.9)); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; transition: all 0.25s ease; text-align: left; }
+    .activity-card:hover { border-color: var(--gold); box-shadow: var(--glow); transform: translateY(-2px); }
+    .activity-card .poster-wrap { width: 100%; aspect-ratio: 16/9; background: #100018; overflow: hidden; position: relative; }
+    .activity-card .poster-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .activity-card .poster-wrap .no-poster { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 34px; opacity: 0.35; }
+    .activity-card .a-body { padding: 14px 16px 16px; }
+    .activity-card .a-title { margin: 0 0 6px; font-size: 15.5px; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(157,78,221,0.5); }
+    .activity-card .a-date { font-size: 10.5px; color: var(--muted); margin-bottom: 8px; display: block; }
+    .activity-card .a-content { font-size: 12.5px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+    .empty-activity-msg { text-align: center; padding: 40px 10px; color: var(--muted); font-size: 13px; }
+    .admin-activity-row { display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.55); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 8px; text-align: left; }
+    .admin-activity-row img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; background: #111; flex: 0 0 auto; }
+    .admin-activity-row .info { flex: 1; font-size: 12px; }
+    .admin-activity-row .info b { color: var(--gold); }
 
     /* ---------- Admin extras ---------- */
     .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 16px; }
@@ -434,6 +427,23 @@
       cursor: pointer; font-size: 14px; transition: all 0.25s ease;
     }
     .aichat-clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    .aichat-urgent-row { display: flex; gap: 8px; margin: 10px 0 2px; }
+    .aichat-urgent-btn, .aichat-topup-btn {
+      flex: 1 1 auto; border: none; border-radius: 12px; padding: 9px 8px; font-size: 11.5px; font-weight: 700;
+      cursor: pointer; transition: all 0.25s ease; text-align: center; font-family: 'Prompt','Sarabun',sans-serif;
+    }
+    .aichat-urgent-btn { background: linear-gradient(90deg,#5a0000,#ff2d2d); color: #fff; box-shadow: 0 0 14px rgba(255,45,45,0.45); animation: pulseRed 2.2s infinite; }
+    .aichat-topup-btn { background: linear-gradient(145deg, var(--gold), var(--gold-light)); color: #2a1a00; box-shadow: var(--glow-gold); }
+    .aichat-urgent-btn:active, .aichat-topup-btn:active { transform: scale(0.97); }
+
+    .aichat-suggest-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+    .aichat-suggest-chip {
+      flex: 0 0 auto; padding: 6px 11px; border-radius: 14px; font-size: 11px; font-weight: 600;
+      background: rgba(255,215,0,0.08); border: 1px dashed var(--gold); color: var(--gold-light);
+      cursor: pointer; transition: all 0.2s ease; user-select: none;
+    }
+    .aichat-suggest-chip:hover { background: rgba(255,215,0,0.18); transform: translateY(-1px); }
 
     .aichat-topics { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0 2px; padding-bottom: 4px; scrollbar-width: none; }
     .aichat-topics::-webkit-scrollbar { display: none; }
@@ -511,8 +521,8 @@
       <div class="nav-btn active" data-page="profile" onclick="showPage('profile')"><span class="ic">👤</span>โปรไฟล์</div>
       <div class="nav-btn" data-page="aichat" onclick="showPage('aichat')"><span class="ic">🔮</span>แม่หมอ AI</div>
       <div class="nav-btn" data-page="booking" onclick="showPage('booking')"><span class="ic">📅</span>จองคิว</div>
-      <div class="nav-btn" data-page="shop" onclick="showPage('shop')"><span class="ic">🛍️</span>ร้านค้า</div>
       <div class="nav-btn" data-page="missions" onclick="showPage('missions')"><span class="ic">🎯</span>ภารกิจ</div>
+      <div class="nav-btn" data-page="activities" onclick="showPage('activities')"><span class="ic">📢</span>กิจกรรม</div>
       <div class="nav-btn" data-page="history" onclick="showPage('history')"><span class="ic">📜</span>ประวัติ</div>
       <div class="nav-btn" data-page="reviews" onclick="showPage('reviews')"><span class="ic">⭐</span>รีวิว</div>
       <div class="nav-btn" data-page="invite" onclick="showPage('invite')"><span class="ic">🤝</span>แนะนำเพื่อน</div>
@@ -530,11 +540,6 @@
   <!-- Floating Music Toggle -->
   <div class="music-fab main-system" id="musicFab" onclick="toggleMusic()" title="เล่น/หยุดเพลง">🎵</div>
   <audio id="bgMusicPlayer" style="display:none;"></audio>
-
-  <!-- Floating Cart Button -->
-  <div class="cart-fab main-system" id="cartFab" onclick="openCheckoutModal()" title="ตะกร้าสินค้า">
-    🛒<span class="cart-badge" id="cartBadge" style="display:none;">0</span>
-  </div>
 
   <!-- Custom Alert / Toast Modal -->
   <div class="modal-overlay" id="customAlertModal" style="z-index: 10500;">
@@ -564,7 +569,7 @@
         3. <b>เช็คอินรายวัน</b> รับ 2 แต้มทุกวัน นับรอบทุก 3 วัน สรุปผลรวม 30 วัน<br>
         4. <b>การแก้ไขข้อมูลส่วนตัว</b> แก้ไขฟรีได้ 1 ครั้ง ครั้งถัดไปติดต่อแอดมิน<br>
         5. เมื่อได้ใบคิว <b>ต้องแคปหน้าจอส่งเข้า IG ทันที</b><br>
-        6. เลือกซื้อสินค้าได้ที่หน้า <b>ร้านค้า</b> (คิดค่าจัดส่งอัตโนมัติ +50 บาท/ออเดอร์)
+        6. หากต้องการปรึกษาด่วน สามารถกด <b>ลัดคิวพิเศษ (VIP)</b> ได้ที่หน้าจองคิว โดยใช้แต้มสะสม
       </p>
       <button class="btn btn-gold" id="acceptRulesBtn">รับทราบและยอมรับกฎ</button>
     </div>
@@ -686,25 +691,6 @@
     </div>
   </div>
 
-  <!-- Popup Cart / Checkout -->
-  <div class="modal-overlay" id="cartModal">
-    <div class="modal-content">
-      <button class="close-modal-x" onclick="$('#cartModal').classList.remove('show')">&times;</button>
-      <h2>🛒 ตะกร้าสินค้า</h2>
-      <div id="cartItemsList" style="margin-bottom:10px;"><p class="muted">ยังไม่มีสินค้าในตะกร้า</p></div>
-      <p style="text-align:right; font-size:13px;">ค่าจัดส่ง: <b style="color:var(--gold);">+50 บาท</b></p>
-      <p style="text-align:right; font-size:17px; font-weight:800; color:var(--gold);">ยอดรวมทั้งหมด: <span id="cartGrandTotal">0</span> บาท</p>
-      <div id="cartCheckoutForm" style="margin-top:10px;">
-        <label>ชื่อ-นามสกุลจริง</label><input type="text" id="orderFullName" placeholder="ชื่อ-นามสกุลผู้รับ" />
-        <label>ที่อยู่จัดส่ง</label><textarea id="orderAddress" rows="3" placeholder="บ้านเลขที่ / ตำบล / อำเภอ / จังหวัด / รหัสไปรษณีย์"></textarea>
-        <label>เบอร์โทร / ช่องทางติดต่อ</label><input type="text" id="orderContact" placeholder="08xxxxxxxx หรือ IG/Line" />
-        <label>แนบสลิปชำระเงิน</label>
-        <input type="file" id="orderSlipImg" accept="image/*" />
-        <button class="btn btn-gold" onclick="submitOrder()" style="margin-top:15px; font-size:15px; padding:12px;">✅ ยืนยันสั่งซื้อ</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Popup Review Add/Edit -->
   <div class="modal-overlay" id="reviewModal">
     <div class="modal-content">
@@ -743,15 +729,14 @@
       <div class="admin-stats" id="adminStatsBar">
         <div class="admin-stat-card"><div class="num" id="statUsers">0</div><div class="lbl">สมาชิกทั้งหมด</div></div>
         <div class="admin-stat-card"><div class="num" id="statQueues">0</div><div class="lbl">คิวทั้งหมด</div></div>
-        <div class="admin-stat-card"><div class="num" id="statOrders">0</div><div class="lbl">ออเดอร์ค้างจ่าย</div></div>
+        <div class="admin-stat-card"><div class="num" id="statActivities">0</div><div class="lbl">กิจกรรมทั้งหมด</div></div>
         <div class="admin-stat-card"><div class="num" id="statPending">0</div><div class="lbl">รายการรออนุมัติ</div></div>
       </div>
 
       <div class="admin-tabs">
         <div class="admin-tab active" onclick="switchAdminTab('tabQueues', this)">📅 คิวทั้งหมด</div>
         <div class="admin-tab" onclick="switchAdminTab('tabUsers', this)">👥 สมาชิก</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabProducts', this)">🛍️ สินค้า/หมวดหมู่</div>
-        <div class="admin-tab" onclick="switchAdminTab('tabOrders', this)">📦 ออเดอร์</div>
+        <div class="admin-tab" onclick="switchAdminTab('tabActivities', this)">📢 กิจกรรม</div>
         <div class="admin-tab" onclick="switchAdminTab('tabReviews', this)">⭐ รีวิว</div>
         <div class="admin-tab" onclick="switchAdminTab('tabTopups', this)">💎 เติมเงิน</div>
         <div class="admin-tab" onclick="switchAdminTab('tabVerifies', this)">🛡️ ยืนยันตัวตน</div>
@@ -778,29 +763,14 @@
         </table></div>
       </div>
 
-      <div id="tabProducts" class="admin-content">
-        <div class="admin-subblock">
-          <h4>📂 หมวดหมู่สินค้า</h4>
-          <div class="cat-chip-row" id="adminCatChipRow"><span class="muted">ยังไม่มีหมวดหมู่</span></div>
-          <div class="row">
-            <input type="text" id="newCatName" placeholder="ชื่อหมวดหมู่ใหม่" />
-            <button class="btn btn-gold" onclick="addShopCategory()">+ เพิ่มหมวดหมู่</button>
-          </div>
-        </div>
+      <div id="tabActivities" class="admin-content">
         <div class="admin-subblock">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h4 style="margin:0;">🛍️ รายการสินค้า</h4>
-            <button class="btn btn-gold btn-small" onclick="openAdminProductModal()">+ เพิ่มสินค้าใหม่</button>
+            <h4 style="margin:0;">📢 กิจกรรมทั้งหมด</h4>
+            <button class="btn btn-gold btn-small" onclick="openAdminActivityModal()">+ เพิ่มกิจกรรมใหม่</button>
           </div>
-          <div id="adminProductList"><p class="muted">ยังไม่มีสินค้า</p></div>
+          <div id="adminActivityList"><p class="muted">ยังไม่มีกิจกรรม</p></div>
         </div>
-      </div>
-
-      <div id="tabOrders" class="admin-content">
-        <div class="table-responsive"><table id="adminOrderTable">
-          <thead><tr><th>UID/ผู้สั่ง</th><th>รายการ</th><th>ยอดรวม</th><th>สลิป/ที่อยู่</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
-          <tbody></tbody>
-        </table></div>
       </div>
 
       <div id="tabReviews" class="admin-content">
@@ -903,28 +873,25 @@
     </div>
   </div>
 
-  <!-- Popup Admin Add/Edit Product -->
-  <div class="modal-overlay" id="adminProductModal">
+  <!-- Popup Admin Add/Edit Activity -->
+  <div class="modal-overlay" id="adminActivityModal">
     <div class="modal-content">
-      <button class="close-modal-x" onclick="$('#adminProductModal').classList.remove('show')">&times;</button>
-      <h2>🛍️ เพิ่ม/แก้ไขสินค้า</h2>
-      <input type="hidden" id="pmDocId" />
-      <label>หมวดหมู่</label>
-      <select id="pmCategory"></select>
-      <label>ชื่อสินค้า</label><input type="text" id="pmName" placeholder="ชื่อสินค้า" />
-      <label>ราคา (บาท)</label><input type="number" id="pmPrice" placeholder="0" min="0" />
-      <label>รายละเอียดสินค้า</label><textarea id="pmDesc" rows="3" placeholder="รายละเอียดสินค้า"></textarea>
-      <label>สถานะสินค้า</label>
-      <select id="pmStatus">
-        <option value="available">พร้อมจำหน่าย</option>
-        <option value="soldout">สินค้าหมด</option>
+      <button class="close-modal-x" onclick="$('#adminActivityModal').classList.remove('show')">&times;</button>
+      <h2>📢 เพิ่ม/แก้ไขกิจกรรม</h2>
+      <input type="hidden" id="actDocId" />
+      <label>หัวข้อกิจกรรม</label><input type="text" id="actTitle" placeholder="เช่น โปรโมชั่นพิเศษเดือนนี้" />
+      <label>เนื้อหา/รายละเอียดกิจกรรม</label><textarea id="actContent" rows="5" placeholder="รายละเอียดกิจกรรม เงื่อนไข ระยะเวลา ฯลฯ"></textarea>
+      <label>สถานะ</label>
+      <select id="actStatus">
+        <option value="active">เปิดใช้งาน (แสดงผล)</option>
+        <option value="hidden">ซ่อนชั่วคราว</option>
       </select>
-      <label>รูปภาพสินค้า</label><br/>
-      <img id="pmImgPreview" class="logo-preview-sm" style="border-radius:10px; width:80px; height:80px; display:none;" />
-      <input type="file" id="pmImgInput" accept="image/*" />
+      <label>โปสเตอร์กิจกรรม</label><br/>
+      <img id="actImgPreview" class="logo-preview-sm" style="border-radius:10px; width:100%; max-width:260px; height:auto; display:none; margin-bottom:8px;" />
+      <input type="file" id="actImgInput" accept="image/*" />
       <div class="row" style="margin-top:15px;">
-        <button class="btn btn-gold" onclick="saveAdminProduct()">บันทึกสินค้า</button>
-        <button class="btn btn-danger" onclick="$('#adminProductModal').classList.remove('show')">ยกเลิก</button>
+        <button class="btn btn-gold" onclick="saveAdminActivity()">บันทึกกิจกรรม</button>
+        <button class="btn btn-danger" onclick="$('#adminActivityModal').classList.remove('show')">ยกเลิก</button>
       </div>
     </div>
   </div>
@@ -992,8 +959,8 @@
               <div class="qa-btn" onclick="openTreasureModal()"><span class="ic">🎁</span><span class="lbl">เช็คอินรายวัน</span></div>
               <div class="qa-btn" onclick="$('#gachaModal').classList.add('show')"><span class="ic">🎡</span><span class="lbl">เสี่ยงดวง</span></div>
               <div class="qa-btn" onclick="$('#topupModal').classList.add('show')"><span class="ic">💎</span><span class="lbl">เติมแต้ม VIP</span></div>
-              <div class="qa-btn" onclick="showPage('shop')"><span class="ic">🛍️</span><span class="lbl">ร้านค้า</span></div>
               <div class="qa-btn" onclick="showPage('missions')"><span class="ic">🎯</span><span class="lbl">ภารกิจ</span></div>
+              <div class="qa-btn" onclick="showPage('activities')"><span class="ic">📢</span><span class="lbl">กิจกรรม</span></div>
               <div class="qa-btn danger" onclick="logout()"><span class="ic">🚪</span><span class="lbl">ออกจากระบบ</span></div>
             </div>
           </div>
@@ -1018,19 +985,25 @@
             <div class="aichat-header">
               <div class="aichat-avatar">🔮</div>
               <div class="aichat-header-text">
-                <h2 class="title" style="margin:0;">แม่หมอ AI</h2>
+                <h2 class="title" style="margin:0;">แม่หมอ AI ที่ปรึกษาชีวิต</h2>
                 <span class="aichat-status"><span class="dot-online"></span>พร้อมรับฟังตลอด 24 ชม.</span>
               </div>
               <button class="aichat-clear-btn" onclick="clearMaehmorChat()" title="เริ่มบทสนทนาใหม่">🗑️</button>
             </div>
-            <p class="muted" style="margin-top:2px;">ระบายปัญหาชีวิต ความรัก การงาน การเงิน หรือเรื่องทั่วไปกับแม่หมอได้เลยจ้ะ (คำแนะนำเบื้องต้นจาก AI เพื่อความบันเทิง ไม่ใช่การพยากรณ์ที่แม่นยำ 100%)</p>
+            <p class="muted" style="margin-top:2px;">ระบายปัญหาชีวิตประจำวัน ความรัก การงาน การเงิน ครอบครัว หรือความเครียด แล้วแม่หมอ AI จะช่วยวิเคราะห์และแนะนำแนวทางแก้ไขอย่างมีเหตุผลให้จ้ะ (คำแนะนำเบื้องต้นจาก AI เพื่อเป็นแนวทาง ไม่ใช่การวินิจฉัยทางการแพทย์หรือจิตวิทยาโดยผู้เชี่ยวชาญ)</p>
+
+            <div class="aichat-urgent-row" id="aichatUrgentRow">
+              <button class="aichat-urgent-btn" onclick="goToUrgentBooking()">🚨 ปรึกษาด่วน ลัดคิว VIP (ใช้แต้ม)</button>
+              <button class="aichat-topup-btn" onclick="$('#topupModal').classList.add('show')">💎 เติมแต้ม</button>
+            </div>
 
             <div class="aichat-topics" id="aichatTopics">
               <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องความรัก')">💞 ความรัก</div>
               <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องการงาน')">💼 การงาน</div>
               <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องการเงิน')">💰 การเงิน</div>
-              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องสุขภาพ')">🌿 สุขภาพ</div>
-              <div class="aichat-chip" onclick="sendMaehmorQuick('ดวงวันนี้')">🌟 ดวงวันนี้</div>
+              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องครอบครัว')">👨‍👩‍👧 ครอบครัว</div>
+              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องสุขภาพใจ')">🌿 สุขภาพใจ</div>
+              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องความเครียด')">😮‍💨 ความเครียด</div>
             </div>
 
             <div class="aichat-window" id="aichatWindow"></div>
@@ -1039,6 +1012,8 @@
               <div class="aichat-avatar-sm">🔮</div>
               <div class="typing-dots"><span></span><span></span><span></span></div>
             </div>
+
+            <div class="aichat-suggest-row" id="aichatSuggestRow"></div>
 
             <div class="aichat-input-row">
               <textarea id="aichatInput" rows="1" placeholder="พิมพ์เล่าปัญหาให้แม่หมอฟัง..." onkeydown="handleMaehmorKey(event)"></textarea>
@@ -1094,18 +1069,6 @@
           </section>
         </div>
 
-        <!-- PAGE: Shop -->
-        <div class="page" id="page-shop">
-          <section class="card">
-            <h2 class="title">🛍️ ร้านค้าออนไลน์</h2>
-            <p class="muted">ค่าจัดส่งคิดอัตโนมัติ +50 บาทต่อออเดอร์</p>
-            <div class="shop-cat-tabs" id="shopCatTabs"></div>
-            <div class="product-grid" id="shopProductGrid">
-              <p class="empty-cat-msg">กำลังโหลดสินค้า...</p>
-            </div>
-          </section>
-        </div>
-
         <!-- PAGE: Missions -->
         <div class="page" id="page-missions">
           <section class="card" id="missionSection">
@@ -1117,6 +1080,17 @@
             <h3 style="color:var(--gold); font-size: 13.5px; margin-top:15px;">🌟 ภารกิจพิเศษ</h3>
             <div id="missionListSpecial"></div>
             <input type="file" id="missionProofImg" style="display:none;" accept="image/*" />
+          </section>
+        </div>
+
+        <!-- PAGE: Activities -->
+        <div class="page" id="page-activities">
+          <section class="card">
+            <h2 class="title">📢 กิจกรรมและข่าวสาร</h2>
+            <p class="muted">ติดตามกิจกรรม โปรโมชั่น และข่าวสารล่าสุดจากร้านได้ที่นี่</p>
+            <div class="activity-list" id="activityListWrap">
+              <p class="muted">กำลังโหลดกิจกรรม...</p>
+            </div>
           </section>
         </div>
 
@@ -1198,10 +1172,7 @@
     let activeMissionId = null;
 
     /* ---- New feature globals ---- */
-    let shopCategories = {};
-    let shopProducts = {};
-    let activeShopCatId = null;
-    let cart = [];
+    let activitiesCache = {};
     let closedDatesCache = [];
     let adminCalDate = new Date();
     let musicTracks = [];
@@ -1277,208 +1248,83 @@
       if (sel) sel.value = catName;
     };
 
-    /* ---------------- Shop: Categories & Products (member view) ---------------- */
-    db.collection("shopCategories").orderBy("name").onSnapshot(snap => {
-      shopCategories = {};
-      snap.forEach(doc => shopCategories[doc.id] = doc.data());
-      renderShopCategoryTabs();
-      renderAdminCategoryChips();
-      renderAdminProductCategorySelect();
+    /* ---------------- Activities: member view ---------------- */
+    db.collection("activities").orderBy("createdAt", "desc").onSnapshot(snap => {
+      activitiesCache = {};
+      snap.forEach(doc => activitiesCache[doc.id] = doc.data());
+      renderActivityList();
+      renderAdminActivityList();
+      $("#statActivities") && ($("#statActivities").textContent = Object.keys(activitiesCache).length);
     });
 
-    db.collection("products").onSnapshot(snap => {
-      shopProducts = {};
-      snap.forEach(doc => shopProducts[doc.id] = doc.data());
-      renderShopProductGrid();
-      renderAdminProductList();
-    });
-
-    function renderShopCategoryTabs() {
-      const wrap = $("#shopCatTabs"); if (!wrap) return;
-      const ids = Object.keys(shopCategories);
-      if (ids.length === 0) { wrap.innerHTML = ""; activeShopCatId = null; renderShopProductGrid(); return; }
-      if (!activeShopCatId || !shopCategories[activeShopCatId]) activeShopCatId = ids[0];
-      wrap.innerHTML = ids.map(id => `<div class="shop-cat-tab ${id === activeShopCatId ? 'active' : ''}" onclick="selectShopCategory('${id}')">${shopCategories[id].name}</div>`).join('');
-      renderShopProductGrid();
+    function formatActivityDate(ts) {
+      try {
+        const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+      } catch (e) { return ''; }
     }
-    window.selectShopCategory = (id) => { activeShopCatId = id; renderShopCategoryTabs(); };
 
-    function renderShopProductGrid() {
-      const grid = $("#shopProductGrid"); if (!grid) return;
-      const catIds = Object.keys(shopCategories);
-      if (catIds.length === 0) { grid.innerHTML = '<p class="empty-cat-msg">ยังไม่มีหมวดหมู่สินค้าในระบบ</p>'; return; }
-      const items = Object.entries(shopProducts).filter(([id, p]) => p.categoryId === activeShopCatId);
-      if (items.length === 0) { grid.innerHTML = '<p class="empty-cat-msg">🕐 รอจำหน่ายเร็วๆ นี้</p>'; return; }
-      grid.innerHTML = items.map(([id, p]) => {
-        const soldout = p.status === 'soldout';
-        return `<div class="product-card">
-          <img src="${p.image || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png'}" alt="${p.name}"/>
-          <div class="p-body">
-            <span class="product-status ${soldout ? 'soldout' : 'available'}">${soldout ? 'สินค้าหมด' : 'พร้อมจำหน่าย'}</span>
-            <div class="p-name">${p.name}</div>
-            <div class="p-desc">${p.description || ''}</div>
-            <div class="p-price">${p.price || 0} บาท</div>
-            <button class="btn btn-gold btn-small" style="margin-top:auto;" ${soldout ? 'disabled' : ''} onclick="addToCart('${id}')">${soldout ? 'สินค้าหมด' : '➕ เพิ่มลงตะกร้า'}</button>
+    function renderActivityList() {
+      const wrap = $("#activityListWrap"); if (!wrap) return;
+      const entries = Object.entries(activitiesCache).filter(([id, a]) => a.status !== 'hidden');
+      if (entries.length === 0) { wrap.innerHTML = '<p class="empty-activity-msg">🕊️ ยังไม่มีกิจกรรมในขณะนี้ โปรดติดตามเร็วๆ นี้</p>'; return; }
+      wrap.innerHTML = entries.map(([id, a]) => `
+        <div class="activity-card">
+          <div class="poster-wrap">${a.poster ? `<img src="${a.poster}" alt="${a.title || ''}"/>` : `<div class="no-poster">📢</div>`}</div>
+          <div class="a-body">
+            <h3 class="a-title">${a.title || 'กิจกรรม'}</h3>
+            <span class="a-date">🗓️ ${formatActivityDate(a.createdAt)}</span>
+            <p class="a-content">${(a.content || '').replace(/</g, '&lt;')}</p>
           </div>
-        </div>`;
-      }).join('');
+        </div>`).join('');
     }
 
-    /* ---------------- Shop: Cart & Checkout ---------------- */
-    window.addToCart = (productId) => {
-      if (!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนสั่งซื้อสินค้า");
-      const p = shopProducts[productId];
-      if (!p || p.status === 'soldout') return;
-      const existing = cart.find(c => c.productId === productId);
-      if (existing) existing.qty += 1;
-      else cart.push({ productId, name: p.name, price: p.price || 0, qty: 1 });
-      updateCartUI();
-      showCustomAlert("เพิ่มลงตะกร้าแล้ว", `เพิ่ม "${p.name}" ลงตะกร้าเรียบร้อย`);
-    };
-    window.changeCartQty = (idx, delta) => {
-      cart[idx].qty += delta;
-      if (cart[idx].qty <= 0) cart.splice(idx, 1);
-      updateCartUI(); renderCartModal();
-    };
-    function updateCartUI() {
-      const totalQty = cart.reduce((s, c) => s + c.qty, 0);
-      const fab = $("#cartFab"), badge = $("#cartBadge");
-      if (!fab) return;
-      if (totalQty > 0) { fab.classList.add('show'); badge.style.display = 'flex'; badge.textContent = totalQty; }
-      else { fab.classList.remove('show'); badge.style.display = 'none'; }
-    }
-    function renderCartModal() {
-      const list = $("#cartItemsList");
-      if (cart.length === 0) { list.innerHTML = '<p class="muted">ยังไม่มีสินค้าในตะกร้า</p>'; $("#cartGrandTotal").textContent = 0; return; }
-      let subtotal = 0;
-      list.innerHTML = cart.map((c, idx) => {
-        subtotal += c.price * c.qty;
-        return `<div class="cart-item-row"><span>${c.name}</span><div class="qty-ctrl"><button onclick="changeCartQty(${idx},-1)">-</button><span>${c.qty}</span><button onclick="changeCartQty(${idx},1)">+</button><span style="color:var(--gold);">${c.price * c.qty}บ.</span></div></div>`;
-      }).join('');
-      $("#cartGrandTotal").textContent = subtotal + 50;
-    }
-    window.openCheckoutModal = () => {
-      if (cart.length === 0) return showCustomAlert("ตะกร้าว่าง", "กรุณาเลือกสินค้าก่อนทำการสั่งซื้อ");
-      renderCartModal();
-      $("#cartModal").classList.add("show");
-    };
-    window.submitOrder = () => {
-      if (!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อน");
-      if (cart.length === 0) return showCustomAlert("แจ้งเตือน", "ตะกร้าสินค้าว่างเปล่า");
-      const fullName = $("#orderFullName").value.trim();
-      const address = $("#orderAddress").value.trim();
-      const contact = $("#orderContact").value.trim();
-      const file = $("#orderSlipImg").files[0];
-      if (!fullName || !address || !contact) return showCustomAlert("แจ้งเตือน", "กรุณากรอกข้อมูลผู้รับให้ครบถ้วน");
-      if (!file) return showCustomAlert("แจ้งเตือน", "โปรดแนบสลิปชำระเงิน");
-      const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          await db.collection("orders").add({
-            uid: currentUser.uid, name: currentUser.name, items: cart, subtotal, shipping: 50, total: subtotal + 50,
-            fullName, address, contact, slip: e.target.result, status: 'pending', timestamp: new Date()
-          });
-          cart = []; updateCartUI();
-          $("#cartModal").classList.remove("show");
-          $("#orderFullName").value = ""; $("#orderAddress").value = ""; $("#orderContact").value = ""; $("#orderSlipImg").value = "";
-          showCustomAlert("สั่งซื้อสำเร็จ", "ทำรายการสั่งซื้อเรียบร้อยแล้ว รอแอดมินตรวจสอบและจัดส่งสินค้า");
-        } catch (err) { showCustomAlert("ผิดพลาด", err.message); }
-      };
-      reader.readAsDataURL(file);
-    };
-
-    /* ---------------- Shop: Admin Categories & Products ---------------- */
-    window.addShopCategory = async () => {
-      const name = $("#newCatName").value.trim();
-      if (!name) return showCustomAlert("แจ้งเตือน", "กรุณากรอกชื่อหมวดหมู่");
-      await db.collection("shopCategories").add({ name, createdAt: new Date() });
-      $("#newCatName").value = "";
-    };
-    window.deleteShopCategory = async (id) => {
-      if (!confirm("ลบหมวดหมู่นี้? สินค้าภายในจะยังคงอยู่แต่ไม่ถูกจัดกลุ่ม")) return;
-      await db.collection("shopCategories").doc(id).delete();
-    };
-    function renderAdminCategoryChips() {
-      const wrap = $("#adminCatChipRow"); if (!wrap) return;
-      const ids = Object.keys(shopCategories);
-      if (ids.length === 0) { wrap.innerHTML = '<span class="muted">ยังไม่มีหมวดหมู่</span>'; return; }
-      wrap.innerHTML = ids.map(id => `<span class="cat-chip">${shopCategories[id].name}<button onclick="deleteShopCategory('${id}')">×</button></span>`).join('');
-    }
-    function renderAdminProductCategorySelect() {
-      const sel = $("#pmCategory"); if (!sel) return;
-      const ids = Object.keys(shopCategories);
-      sel.innerHTML = ids.length ? ids.map(id => `<option value="${id}">${shopCategories[id].name}</option>`).join('') : '<option value="">-- ยังไม่มีหมวดหมู่ --</option>';
-    }
-    window.openAdminProductModal = (id) => {
-      if (Object.keys(shopCategories).length === 0) return showCustomAlert("แจ้งเตือน", "กรุณาเพิ่มหมวดหมู่สินค้าก่อน");
-      renderAdminProductCategorySelect();
-      $("#pmImgPreview").style.display = "none"; $("#pmImgPreview").src = "";
-      if (id && shopProducts[id]) {
-        const p = shopProducts[id];
-        $("#pmDocId").value = id; $("#pmCategory").value = p.categoryId || ""; $("#pmName").value = p.name || "";
-        $("#pmPrice").value = p.price || 0; $("#pmDesc").value = p.description || ""; $("#pmStatus").value = p.status || 'available';
-        if (p.image) { $("#pmImgPreview").src = p.image; $("#pmImgPreview").style.display = "inline-block"; }
+    /* ---------------- Activities: admin ---------------- */
+    window.openAdminActivityModal = (id) => {
+      $("#actImgPreview").style.display = "none"; $("#actImgPreview").src = "";
+      if (id && activitiesCache[id]) {
+        const a = activitiesCache[id];
+        $("#actDocId").value = id; $("#actTitle").value = a.title || ""; $("#actContent").value = a.content || "";
+        $("#actStatus").value = a.status || "active";
+        if (a.poster) { $("#actImgPreview").src = a.poster; $("#actImgPreview").style.display = "inline-block"; }
       } else {
-        $("#pmDocId").value = ""; $("#pmName").value = ""; $("#pmPrice").value = ""; $("#pmDesc").value = ""; $("#pmStatus").value = "available";
+        $("#actDocId").value = ""; $("#actTitle").value = ""; $("#actContent").value = ""; $("#actStatus").value = "active";
       }
-      $("#pmImgInput").value = "";
-      $("#adminProductModal").classList.add("show");
+      $("#actImgInput").value = "";
+      $("#adminActivityModal").classList.add("show");
     };
-    window.saveAdminProduct = () => {
-      const id = $("#pmDocId").value;
-      const data = {
-        categoryId: $("#pmCategory").value, name: $("#pmName").value.trim(), price: parseFloat($("#pmPrice").value) || 0,
-        description: $("#pmDesc").value.trim(), status: $("#pmStatus").value
-      };
-      if (!data.name || !data.categoryId) return showCustomAlert("แจ้งเตือน", "กรุณากรอกชื่อสินค้าและเลือกหมวดหมู่");
+    window.saveAdminActivity = () => {
+      const id = $("#actDocId").value;
+      const data = { title: $("#actTitle").value.trim(), content: $("#actContent").value.trim(), status: $("#actStatus").value };
+      if (!data.title || !data.content) return showCustomAlert("แจ้งเตือน", "กรุณากรอกหัวข้อและเนื้อหากิจกรรม");
       const finish = async (imgData) => {
-        if (imgData) data.image = imgData;
+        if (imgData) data.poster = imgData;
         try {
-          if (id) await db.collection("products").doc(id).update(data);
-          else { data.createdAt = new Date(); await db.collection("products").add(data); }
-          $("#adminProductModal").classList.remove("show");
-          showCustomAlert("สำเร็จ", "บันทึกข้อมูลสินค้าเรียบร้อยแล้ว");
+          if (id) await db.collection("activities").doc(id).update(data);
+          else { data.createdAt = new Date(); await db.collection("activities").add(data); }
+          $("#adminActivityModal").classList.remove("show");
+          showCustomAlert("สำเร็จ", "บันทึกกิจกรรมเรียบร้อยแล้ว");
         } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
       };
-      const file = $("#pmImgInput").files[0];
+      const file = $("#actImgInput").files[0];
       if (file) { const r = new FileReader(); r.onload = (e) => finish(e.target.result); r.readAsDataURL(file); }
       else finish(null);
     };
-    window.deleteProduct = async (id) => { if (confirm("ลบสินค้านี้?")) await db.collection("products").doc(id).delete(); };
-    function renderAdminProductList() {
-      const wrap = $("#adminProductList"); if (!wrap) return;
-      const entries = Object.entries(shopProducts);
-      if (entries.length === 0) { wrap.innerHTML = '<p class="muted">ยังไม่มีสินค้า</p>'; return; }
-      wrap.innerHTML = entries.map(([id, p]) => `<div class="admin-product-row">
-        <img src="${p.image || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png'}" />
-        <div class="info"><b>${p.name}</b><br>${shopCategories[p.categoryId] ? shopCategories[p.categoryId].name : '-'} | ${p.price || 0} บ. | ${p.status === 'soldout' ? 'สินค้าหมด' : 'พร้อมจำหน่าย'}</div>
+    window.deleteActivity = async (id) => { if (confirm("ลบกิจกรรมนี้?")) await db.collection("activities").doc(id).delete(); };
+    function renderAdminActivityList() {
+      const wrap = $("#adminActivityList"); if (!wrap) return;
+      const entries = Object.entries(activitiesCache);
+      if (entries.length === 0) { wrap.innerHTML = '<p class="muted">ยังไม่มีกิจกรรม</p>'; return; }
+      wrap.innerHTML = entries.map(([id, a]) => `<div class="admin-activity-row">
+        ${a.poster ? `<img src="${a.poster}" />` : `<div style="width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:#111;border-radius:8px;">📢</div>`}
+        <div class="info"><b>${a.title}</b><br>${a.status === 'hidden' ? '🔒 ซ่อนอยู่' : '✅ เปิดใช้งาน'} | ${formatActivityDate(a.createdAt)}</div>
         <div class="admin-actions">
-          <button class="btn btn-outline btn-small" onclick="openAdminProductModal('${id}')">✏️</button>
-          <button class="btn btn-danger btn-small" onclick="deleteProduct('${id}')">ลบ</button>
+          <button class="btn btn-outline btn-small" onclick="openAdminActivityModal('${id}')">✏️</button>
+          <button class="btn btn-danger btn-small" onclick="deleteActivity('${id}')">ลบ</button>
         </div>
       </div>`).join('');
     }
 
-    /* ---------------- Admin: Orders ---------------- */
-    async function loadAdminOrders() {
-      const tbody = $("#adminOrderTable tbody"); tbody.innerHTML = "<tr><td colspan='6'>กำลังดึงข้อมูล...</td></tr>";
-      const snap = await db.collection("orders").orderBy("timestamp", "desc").get(); tbody.innerHTML = "";
-      $("#statOrders").textContent = snap.docs.filter(d => !d.data().status || d.data().status === 'pending').length;
-      snap.forEach(doc => {
-        const d = doc.data();
-        const itemsHtml = (d.items || []).map(i => `${i.name} x${i.qty}`).join('<br>');
-        const actions = `
-          <select onchange="updateOrderStatus('${doc.id}', this.value)" style="width:auto; padding:4px 6px; font-size:11px; margin-bottom:4px;">
-            <option value="pending" ${(!d.status || d.status === 'pending') ? 'selected' : ''}>รอดำเนินการ</option>
-            <option value="shipped" ${d.status === 'shipped' ? 'selected' : ''}>จัดส่งแล้ว</option>
-            <option value="rejected" ${d.status === 'rejected' ? 'selected' : ''}>ยกเลิก</option>
-          </select><br>
-          <button class="btn btn-danger btn-small" onclick="deleteDoc('orders','${doc.id}')">ลบ</button>`;
-        tbody.innerHTML += `<tr><td>UID: ${d.uid}<br>${d.fullName || ''}</td><td>${itemsHtml}</td><td style="color:var(--gold);">${d.total || 0} บ.</td><td><img src="${d.slip}" width="46" onclick="window.open('${d.slip}')" style="cursor:pointer;" /><br><small>${d.address || ''}</small><br><small>${d.contact || ''}</small></td><td>${statusPill(d.status)}</td><td class="admin-actions">${actions}</td></tr>`;
-      });
-    }
-    window.updateOrderStatus = async (id, status) => { await db.collection("orders").doc(id).update({ status }); loadAdminOrders(); };
 
     /* ---------------- Admin: Legacy Customer Merge ---------------- */
     async function renderLegacyCustomers() {
@@ -2128,14 +1974,15 @@
       else btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี / รับ 3 แต้ม) ✨";
     }
 
-    /* ---------------- 8. AI แม่หมอ Chatbot ---------------- */
+    /* ---------------- 8. AI แม่หมอ Chatbot (ที่ปรึกษาปัญหาชีวิต) ---------------- */
     // เก็บประวัติแชทไว้ในหน่วยความจำระหว่างที่เปิดแอปอยู่ (ยังไม่ผูกฐานข้อมูล)
     let maehmorHistory = [];
     let maehmorBusy = false;
+    let maehmorLastTopic = 'general';
 
     // NOTE สำหรับผู้ดูแลระบบ:
-    // ตอนนี้แม่หมอ AI ตอบด้วยชุดคำแนะนำสำเร็จรูป (โหมดออฟไลน์) ที่สุ่มปรับตามคำที่ผู้ใช้พิมพ์
-    // เพื่อให้ใช้งานได้ทันทีโดยไม่ต้องมีเซิร์ฟเวอร์เสริม
+    // ตอนนี้แม่หมอ AI ตอบด้วยชุดคำแนะนำสำเร็จรูปเชิงเหตุผล (โหมดออฟไลน์) ที่ปรับตามคำที่ผู้ใช้พิมพ์
+    // เพื่อให้ใช้งานได้ทันทีโดยไม่ต้องมีเซิร์ฟเวอร์เสริม โดยเน้นให้คำแนะนำเรื่อง "การใช้ชีวิต" ไม่ใช่การทำนายดวงชะตา
     // หากต้องการต่อ AI จริง (เช่น Claude API) ให้สร้างฟังก์ชัน backend ของตัวเอง (เช่น Firebase
     // Cloud Function) ที่เก็บ API key ไว้ฝั่งเซิร์ฟเวอร์ (ห้ามใส่ API key ในไฟล์นี้เด็ดขาด เพราะไฟล์นี้
     // รันอยู่ฝั่งผู้ใช้ ใครก็เปิดดูโค้ดและขโมยคีย์ไปได้) แล้วแก้ไขค่า MAEHMOR_API_URL ด้านล่างให้ชี้ไปยัง
@@ -2158,10 +2005,37 @@
       maehmorHistory.push({ role, text });
     }
 
+    // ปุ่มลัดคิว VIP แบบด่วน จากหน้าแชท (ใช้แต้มสะสม)
+    window.goToUrgentBooking = () => {
+      showPage('booking');
+      const typeSel = $("#queueType");
+      if (typeSel) { typeSel.value = 'vip'; updateQueueTypeUI(); }
+      showCustomAlert("🚨 ปรึกษาด่วน", "เลือก “ลัดคิว VIP” ไว้ให้แล้ว กรอกวันที่และเวลาที่สะดวก ระบบจะหักแต้มสะสม 30 แต้มเมื่อยืนยันการจองจ้ะ");
+    };
+
+    // ระบบปุ่มแนะนำ (Suggestion buttons) แสดงคำถามต่อยอดให้ทุกครั้งหลังแม่หมอตอบ
+    const SUGGEST_BANK = {
+      love: ['ควรเริ่มคุยกับเขายังไงดี?', 'ถ้าเขาไม่ตอบกลับควรทำยังไง?', 'จะรู้ได้ไงว่าเขาจริงใจ?'],
+      work: ['ควรคุยกับหัวหน้ายังไงดี?', 'ถ้าเครียดจากงานควรทำยังไง?', 'ควรเปลี่ยนงานตอนนี้ไหม?'],
+      money: ['ควรเริ่มวางแผนการเงินยังไง?', 'มีหนี้ควรจัดการยังไงก่อน?', 'ควรเก็บเงินฉุกเฉินเท่าไหร่?'],
+      family: ['ควรเปิดใจคุยกับครอบครัวยังไง?', 'ถ้าความเห็นไม่ตรงกันควรทำยังไง?', 'จะรักษาระยะห่างที่พอดีได้ยังไง?'],
+      mental: ['วิธีจัดการความคิดฟุ้งซ่านทำยังไง?', 'ควรพักผ่อนแบบไหนถึงจะช่วยได้จริง?', 'เมื่อไหร่ควรไปพบผู้เชี่ยวชาญ?'],
+      stress: ['มีวิธีคลายเครียดเร่งด่วนไหม?', 'จะจัดลำดับความสำคัญยังไงดี?', 'ควรพูดคุยกับใครเรื่องนี้?'],
+      general: ['ช่วยแนะนำขั้นตอนแรกที่ควรทำ', 'ถ้าทำแล้วยังไม่ดีขึ้นควรทำไง?', 'ปรึกษาด่วนกับแม่หมอตัวจริงได้ไหม?']
+    };
+
+    function renderAichatSuggestions(topic) {
+      const wrap = $("#aichatSuggestRow"); if (!wrap) return;
+      const pool = SUGGEST_BANK[topic] || SUGGEST_BANK.general;
+      wrap.innerHTML = pool.map(q => `<div class="aichat-suggest-chip" onclick="sendMaehmorQuick('${q.replace(/'/g, "\\'")}')">${q}</div>`).join('')
+        + `<div class="aichat-suggest-chip" onclick="goToUrgentBooking()">🚨 ปรึกษาด่วนกับแม่หมอตัวจริง</div>`;
+    }
+
     function ensureMaehmorGreeting() {
       const win = $("#aichatWindow");
       if (win.children.length === 0) {
-        addChatBubble('ai', 'สวัสดีจ้ะ แม่หมอเองนะ 🔮 มีเรื่องอะไรอยากปรึกษา ระบายให้แม่หมอฟังได้เลย ไม่ว่าจะเรื่องความรัก การงาน การเงิน หรือเรื่องทั่วไปในชีวิตก็ได้จ้ะ');
+        addChatBubble('ai', 'สวัสดีจ้ะ แม่หมอเองนะ 🔮 วันนี้มีเรื่องอะไรในชีวิตอยากปรึกษาไหม ไม่ว่าจะเป็นเรื่องความรัก การงาน การเงิน ครอบครัว หรือความเครียดสะสม เล่าให้แม่หมอฟังได้เลย แม่หมอจะช่วยวิเคราะห์และแนะนำแนวทางแก้ไขอย่างมีเหตุผลให้จ้ะ');
+        renderAichatSuggestions('general');
       }
     }
 
@@ -2183,6 +2057,7 @@
       addChatBubble('user', text);
       input.value = "";
       input.style.height = 'auto';
+      $("#aichatSuggestRow").innerHTML = "";
 
       maehmorBusy = true;
       $("#aichatSendBtn").disabled = true;
@@ -2193,9 +2068,11 @@
         const reply = await getMaehmorReply(text);
         $("#aichatTyping").style.display = 'none';
         addChatBubble('ai', reply);
+        renderAichatSuggestions(maehmorLastTopic);
       } catch (err) {
         $("#aichatTyping").style.display = 'none';
-        addChatBubble('ai', 'ขอโทษจ้ะ ตอนนี้แม่หมอขัดข้องชั่วคราว ลองพิมพ์อีกครั้งนะ 🙏');
+        addChatBubble('ai', 'ขอโทษจ้ะ ตอนนี้แม่หมอขัดข้องชั่วคราว ลองพิมพ์อีกครั้งนะ 🙏 หรือถ้าต้องการคำตอบด่วน กดปุ่ม "ปรึกษาด่วน ลัดคิว VIP" ด้านบนได้เลยจ้ะ');
+        renderAichatSuggestions('general');
       } finally {
         maehmorBusy = false;
         $("#aichatSendBtn").disabled = false;
@@ -2204,7 +2081,9 @@
 
     function clearMaehmorChat() {
       $("#aichatWindow").innerHTML = "";
+      $("#aichatSuggestRow").innerHTML = "";
       maehmorHistory = [];
+      maehmorLastTopic = 'general';
       ensureMaehmorGreeting();
     }
 
@@ -2221,62 +2100,97 @@
         if (data && data.reply) return data.reply;
         throw new Error("Bad response");
       }
-      // 2) โหมดออฟไลน์: สุ่มคำแนะนำแบบแม่หมอ ปรับตามหัวข้อที่พิมพ์มา
-      await new Promise(r => setTimeout(r, 900 + Math.random() * 900)); // จำลองเวลาคิด
+      // 2) โหมดออฟไลน์: วิเคราะห์คำที่พิมพ์มาแล้วให้คำแนะนำเชิงเหตุผล ไม่ใช่การทำนายดวง
+      await new Promise(r => setTimeout(r, 700 + Math.random() * 700)); // จำลองเวลาคิด
       return buildOfflineMaehmorReply(userText);
+    }
+
+    function detectMaehmorTopic(t) {
+      if (/รัก|แฟน|คนรัก|คู่|แอบชอบ|เลิกกัน|นอกใจ/.test(t)) return 'love';
+      if (/งาน|เงินเดือน|เจ้านาย|ธุรกิจ|สัมภาษณ์|ลาออก|เพื่อนร่วมงาน/.test(t)) return 'work';
+      if (/เงิน|หนี้|ลงทุน|โชคลาภ|หวย|ออมเงิน|รายจ่าย/.test(t)) return 'money';
+      if (/ครอบครัว|พ่อแม่|พี่น้อง|ลูก|ญาติ/.test(t)) return 'family';
+      if (/นอนไม่หลับ|ป่วย|จิตใจ|ซึมเศร้า|ท้อ|เหนื่อยใจ|สุขภาพใจ/.test(t)) return 'mental';
+      if (/เครียด|กดดัน|วิตกกังวล|กังวล|ฟุ้งซ่าน/.test(t)) return 'stress';
+      return 'general';
     }
 
     function buildOfflineMaehmorReply(userText) {
       const t = userText.toLowerCase();
+      const topic = detectMaehmorTopic(t);
+      maehmorLastTopic = topic;
+
       const openers = [
-        "แม่หมอฟังแล้วนะจ๊ะ", "อืม... แม่หมอเห็นแล้วล่ะ", "เข้าใจความรู้สึกนี้ดีจ้ะ", "แม่หมอขอเสี่ยงทายให้ฟังนะ"
+        "แม่หมอฟังแล้วนะจ๊ะ ลองมาแยกปัญหาเป็นเหตุเป็นผลไปด้วยกันนะ",
+        "อืม... แม่หมอเข้าใจสถานการณ์นี้แล้วล่ะ ขอวิเคราะห์และแนะนำให้ฟังนะจ๊ะ",
+        "เรื่องนี้เจอได้บ่อยเลยจ้ะ แม่หมอขอแนะนำแนวทางที่พอจะช่วยได้นะ"
       ];
       const opener = openers[Math.floor(Math.random() * openers.length)];
 
-      let topic = null;
-      if (/รัก|แฟน|คนรัก|คู่/.test(t)) topic = 'love';
-      else if (/งาน|เงินเดือน|เจ้านาย|ธุรกิจ|สัมภาษณ์/.test(t)) topic = 'work';
-      else if (/เงิน|หนี้|ลงทุน|โชคลาภ|หวย/.test(t)) topic = 'money';
-      else if (/สุขภาพ|ป่วย|เจ็บ|นอนไม่หลับ/.test(t)) topic = 'health';
-      else if (/ดวงวันนี้|ดวงประจำวัน/.test(t)) topic = 'today';
-
       const banks = {
-        love: [
-          "ช่วงนี้ดาวความรักกำลังผันผวน อย่าเพิ่งตัดสินใจอะไรใจร้อน ลองเปิดใจคุยตรงๆ กับอีกฝ่ายดูนะ ความจริงใจจะช่วยคลี่คลายเรื่องได้มาก",
-          "ความรักของเธอกำลังอยู่ในช่วงทดสอบใจ ให้เวลากับตัวเองและอีกฝ่ายบ้าง อย่ากดดันกันมากเกินไป ทุกอย่างจะค่อยๆ ดีขึ้น",
-          "ดวงบอกว่าจะมีคนสำคัญเข้ามาทำให้หัวใจเธอสั่นไหว แต่อย่าลืมฟังเสียงหัวใจตัวเองด้วยนะ"
-        ],
-        work: [
-          "งานที่ทำอยู่จะเริ่มเห็นผลลัพธ์ในไม่ช้า ให้อดทนอีกนิด ความพยายามจะไม่สูญเปล่าแน่นอน",
-          "ช่วงนี้อาจมีอุปสรรคเล็กน้อยในที่ทำงาน ให้ตั้งสติและวางแผนให้รอบคอบก่อนตัดสินใจเรื่องสำคัญ",
-          "ดวงการงานกำลังไปได้สวย มีโอกาสได้รับการสนับสนุนจากคนรอบข้าง อย่ากลัวที่จะเสนอไอเดียใหม่ๆ"
-        ],
-        money: [
-          "การเงินช่วงนี้ควรระมัดระวังเรื่องรายจ่ายที่ไม่จำเป็น เก็บออมไว้บ้างจะช่วยให้อุ่นใจในอนาคต",
-          "มีสัญญาณโชคลาภเล็กๆ กำลังเข้ามา แต่อย่าลงทุนอะไรใหญ่โดยไม่ศึกษาให้ดีก่อนนะ",
-          "ดวงการเงินเริ่มคลี่คลายไปในทางที่ดีขึ้น ความอดทนของเธอกำลังจะได้ผล"
-        ],
-        health: [
-          "อย่าลืมพักผ่อนให้เพียงพอนะจ๊ะ ร่างกายกำลังส่งสัญญาณให้เธอช้าลงบ้าง ดูแลใจตัวเองด้วยนะ",
-          "ช่วงนี้ควรใส่ใจเรื่องการพักผ่อนและอาหารการกินเป็นพิเศษ สุขภาพใจก็สำคัญไม่แพ้สุขภาพกาย",
-          "ลองหาเวลาผ่อนคลายให้ตัวเองบ้าง ความเครียดสะสมอาจเป็นต้นเหตุของความไม่สบายใจตอนนี้"
-        ],
-        today: [
-          "วันนี้เป็นวันที่เหมาะกับการเริ่มต้นสิ่งใหม่ๆ ใจเย็นๆ แล้วทุกอย่างจะราบรื่นจ้ะ",
-          "วันนี้ดวงโดยรวมอยู่ในเกณฑ์ดี แต่ควรระวังคำพูดของตัวเองสักนิด อาจมีเรื่องเข้าใจผิดได้ง่าย",
-          "วันนี้เหมาะกับการทบทวนตัวเอง พักใจ แล้วค่อยลุยงานต่อในวันพรุ่งนี้จ้ะ"
-        ],
-        general: [
-          "ทุกปัญหามีทางออกเสมอ ให้เวลากับตัวเองสักนิด อย่าเพิ่งกดดันตัวเองมากไป",
-          "บางทีคำตอบที่เธอตามหาอาจอยู่ใกล้ตัวกว่าที่คิด ลองสงบใจแล้วฟังเสียงภายในดูนะ",
-          "แม่หมอเชื่อว่าเธอผ่านเรื่องยากๆ มาได้เสมอ ครั้งนี้ก็เช่นกัน ค่อยๆ ก้าวไปทีละก้าวนะจ๊ะ"
-        ]
+        love: {
+          reason: "ความสัมพันธ์ที่รู้สึกไม่มั่นคงมักเกิดจากการสื่อสารที่ไม่ตรงกัน หรือความคาดหวังที่ไม่ได้พูดออกมาให้อีกฝ่ายรู้ตรงๆ",
+          steps: [
+            "ลองทบทวนว่าความกังวลนี้มาจากพฤติกรรมจริงของอีกฝ่าย หรือมาจากความไม่มั่นใจในตัวเอง",
+            "หาจังหวะที่ทั้งสองฝ่ายใจเย็น แล้วเปิดใจคุยตรงๆ โดยใช้คำพูดที่บอกความรู้สึกของตัวเอง (เช่น \"เรารู้สึก...\") แทนการตำหนิ",
+            "ตั้งเป้าหมายร่วมกันว่าจะสื่อสารกันแบบไหนต่อไป และให้เวลาผลลัพธ์เกิดขึ้นจริง ไม่ตัดสินใจอะไรใหญ่ตอนอารมณ์ยังไม่นิ่ง"
+          ]
+        },
+        work: {
+          reason: "ความเครียดเรื่องงานส่วนใหญ่เกิดจากภาระงานที่ไม่ชัดเจน การสื่อสารกับหัวหน้า/เพื่อนร่วมงานที่ไม่ราบรื่น หรือเป้าหมายในสายงานที่ยังไม่ชัด",
+          steps: [
+            "ลองเขียนรายการปัญหาที่เจอออกมาเป็นข้อๆ แล้วแยกว่าอันไหนแก้ได้เอง อันไหนต้องคุยกับคนอื่น",
+            "ถ้าต้องคุยกับหัวหน้าหรือเพื่อนร่วมงาน ให้เตรียมประเด็นและผลกระทบที่ชัดเจน จะช่วยให้บทสนทนามีทิศทางและไม่กลายเป็นอารมณ์",
+            "หากเป็นเรื่องเส้นทางอาชีพ ลองตั้งคำถามกับตัวเองว่าอีก 1 ปีอยากอยู่จุดไหน แล้ววางแผนเป็นขั้นบันไดทีละก้าว"
+          ]
+        },
+        money: {
+          reason: "ปัญหาการเงินมักคลี่คลายได้เมื่อเรามองเห็นภาพรวมของรายรับ-รายจ่ายชัดเจน แทนที่จะรู้สึกกังวลแบบไม่มีตัวเลขรองรับ",
+          steps: [
+            "ลองจดรายรับ-รายจ่ายย้อนหลัง 1 เดือน เพื่อดูว่าเงินไหลไปทางไหนบ้าง จะช่วยให้เห็นจุดที่ปรับได้จริง",
+            "ถ้ามีหนี้หลายก้อน ให้จัดลำดับตามดอกเบี้ยสูงสุดก่อน และตั้งเป้าผ่อนขั้นต่ำก้อนอื่นไว้ไม่ให้ขาดส่ง",
+            "กันเงินสำรองฉุกเฉินไว้ส่วนหนึ่งก่อนคิดเรื่องลงทุน เพื่อไม่ให้แผนการเงินสะดุดหากมีเหตุไม่คาดฝัน"
+          ]
+        },
+        family: {
+          reason: "ความขัดแย้งในครอบครัวส่วนใหญ่มาจากความคาดหวังต่างวัยและการสื่อสารที่ไม่ได้ฟังกันจริงๆ มากกว่าเรื่องความรักที่มีให้กันน้อยลง",
+          steps: [
+            "เลือกช่วงเวลาที่ทุกคนอารมณ์ดี ไม่ใช่ตอนกำลังมีปากเสียง เพื่อเปิดบทสนทนาที่สร้างสรรค์",
+            "ตั้งใจฟังมุมมองของอีกฝ่ายก่อนอธิบายมุมมองตัวเอง จะช่วยลดความรู้สึกว่าถูกตัดสิน",
+            "หาจุดที่พอประนีประนอมกันได้ในระยะสั้น แล้วค่อยๆ ปรับความเข้าใจกันในระยะยาว ไม่ต้องคาดหวังว่าจะแก้ได้ในครั้งเดียว"
+          ]
+        },
+        mental: {
+          reason: "ความรู้สึกเหนื่อยใจหรือนอนไม่หลับ มักเป็นสัญญาณว่าร่างกายและจิตใจกำลังสะสมความเครียดเกินกว่าที่จะจัดการเองได้ไหว",
+          steps: [
+            "จัดตารางพักผ่อนให้เพียงพอ และลดสิ่งกระตุ้นก่อนนอน เช่น จอมือถือ คาเฟอีน อย่างน้อย 1 ชั่วโมงก่อนนอน",
+            "ลองหาคนที่ไว้ใจพูดคุยระบายความรู้สึก การพูดออกมาช่วยลดความหนักอึ้งในใจได้มาก",
+            "หากอาการเหล่านี้เป็นต่อเนื่องนานเกิน 2 สัปดาห์ หรือกระทบชีวิตประจำวันชัดเจน แนะนำให้ปรึกษาแพทย์หรือนักจิตวิทยาโดยตรง เพื่อดูแลอย่างถูกวิธี"
+          ]
+        },
+        stress: {
+          reason: "ความเครียดมักเกิดจากงานหลายอย่างพร้อมกันโดยไม่มีลำดับความสำคัญ ทำให้รู้สึกควบคุมสถานการณ์ไม่ได้",
+          steps: [
+            "ลองเขียนสิ่งที่ต้องทำทั้งหมดออกมา แล้วจัดลำดับว่าอะไรสำคัญ-เร่งด่วนที่สุดก่อน",
+            "แบ่งเวลาพักสั้นๆ ระหว่างวันเพื่อหายใจลึกๆ หรือเดินเปลี่ยนบรรยากาศ จะช่วยให้สมองปลอดโปร่งขึ้น",
+            "ถ้าเป็นไปได้ ลองขอความช่วยเหลือหรือแบ่งงานกับคนรอบข้าง ไม่จำเป็นต้องแบกรับทุกอย่างคนเดียว"
+          ]
+        },
+        general: {
+          reason: "ทุกปัญหามักมีที่มาที่ไปเสมอ การเข้าใจสาเหตุที่แท้จริงจะช่วยให้หาทางแก้ได้ตรงจุดกว่าการกังวลเฉยๆ",
+          steps: [
+            "ลองเล่าเหตุการณ์ให้ละเอียดขึ้นอีกนิด แม่หมอจะได้ช่วยวิเคราะห์และแนะนำได้ตรงจุดมากขึ้น",
+            "ให้เวลาตัวเองสักนิด อย่าเพิ่งกดดันตัวเองให้ตัดสินใจอะไรเร็วเกินไป",
+            "ลองมองปัญหาเป็นขั้นตอนย่อยๆ แล้วจัดการทีละขั้น จะรู้สึกว่าจัดการได้ง่ายขึ้น"
+          ]
+        }
       };
 
-      const pool = banks[topic] || banks.general;
-      const advice = pool[Math.floor(Math.random() * pool.length)];
-      const closer = "หากอยากได้คำพยากรณ์ที่ละเอียดและแม่นยำยิ่งขึ้น แนะนำให้จองคิวดูดวงกับแม่หมอตัวจริงที่หน้า “จองคิว” ได้เลยจ้ะ 🙏";
-      return `${opener} ${advice}\n\n${closer}`;
+      const b = banks[topic] || banks.general;
+      const stepsHtml = b.steps.map((s, i) => `${i + 1}. ${s}`).join('\n');
+      const closer = "หากอยากได้คำแนะนำที่ลึกและตรงกับสถานการณ์ของเธอมากขึ้น แนะนำให้จองคิวปรึกษากับแม่หมอตัวจริงที่หน้า “จองคิว” ได้เลยจ้ะ หรือถ้าต้องการคำตอบด่วน กดปุ่ม “🚨 ปรึกษาด่วน ลัดคิว VIP” ด้านบนได้ทันที 🙏";
+
+      return `${opener}\n\n🔎 สาเหตุที่น่าจะเป็นไปได้: ${b.reason}\n\n📝 แนวทางที่แนะนำ:\n${stepsHtml}\n\n${closer}`;
     }
 
     /* ---------------- 9. Booking & History ---------------- */
@@ -2442,7 +2356,7 @@
       if (pass === 'horoscope') {
         $("#adminModal").classList.add("show");
         loadAdminQueues(); loadAdminUsers(); loadAdminReviews(); loadAdminTopups(); loadAdminVerifies(); loadAdminMissions();
-        loadAdminOrders(); renderLegacyCustomers(); loadAdminStats(); renderAdminHolidayCal();
+        renderAdminActivityList(); renderLegacyCustomers(); loadAdminStats(); renderAdminHolidayCal();
       } else if (pass !== null) { showCustomAlert("แจ้งเตือน", "รหัสผ่านไม่ถูกต้อง!"); }
     });
 
@@ -2580,14 +2494,14 @@
         if (collection === 'queues') loadAdminQueues(); if (collection === 'users') loadAdminUsers();
         if (collection === 'reviews') loadAdminReviews(); if (collection === 'topups') loadAdminTopups();
         if (collection === 'verifies') loadAdminVerifies(); if (collection === 'missionProofs') loadAdminMissions();
-        if (collection === 'orders') loadAdminOrders();
+        if (collection === 'activities') renderAdminActivityList();
       }
     };
 
-    $("#pmImgInput").addEventListener("change", function () {
+    $("#actImgInput").addEventListener("change", function () {
       const f = this.files[0]; if (!f) return;
       const r = new FileReader();
-      r.onload = (e) => { $("#pmImgPreview").src = e.target.result; $("#pmImgPreview").style.display = "inline-block"; };
+      r.onload = (e) => { $("#actImgPreview").src = e.target.result; $("#actImgPreview").style.display = "inline-block"; };
       r.readAsDataURL(f);
     });
 
