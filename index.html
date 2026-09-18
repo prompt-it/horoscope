@@ -1681,7 +1681,6 @@
       document.getElementById("mainContainer").classList.add("logged-in");
       document.body.classList.add("logged-in");
       showPage('profile');
-      setTimeout(startTour, 700);
 
       updateProfileUI(data);
 
@@ -2606,7 +2605,7 @@
       { sel: "#tourRestartFab",                     title: "ทบทวนวิธีใช้งาน",   desc: "หากต้องการดูคำแนะนำนี้อีกครั้งในภายหลัง กดปุ่มนี้ได้เลย" }
     ];
     let tourIdx = 0;
-    let tourNavWasCollapsed = true;
+    let tourNavWasCollapsed = false;
 
     window.startTour = function () {
       if (!document.body.classList.contains("logged-in")) return;
