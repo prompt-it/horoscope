@@ -73,7 +73,7 @@
     .brand-bar { display: flex; align-items: center; gap: 10px; padding: 8px 14px; }
     .brand-logo { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--gold); box-shadow: var(--glow-gold); object-fit: cover; background: #fff; flex: 0 0 auto; }
     .brand-name { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; text-shadow: 0 2px 6px rgba(0,0,0,0.7), 0 0 14px rgba(157,78,221,0.5); background: linear-gradient(90deg,#fff,var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .status-strip { display: flex; gap: 14px; padding: 0 14px 8px; font-size: 11px; color: var(--muted); }
+    .status-strip { display: flex; flex-wrap: wrap; row-gap: 2px; gap: 6px 14px; padding: 0 14px 8px; font-size: 11px; color: var(--muted); }
 
     .app-nav { display: flex; gap: 6px; padding: 0 10px 8px; overflow-x: auto; scrollbar-width: none; }
     .app-nav::-webkit-scrollbar { display: none; }
@@ -133,6 +133,18 @@
     }
     .floating-support-btn:hover { opacity: 1; transform: scale(1.12) rotate(5deg); box-shadow: var(--glow); background: rgba(90, 24, 154, 0.95); }
     .floating-support-btn svg { width: 22px; height: 22px; fill: var(--gold); }
+
+    /* ---------- Floating Home Button (visible on every page) ---------- */
+    .home-fab {
+      position: fixed; bottom: 18px; left: 18px; z-index: 999;
+      width: 46px; height: 46px; border-radius: 50%;
+      background: rgba(60, 9, 108, 0.85); border: 1.5px solid var(--gold);
+      box-shadow: var(--glow-gold);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0.85; backdrop-filter: blur(8px);
+      transition: all 0.3s ease; font-size: 21px;
+    }
+    .home-fab:hover { opacity: 1; transform: scale(1.12); box-shadow: var(--glow), var(--glow-gold); }
 
     .card {
       background: var(--card); backdrop-filter: blur(14px);
@@ -225,6 +237,16 @@
     .main-system { display: none; }
     .logged-in .auth-section { display: none; }
     .logged-in .main-system { display: block; }
+    /* FIX: ".logged-in .main-system" above (2 classes) is more specific than the
+       flex layout rules for the nav bar / toggle button / music button (1 class),
+       so once logged in those elements were forced to display:block and lost their
+       flex layout — this made the collapsible bar and its buttons render crooked
+       and misaligned. Restore the correct display mode for each with higher
+       specificity so they keep their intended flex layout after login. */
+    .logged-in .app-nav.main-system { display: flex; }
+    .logged-in .nav-toggle-btn.main-system { display: flex; }
+    .logged-in .music-fab.main-system { display: flex; }
+    .logged-in .home-fab.main-system { display: flex; }
 
     @keyframes floatUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -388,6 +410,82 @@
     .music-fab { position: fixed; bottom: 74px; right: 18px; z-index: 998; width: 46px; height: 46px; border-radius: 50%; background: rgba(60,9,108,0.85); border: 1.5px solid var(--primary); box-shadow: 0 0 15px rgba(157,78,221,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 19px; transition: all 0.3s ease; }
     .music-fab.playing { animation: chestPulse 1.6s infinite alternate; }
     .music-track-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; font-size: 12px; text-align: left; }
+
+    /* ---------- AI แม่หมอ Chatbot ---------- */
+    .aichat-card { display: flex; flex-direction: column; padding: 16px; }
+    .aichat-header { display: flex; align-items: center; gap: 10px; }
+    .aichat-avatar {
+      width: 46px; height: 46px; border-radius: 50%; flex: 0 0 auto;
+      background: radial-gradient(circle at 30% 30%, #3c096c, #10002b);
+      border: 2px solid var(--gold); box-shadow: var(--glow-gold);
+      display: flex; align-items: center; justify-content: center; font-size: 22px;
+    }
+    .aichat-avatar-sm {
+      width: 28px; height: 28px; border-radius: 50%; flex: 0 0 auto;
+      background: radial-gradient(circle at 30% 30%, #3c096c, #10002b);
+      border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .aichat-header-text { flex: 1 1 auto; min-width: 0; text-align: left; }
+    .aichat-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .dot-online { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 6px var(--ok); flex: 0 0 auto; animation: chestPulse 1.6s infinite alternate; }
+    .aichat-clear-btn {
+      width: 34px; height: 34px; border-radius: 10px; flex: 0 0 auto; padding: 0;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted);
+      cursor: pointer; font-size: 14px; transition: all 0.25s ease;
+    }
+    .aichat-clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    .aichat-topics { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0 2px; padding-bottom: 4px; scrollbar-width: none; }
+    .aichat-topics::-webkit-scrollbar { display: none; }
+    .aichat-chip {
+      flex: 0 0 auto; padding: 6px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+      background: rgba(157,78,221,0.12); border: 1px solid var(--border); color: var(--muted);
+      cursor: pointer; transition: all 0.25s ease; user-select: none; white-space: nowrap;
+    }
+    .aichat-chip:hover { border-color: var(--gold); color: var(--gold); background: rgba(255,215,0,0.08); }
+
+    .aichat-window {
+      display: flex; flex-direction: column; gap: 10px; margin-top: 12px;
+      min-height: 260px; max-height: 46vh; overflow-y: auto; padding: 4px 2px;
+    }
+    .chat-row { display: flex; gap: 8px; align-items: flex-end; max-width: 100%; }
+    .chat-row.user { flex-direction: row-reverse; }
+    .chat-bubble {
+      max-width: 78%; padding: 10px 13px; border-radius: 16px; font-size: 13px; line-height: 1.55;
+      text-align: left; white-space: pre-wrap; word-break: break-word;
+      animation: pageIn 0.25s ease;
+    }
+    .chat-row.ai .chat-bubble {
+      background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--text);
+    }
+    .chat-row.user .chat-bubble {
+      background: linear-gradient(135deg, var(--primary-2), var(--primary)); border-bottom-right-radius: 4px; color: #fff;
+      box-shadow: 0 4px 14px rgba(157,78,221,0.35);
+    }
+    .chat-time { font-size: 9.5px; color: var(--muted); margin-top: 3px; opacity: 0.7; }
+    .chat-row.user .chat-time { text-align: right; }
+
+    .aichat-typing { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .typing-dots { display: flex; gap: 4px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 14px; padding: 8px 12px; }
+    .typing-dots span {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block;
+      animation: typingBounce 1.2s infinite ease-in-out;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+    .aichat-input-row { display: flex; gap: 8px; align-items: flex-end; margin-top: 12px; }
+    .aichat-input-row textarea {
+      flex: 1 1 auto; resize: none; max-height: 90px; margin: 0; width: auto;
+      border-radius: 16px; padding: 11px 14px; font-size: 13.5px; line-height: 1.4;
+    }
+    .aichat-send-btn {
+      flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; padding: 0; margin: 0;
+      background: linear-gradient(45deg, #7a5a00, var(--gold)); color: #0a0212; font-size: 17px;
+      display: flex; align-items: center; justify-content: center; box-shadow: var(--glow-gold);
+    }
+    .aichat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
   </style>
 </head>
 <body>
@@ -406,10 +504,12 @@
     </div>
     <div class="status-strip">
       <span id="queueCount">สมาชิกปัจจุบัน: รอโหลดข้อมูล...</span>
+      <span id="totalQueueCount">ยอดคิวทั้งหมด: รอโหลดข้อมูล...</span>
       <span id="currentTime">เวลาขณะนี้: --:--:--</span>
     </div>
     <nav class="app-nav main-system" id="appNav">
       <div class="nav-btn active" data-page="profile" onclick="showPage('profile')"><span class="ic">👤</span>โปรไฟล์</div>
+      <div class="nav-btn" data-page="aichat" onclick="showPage('aichat')"><span class="ic">🔮</span>แม่หมอ AI</div>
       <div class="nav-btn" data-page="booking" onclick="showPage('booking')"><span class="ic">📅</span>จองคิว</div>
       <div class="nav-btn" data-page="shop" onclick="showPage('shop')"><span class="ic">🛍️</span>ร้านค้า</div>
       <div class="nav-btn" data-page="missions" onclick="showPage('missions')"><span class="ic">🎯</span>ภารกิจ</div>
@@ -418,6 +518,9 @@
       <div class="nav-btn" data-page="invite" onclick="showPage('invite')"><span class="ic">🤝</span>แนะนำเพื่อน</div>
     </nav>
   </header>
+
+  <!-- Floating Home Button: present on every page, returns to first page -->
+  <div class="home-fab main-system" id="homeFab" onclick="goHome()" title="กลับหน้าแรก">🏠</div>
 
   <!-- Floating Report / Support Button -->
   <a class="floating-support-btn" id="floatingSupportBtn" title="แจ้งปัญหาการใช้งาน">
@@ -434,7 +537,7 @@
   </div>
 
   <!-- Custom Alert / Toast Modal -->
-  <div class="modal-overlay" id="customAlertModal">
+  <div class="modal-overlay" id="customAlertModal" style="z-index: 10500;">
     <div class="modal-content" style="max-width: 380px;">
       <h2 id="customAlertTitle">แจ้งเตือน</h2>
       <p id="customAlertMessage" style="margin: 15px 0; font-size: 15px;"></p>
@@ -885,6 +988,7 @@
             </div>
 
             <div class="quick-actions-grid">
+              <div class="qa-btn" onclick="showPage('aichat')" style="border-color: var(--gold);"><span class="ic">🔮</span><span class="lbl">คุยกับแม่หมอ AI</span></div>
               <div class="qa-btn" onclick="openTreasureModal()"><span class="ic">🎁</span><span class="lbl">เช็คอินรายวัน</span></div>
               <div class="qa-btn" onclick="$('#gachaModal').classList.add('show')"><span class="ic">🎡</span><span class="lbl">เสี่ยงดวง</span></div>
               <div class="qa-btn" onclick="$('#topupModal').classList.add('show')"><span class="ic">💎</span><span class="lbl">เติมแต้ม VIP</span></div>
@@ -906,6 +1010,41 @@
           </section>
 
           <span class="footer-link" id="triggerAdmin">© 2026 <span id="footerBrandName">Horoscope</span> | Admin Control Panel</span>
+        </div>
+
+        <!-- PAGE: AI แม่หมอ Chatbot -->
+        <div class="page" id="page-aichat">
+          <section class="card aichat-card">
+            <div class="aichat-header">
+              <div class="aichat-avatar">🔮</div>
+              <div class="aichat-header-text">
+                <h2 class="title" style="margin:0;">แม่หมอ AI</h2>
+                <span class="aichat-status"><span class="dot-online"></span>พร้อมรับฟังตลอด 24 ชม.</span>
+              </div>
+              <button class="aichat-clear-btn" onclick="clearMaehmorChat()" title="เริ่มบทสนทนาใหม่">🗑️</button>
+            </div>
+            <p class="muted" style="margin-top:2px;">ระบายปัญหาชีวิต ความรัก การงาน การเงิน หรือเรื่องทั่วไปกับแม่หมอได้เลยจ้ะ (คำแนะนำเบื้องต้นจาก AI เพื่อความบันเทิง ไม่ใช่การพยากรณ์ที่แม่นยำ 100%)</p>
+
+            <div class="aichat-topics" id="aichatTopics">
+              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องความรัก')">💞 ความรัก</div>
+              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องการงาน')">💼 การงาน</div>
+              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องการเงิน')">💰 การเงิน</div>
+              <div class="aichat-chip" onclick="sendMaehmorQuick('เรื่องสุขภาพ')">🌿 สุขภาพ</div>
+              <div class="aichat-chip" onclick="sendMaehmorQuick('ดวงวันนี้')">🌟 ดวงวันนี้</div>
+            </div>
+
+            <div class="aichat-window" id="aichatWindow"></div>
+
+            <div class="aichat-typing" id="aichatTyping" style="display:none;">
+              <div class="aichat-avatar-sm">🔮</div>
+              <div class="typing-dots"><span></span><span></span><span></span></div>
+            </div>
+
+            <div class="aichat-input-row">
+              <textarea id="aichatInput" rows="1" placeholder="พิมพ์เล่าปัญหาให้แม่หมอฟัง..." onkeydown="handleMaehmorKey(event)"></textarea>
+              <button class="aichat-send-btn" id="aichatSendBtn" onclick="sendMaehmorMsg()" title="ส่งข้อความ">➤</button>
+            </div>
+          </section>
         </div>
 
         <!-- PAGE: Booking -->
@@ -1097,7 +1236,14 @@
       if (pg) pg.classList.add('active');
       const btn = document.querySelector(`.nav-btn[data-page="${name}"]`);
       if (btn) btn.classList.add('active');
+      if (name === 'aichat') ensureMaehmorGreeting();
       $("#mainContainer").scrollTop = 0;
+    };
+
+    // ปุ่ม Home: กลับไปหน้าแรกสุด (โปรไฟล์) จากทุกหน้า และปิด modal ที่เปิดค้างอยู่
+    window.goHome = () => {
+      document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+      showPage('profile');
     };
 
     /* ---------------- Shop Branding ---------------- */
@@ -1533,6 +1679,10 @@
     });
 
     $("#acceptRulesBtn").addEventListener("click", () => { $("#rulesModal").classList.remove("show"); });
+    $("#aichatInput").addEventListener("input", function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 90) + 'px';
+    });
     $("#floatingSupportBtn").addEventListener("click", () => {
       showCustomAlert("💬 สอบถามปัญหาการใช้งาน", "หากพบปัญหา การเติมแต้ม หรือการจองคิว ติดต่อแอดมินโดยตรงที่ IG: @horoscope_1308");
     });
@@ -1540,6 +1690,10 @@
     /* ---------------- 2. HUD & Clocks ---------------- */
     db.collection("users").onSnapshot((snap) => {
       $("#queueCount").textContent = `สมาชิกปัจจุบัน: ${snap.size} ท่าน`;
+    });
+    // ยอดคิวทั้งหมด: จำนวนคิวที่เคยจองสะสมทั้งหมด (รวมผู้ใช้เก่า/ปัจจุบันทุกคน)
+    db.collection("queues").onSnapshot((snap) => {
+      $("#totalQueueCount").textContent = `ยอดคิวทั้งหมด: ${snap.size} คิว`;
     });
 
     setInterval(() => {
@@ -1974,7 +2128,158 @@
       else btn.innerHTML = "✨ ยืนยันการจองคิว (ฟรี / รับ 3 แต้ม) ✨";
     }
 
-    /* ---------------- 8. Booking & History ---------------- */
+    /* ---------------- 8. AI แม่หมอ Chatbot ---------------- */
+    // เก็บประวัติแชทไว้ในหน่วยความจำระหว่างที่เปิดแอปอยู่ (ยังไม่ผูกฐานข้อมูล)
+    let maehmorHistory = [];
+    let maehmorBusy = false;
+
+    // NOTE สำหรับผู้ดูแลระบบ:
+    // ตอนนี้แม่หมอ AI ตอบด้วยชุดคำแนะนำสำเร็จรูป (โหมดออฟไลน์) ที่สุ่มปรับตามคำที่ผู้ใช้พิมพ์
+    // เพื่อให้ใช้งานได้ทันทีโดยไม่ต้องมีเซิร์ฟเวอร์เสริม
+    // หากต้องการต่อ AI จริง (เช่น Claude API) ให้สร้างฟังก์ชัน backend ของตัวเอง (เช่น Firebase
+    // Cloud Function) ที่เก็บ API key ไว้ฝั่งเซิร์ฟเวอร์ (ห้ามใส่ API key ในไฟล์นี้เด็ดขาด เพราะไฟล์นี้
+    // รันอยู่ฝั่งผู้ใช้ ใครก็เปิดดูโค้ดและขโมยคีย์ไปได้) แล้วแก้ไขค่า MAEHMOR_API_URL ด้านล่างให้ชี้ไปยัง
+    // endpoint นั้น ระบบจะเรียกใช้ก่อนโหมดออฟไลน์โดยอัตโนมัติ
+    const MAEHMOR_API_URL = ""; // เช่น "https://us-central1-yourproject.cloudfunctions.net/maehmorChat"
+
+    function maehmorTimeNow() {
+      return new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function addChatBubble(role, text) {
+      const win = $("#aichatWindow");
+      const row = document.createElement('div');
+      row.className = `chat-row ${role}`;
+      const avatar = role === 'ai' ? `<div class="aichat-avatar-sm">🔮</div>` : '';
+      row.innerHTML = `${avatar}<div><div class="chat-bubble"></div><div class="chat-time">${maehmorTimeNow()}</div></div>`;
+      row.querySelector('.chat-bubble').textContent = text;
+      win.appendChild(row);
+      win.scrollTop = win.scrollHeight;
+      maehmorHistory.push({ role, text });
+    }
+
+    function ensureMaehmorGreeting() {
+      const win = $("#aichatWindow");
+      if (win.children.length === 0) {
+        addChatBubble('ai', 'สวัสดีจ้ะ แม่หมอเองนะ 🔮 มีเรื่องอะไรอยากปรึกษา ระบายให้แม่หมอฟังได้เลย ไม่ว่าจะเรื่องความรัก การงาน การเงิน หรือเรื่องทั่วไปในชีวิตก็ได้จ้ะ');
+      }
+    }
+
+    function handleMaehmorKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMaehmorMsg(); }
+    }
+
+    function sendMaehmorQuick(topic) {
+      $("#aichatInput").value = topic;
+      sendMaehmorMsg();
+    }
+
+    async function sendMaehmorMsg() {
+      if (maehmorBusy) return;
+      const input = $("#aichatInput");
+      const text = input.value.trim();
+      if (!text) return;
+      ensureMaehmorGreeting();
+      addChatBubble('user', text);
+      input.value = "";
+      input.style.height = 'auto';
+
+      maehmorBusy = true;
+      $("#aichatSendBtn").disabled = true;
+      $("#aichatTyping").style.display = 'flex';
+      $("#aichatWindow").scrollTop = $("#aichatWindow").scrollHeight;
+
+      try {
+        const reply = await getMaehmorReply(text);
+        $("#aichatTyping").style.display = 'none';
+        addChatBubble('ai', reply);
+      } catch (err) {
+        $("#aichatTyping").style.display = 'none';
+        addChatBubble('ai', 'ขอโทษจ้ะ ตอนนี้แม่หมอขัดข้องชั่วคราว ลองพิมพ์อีกครั้งนะ 🙏');
+      } finally {
+        maehmorBusy = false;
+        $("#aichatSendBtn").disabled = false;
+      }
+    }
+
+    function clearMaehmorChat() {
+      $("#aichatWindow").innerHTML = "";
+      maehmorHistory = [];
+      ensureMaehmorGreeting();
+    }
+
+    async function getMaehmorReply(userText) {
+      // 1) ถ้ามีการตั้งค่า backend ของ AI จริงไว้ ให้เรียกใช้ก่อน
+      if (MAEHMOR_API_URL) {
+        const res = await fetch(MAEHMOR_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userText, history: maehmorHistory.slice(-10) })
+        });
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        if (data && data.reply) return data.reply;
+        throw new Error("Bad response");
+      }
+      // 2) โหมดออฟไลน์: สุ่มคำแนะนำแบบแม่หมอ ปรับตามหัวข้อที่พิมพ์มา
+      await new Promise(r => setTimeout(r, 900 + Math.random() * 900)); // จำลองเวลาคิด
+      return buildOfflineMaehmorReply(userText);
+    }
+
+    function buildOfflineMaehmorReply(userText) {
+      const t = userText.toLowerCase();
+      const openers = [
+        "แม่หมอฟังแล้วนะจ๊ะ", "อืม... แม่หมอเห็นแล้วล่ะ", "เข้าใจความรู้สึกนี้ดีจ้ะ", "แม่หมอขอเสี่ยงทายให้ฟังนะ"
+      ];
+      const opener = openers[Math.floor(Math.random() * openers.length)];
+
+      let topic = null;
+      if (/รัก|แฟน|คนรัก|คู่/.test(t)) topic = 'love';
+      else if (/งาน|เงินเดือน|เจ้านาย|ธุรกิจ|สัมภาษณ์/.test(t)) topic = 'work';
+      else if (/เงิน|หนี้|ลงทุน|โชคลาภ|หวย/.test(t)) topic = 'money';
+      else if (/สุขภาพ|ป่วย|เจ็บ|นอนไม่หลับ/.test(t)) topic = 'health';
+      else if (/ดวงวันนี้|ดวงประจำวัน/.test(t)) topic = 'today';
+
+      const banks = {
+        love: [
+          "ช่วงนี้ดาวความรักกำลังผันผวน อย่าเพิ่งตัดสินใจอะไรใจร้อน ลองเปิดใจคุยตรงๆ กับอีกฝ่ายดูนะ ความจริงใจจะช่วยคลี่คลายเรื่องได้มาก",
+          "ความรักของเธอกำลังอยู่ในช่วงทดสอบใจ ให้เวลากับตัวเองและอีกฝ่ายบ้าง อย่ากดดันกันมากเกินไป ทุกอย่างจะค่อยๆ ดีขึ้น",
+          "ดวงบอกว่าจะมีคนสำคัญเข้ามาทำให้หัวใจเธอสั่นไหว แต่อย่าลืมฟังเสียงหัวใจตัวเองด้วยนะ"
+        ],
+        work: [
+          "งานที่ทำอยู่จะเริ่มเห็นผลลัพธ์ในไม่ช้า ให้อดทนอีกนิด ความพยายามจะไม่สูญเปล่าแน่นอน",
+          "ช่วงนี้อาจมีอุปสรรคเล็กน้อยในที่ทำงาน ให้ตั้งสติและวางแผนให้รอบคอบก่อนตัดสินใจเรื่องสำคัญ",
+          "ดวงการงานกำลังไปได้สวย มีโอกาสได้รับการสนับสนุนจากคนรอบข้าง อย่ากลัวที่จะเสนอไอเดียใหม่ๆ"
+        ],
+        money: [
+          "การเงินช่วงนี้ควรระมัดระวังเรื่องรายจ่ายที่ไม่จำเป็น เก็บออมไว้บ้างจะช่วยให้อุ่นใจในอนาคต",
+          "มีสัญญาณโชคลาภเล็กๆ กำลังเข้ามา แต่อย่าลงทุนอะไรใหญ่โดยไม่ศึกษาให้ดีก่อนนะ",
+          "ดวงการเงินเริ่มคลี่คลายไปในทางที่ดีขึ้น ความอดทนของเธอกำลังจะได้ผล"
+        ],
+        health: [
+          "อย่าลืมพักผ่อนให้เพียงพอนะจ๊ะ ร่างกายกำลังส่งสัญญาณให้เธอช้าลงบ้าง ดูแลใจตัวเองด้วยนะ",
+          "ช่วงนี้ควรใส่ใจเรื่องการพักผ่อนและอาหารการกินเป็นพิเศษ สุขภาพใจก็สำคัญไม่แพ้สุขภาพกาย",
+          "ลองหาเวลาผ่อนคลายให้ตัวเองบ้าง ความเครียดสะสมอาจเป็นต้นเหตุของความไม่สบายใจตอนนี้"
+        ],
+        today: [
+          "วันนี้เป็นวันที่เหมาะกับการเริ่มต้นสิ่งใหม่ๆ ใจเย็นๆ แล้วทุกอย่างจะราบรื่นจ้ะ",
+          "วันนี้ดวงโดยรวมอยู่ในเกณฑ์ดี แต่ควรระวังคำพูดของตัวเองสักนิด อาจมีเรื่องเข้าใจผิดได้ง่าย",
+          "วันนี้เหมาะกับการทบทวนตัวเอง พักใจ แล้วค่อยลุยงานต่อในวันพรุ่งนี้จ้ะ"
+        ],
+        general: [
+          "ทุกปัญหามีทางออกเสมอ ให้เวลากับตัวเองสักนิด อย่าเพิ่งกดดันตัวเองมากไป",
+          "บางทีคำตอบที่เธอตามหาอาจอยู่ใกล้ตัวกว่าที่คิด ลองสงบใจแล้วฟังเสียงภายในดูนะ",
+          "แม่หมอเชื่อว่าเธอผ่านเรื่องยากๆ มาได้เสมอ ครั้งนี้ก็เช่นกัน ค่อยๆ ก้าวไปทีละก้าวนะจ๊ะ"
+        ]
+      };
+
+      const pool = banks[topic] || banks.general;
+      const advice = pool[Math.floor(Math.random() * pool.length)];
+      const closer = "หากอยากได้คำพยากรณ์ที่ละเอียดและแม่นยำยิ่งขึ้น แนะนำให้จองคิวดูดวงกับแม่หมอตัวจริงที่หน้า “จองคิว” ได้เลยจ้ะ 🙏";
+      return `${opener} ${advice}\n\n${closer}`;
+    }
+
+    /* ---------------- 9. Booking & History ---------------- */
     $("#bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!currentUser) return showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนจองคิว");
