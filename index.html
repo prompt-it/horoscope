@@ -399,6 +399,40 @@
     .closed-date-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,77,77,0.12); border: 1px solid var(--danger); border-radius: 16px; padding: 4px 8px; margin: 3px 4px 3px 0; font-size: 11px; color: #ffb3b3; }
     .closed-date-chip button { width: auto; padding: 0 2px; background: none; border: none; color: var(--danger); font-weight: 800; cursor: pointer; }
 
+    /* ---------- Onboarding Tour ---------- */
+    .tour-overlay { position: fixed; inset: 0; z-index: 30000; display: none; }
+    .tour-overlay.show { display: block; }
+    .tour-ring {
+      position: fixed; border-radius: 16px; pointer-events: none; z-index: 30001;
+      box-shadow: 0 0 0 4px var(--gold), 0 0 0 9999px rgba(0,0,0,0.78), 0 0 24px rgba(255,215,0,0.55);
+      transition: top 0.35s cubic-bezier(.22,1,.36,1), left 0.35s cubic-bezier(.22,1,.36,1), width 0.35s cubic-bezier(.22,1,.36,1), height 0.35s cubic-bezier(.22,1,.36,1);
+    }
+    .tour-tooltip {
+      position: fixed; z-index: 30002; width: 260px; max-width: calc(100vw - 24px);
+      background: linear-gradient(145deg, #1f0333, #080012); border: 1px solid var(--gold);
+      border-radius: 16px; padding: 14px 16px 14px; box-shadow: var(--glow), 0 0 18px rgba(255,215,0,0.45);
+      visibility: hidden; opacity: 0;
+      transition: top 0.35s cubic-bezier(.22,1,.36,1), left 0.35s cubic-bezier(.22,1,.36,1), opacity 0.25s ease;
+    }
+    .tour-tooltip.tour-visible { visibility: visible; opacity: 1; }
+    .tour-tooltip::before { content: ''; position: absolute; width: 0; height: 0; left: var(--arrow-left, 20px); }
+    .tour-tooltip.arrow-up::before { top: -10px; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 10px solid var(--gold); }
+    .tour-tooltip.arrow-down::before { bottom: -10px; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid var(--gold); }
+    .tour-tooltip .tt-step { font-size: 10.5px; color: var(--gold); font-weight: 700; letter-spacing: 0.4px; margin-bottom: 4px; }
+    .tour-tooltip h4 { margin: 0 0 6px; color: #fff; font-size: 14.5px; font-weight: 700; text-shadow: 0 0 10px rgba(157,78,221,0.6); }
+    .tour-tooltip p { margin: 0 0 12px; font-size: 12.5px; color: var(--text); line-height: 1.55; }
+    .tour-tooltip .tt-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .tour-tooltip .tt-skip { width: auto; padding: 0; background: none; border: none; color: var(--muted); font-size: 11.5px; cursor: pointer; text-decoration: underline; }
+    .tour-tooltip .tt-skip:hover { color: var(--gold); }
+    .tour-tooltip .tt-next { width: auto; padding: 8px 18px; font-size: 12.5px; margin-top: 0; }
+    .tour-restart-fab {
+      position: fixed; bottom: 130px; right: 18px; z-index: 999; width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(60, 9, 108, 0.85); border: 1.5px solid var(--gold); box-shadow: var(--glow-gold);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; font-weight: 800;
+      color: var(--gold); opacity: 0.78; transition: all 0.3s ease;
+    }
+    .tour-restart-fab:hover { opacity: 1; transform: scale(1.12); }
+
     /* ---------- Background Music ---------- */
     .music-fab { position: fixed; bottom: 74px; right: 18px; z-index: 998; width: 46px; height: 46px; border-radius: 50%; background: rgba(60,9,108,0.85); border: 1.5px solid var(--primary); box-shadow: 0 0 15px rgba(157,78,221,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 19px; transition: all 0.3s ease; }
     .music-fab.playing { animation: chestPulse 1.6s infinite alternate; }
@@ -540,6 +574,23 @@
   <!-- Floating Music Toggle -->
   <div class="music-fab main-system" id="musicFab" onclick="toggleMusic()" title="เล่น/หยุดเพลง">🎵</div>
   <audio id="bgMusicPlayer" style="display:none;"></audio>
+
+  <!-- Restart Onboarding Tour -->
+  <div class="tour-restart-fab main-system" id="tourRestartFab" onclick="startTour()" title="วิธีใช้งานเว็บไซต์">❓</div>
+
+  <!-- Onboarding Tour Overlay -->
+  <div class="tour-overlay" id="tourOverlay">
+    <div class="tour-ring" id="tourRing"></div>
+    <div class="tour-tooltip" id="tourTooltip">
+      <div class="tt-step" id="tourStepLabel">ขั้นตอน 1 / 1</div>
+      <h4 id="tourStepTitle">หัวข้อ</h4>
+      <p id="tourStepDesc">รายละเอียด</p>
+      <div class="tt-actions">
+        <button type="button" class="tt-skip" onclick="skipTour()">ข้ามทั้งหมด</button>
+        <button type="button" class="btn btn-gold tt-next" id="tourNextBtn" onclick="nextTourStep()">ถัดไป ›</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Custom Alert / Toast Modal -->
   <div class="modal-overlay" id="customAlertModal" style="z-index: 10500;">
@@ -1630,6 +1681,7 @@
       document.getElementById("mainContainer").classList.add("logged-in");
       document.body.classList.add("logged-in");
       showPage('profile');
+      setTimeout(startTour, 700);
 
       updateProfileUI(data);
 
@@ -2535,6 +2587,113 @@
         $("#adminEditUserModal").classList.remove("show"); loadAdminUsers();
       } catch (e) { showCustomAlert("ผิดพลาด", e.message); }
     };
+
+    /* ===================== Onboarding Tour (แนะนำการใช้งานปุ่มต่างๆ) ===================== */
+    const tourSteps = [
+      { sel: "#headerLogo",                         title: "โลโก้เว็บไซต์",     desc: "นี่คือโลโก้และชื่อของเว็บไซต์ระบบจองคิวดูดวง" },
+      { sel: "#navToggleBtn",                       title: "พับ/ขยายเมนู",      desc: "กดปุ่มนี้เพื่อซ่อนหรือแสดงแถบเมนูด้านบน ให้หน้าจอดูโล่งขึ้น" },
+      { sel: '.nav-btn[data-page="profile"]',       title: "👤 โปรไฟล์",       desc: "ดูและแก้ไขข้อมูลส่วนตัว แต้มสะสม และสถานะสมาชิกของคุณ" },
+      { sel: '.nav-btn[data-page="aichat"]',        title: "🔮 แม่หมอ AI",     desc: "พูดคุยขอคำทำนายดวงชะตาจากแม่หมอ AI ได้ตลอด 24 ชั่วโมง" },
+      { sel: '.nav-btn[data-page="booking"]',       title: "📅 จองคิว",        desc: "จองคิวดูดวงกับหมอดูตัวจริงตามวันและเวลาที่คุณสะดวก" },
+      { sel: '.nav-btn[data-page="missions"]',      title: "🎯 ภารกิจ",        desc: "ทำภารกิจประจำวันและภารกิจหลักเพื่อรับแต้มสะสมฟรี" },
+      { sel: '.nav-btn[data-page="activities"]',    title: "📢 กิจกรรม",       desc: "ติดตามข่าวสารและกิจกรรมพิเศษต่างๆ ของเว็บไซต์" },
+      { sel: '.nav-btn[data-page="history"]',       title: "📜 ประวัติ",       desc: "ตรวจสอบประวัติการจองคิวย้อนหลังทั้งหมดของคุณ" },
+      { sel: '.nav-btn[data-page="reviews"]',       title: "⭐ รีวิว",         desc: "อ่านรีวิวจากผู้ใช้งานจริง หรือเขียนรีวิวของคุณเอง" },
+      { sel: '.nav-btn[data-page="invite"]',        title: "🤝 แนะนำเพื่อน",   desc: "แชร์รหัสแนะนำของคุณเพื่อรับแต้มพิเศษเมื่อเพื่อนสมัครสมาชิก" },
+      { sel: "#homeFab",                            title: "ปุ่มกลับหน้าแรก",   desc: "กดปุ่มนี้เพื่อกลับไปยังหน้าโปรไฟล์ได้ทุกเมื่อ ไม่ว่าจะอยู่หน้าไหน" },
+      { sel: "#musicFab",                           title: "เปิด/ปิดเพลง",     desc: "กดเพื่อเปิดหรือปิดเสียงเพลงประกอบของเว็บไซต์" },
+      { sel: "#floatingSupportBtn",                 title: "แจ้งปัญหาการใช้งาน", desc: "หากพบปัญหาในการใช้งาน กดปุ่มนี้เพื่อติดต่อแอดมินโดยตรง" },
+      { sel: "#tourRestartFab",                     title: "ทบทวนวิธีใช้งาน",   desc: "หากต้องการดูคำแนะนำนี้อีกครั้งในภายหลัง กดปุ่มนี้ได้เลย" }
+    ];
+    let tourIdx = 0;
+    let tourNavWasCollapsed = false;
+
+    window.startTour = function () {
+      if (!document.body.classList.contains("logged-in")) return;
+      tourIdx = 0;
+      const nav = $("#appNav");
+      tourNavWasCollapsed = !!(nav && nav.classList.contains("nav-collapsed"));
+      if (tourNavWasCollapsed) toggleNav();
+      $("#tourOverlay").classList.add("show");
+      renderTourStep();
+      window.addEventListener("resize", repositionCurrentTourStep);
+    };
+
+    window.skipTour = function () {
+      $("#tourOverlay").classList.remove("show");
+      $("#tourTooltip").classList.remove("tour-visible");
+      window.removeEventListener("resize", repositionCurrentTourStep);
+      if (tourNavWasCollapsed) toggleNav();
+    };
+
+    window.nextTourStep = function () {
+      tourIdx++;
+      if (tourIdx >= tourSteps.length) { skipTour(); return; }
+      renderTourStep();
+    };
+
+    function repositionCurrentTourStep() {
+      const step = tourSteps[tourIdx];
+      if (!step) return;
+      const el = document.querySelector(step.sel);
+      if (el) positionTourOn(el, step);
+    }
+
+    function renderTourStep() {
+      const step = tourSteps[tourIdx];
+      let el = document.querySelector(step.sel);
+      if (!el || el.offsetParent === null) { nextTourStep(); return; }
+      $("#tourTooltip").classList.remove("tour-visible");
+      el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      setTimeout(() => positionTourOn(el, step), 280);
+    }
+
+    function positionTourOn(el, step) {
+      const rect = el.getBoundingClientRect();
+      const pad = 8;
+      const ring = $("#tourRing");
+      ring.style.left = (rect.left - pad) + "px";
+      ring.style.top = (rect.top - pad) + "px";
+      ring.style.width = (rect.width + pad * 2) + "px";
+      ring.style.height = (rect.height + pad * 2) + "px";
+
+      const tip = $("#tourTooltip");
+      $("#tourStepLabel").textContent = `ขั้นตอน ${tourIdx + 1} / ${tourSteps.length}`;
+      $("#tourStepTitle").textContent = step.title;
+      $("#tourStepDesc").textContent = step.desc;
+      $("#tourNextBtn").textContent = (tourIdx === tourSteps.length - 1) ? "เสร็จสิ้น ✓" : "ถัดไป ›";
+
+      tip.style.visibility = "hidden";
+      tip.style.opacity = "0";
+      tip.style.left = "-9999px";
+      requestAnimationFrame(() => {
+        const tipRect = tip.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        let top, arrowClass;
+        if (spaceBelow >= tipRect.height + 26 || spaceBelow >= spaceAbove) {
+          top = rect.bottom + pad + 14;
+          arrowClass = "arrow-up";
+        } else {
+          top = rect.top - tipRect.height - pad - 14;
+          arrowClass = "arrow-down";
+        }
+        top = Math.max(10, Math.min(top, window.innerHeight - tipRect.height - 10));
+        let left = rect.left + rect.width / 2 - tipRect.width / 2;
+        left = Math.max(10, Math.min(left, window.innerWidth - tipRect.width - 10));
+
+        tip.classList.remove("arrow-up", "arrow-down");
+        tip.classList.add(arrowClass);
+        const arrowLeft = Math.max(16, Math.min(rect.left + rect.width / 2 - left - 8, tipRect.width - 24));
+        tip.style.setProperty("--arrow-left", arrowLeft + "px");
+
+        tip.style.top = top + "px";
+        tip.style.left = left + "px";
+        tip.style.visibility = "visible";
+        tip.style.opacity = "1";
+        tip.classList.add("tour-visible");
+      });
+    }
   </script>
 </body>
 </html>
